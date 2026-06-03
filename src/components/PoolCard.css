@@ -1,0 +1,123 @@
+.pool-card {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: var(--pf-surface);
+  border-radius: var(--pf-radius);
+  /* border: 1px solid var(--pf-border); */
+  /* box-shadow: var(--pf-shadow); */
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.pool-card:active {
+  transform: scale(0.985);
+  /* box-shadow: var(--pf-shadow-hover); */
+}
+
+/* .pool-card__accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--pf-accent), var(--pf-primary));
+  border-radius: 4px 0 0 4px;
+} */
+
+.pool-card__icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
+.pool-card__emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.pool-card__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 6px;
+  border-radius: 8px;
+  background: var(--pf-primary);
+  color: white;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+.pool-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pool-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.pool-card__name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--pf-text);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.pool-card__chevron {
+  flex-shrink: 0;
+  color: var(--pf-text-muted);
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+.pool-card__address {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--pf-text-muted);
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.pool-card__address-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--pf-primary);
+  opacity: 0.7;
+}
+
+.pool-card__fee {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pf-primary-dark);
+  background: rgba(2, 132, 199, 0.08);
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.pool-card__fee svg {
+  opacity: 0.8;
+}

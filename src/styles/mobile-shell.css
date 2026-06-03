@@ -1,0 +1,44 @@
+/* 모바일 전용 앱 셸 (430px). PC에서는 가운데 고정된 폰 화면처럼 표시 */
+
+:root {
+  --mobile-width: 430px;
+}
+
+html {
+  background: #f2fcfc;
+}
+
+body {
+  width: 100%;
+  max-width: var(--mobile-width);
+  margin: 0 auto;
+  min-height: 100dvh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  min-height: 100svh;
+}
+
+.app {
+  width: 100%;
+  min-height: 100dvh;
+  min-height: 100svh;
+}
+
+/* fixed 하단 UI — transform 충돌 없이 가운데 정렬 */
+.mobile-fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: min(100%, var(--mobile-width));
+  max-width: var(--mobile-width);
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 40;
+}

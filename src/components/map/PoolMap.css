@@ -1,0 +1,32 @@
+.pool-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #e8f4fc;
+}
+
+.pool-map__canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.pool-map--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--pf-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.pool-map--loading p {
+  max-width: 300px;
+  margin: 0;
+}
+
+.pool-map--error {
+  color: #b91c1c;
+}

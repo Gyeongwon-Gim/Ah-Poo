@@ -1,0 +1,82 @@
+/* 수영장 상세 — 아래에서 올라오는 시트 전환 */
+
+.page-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(15, 23, 42, 0.35);
+  animation: backdrop-fade-in 0.35s ease forwards;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page-backdrop--exit {
+  animation: backdrop-fade-out 0.3s ease forwards;
+}
+
+.page-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  width: 100%;
+  max-width: var(--mobile-width);
+  margin: 0 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--pf-bg);
+  box-shadow: 0 -8px 40px rgba(2, 132, 199, 0.15);
+  will-change: transform;
+  animation: sheet-slide-up 0.42s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.page-sheet--exit {
+  animation: sheet-slide-down 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes sheet-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-slide-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdrop-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-sheet,
+  .page-sheet--exit,
+  .page-backdrop,
+  .page-backdrop--exit {
+    animation: none;
+  }
+}

@@ -1,0 +1,47 @@
+@import 'tailwindcss';
+@import './styles/mobile-shell.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --pf-bg: #f0f9ff;
+  --pf-bg-deep: #e0f2fe;
+  --pf-surface: #ffffff;
+  --pf-primary: #0284c7;
+  --pf-primary-dark: #0369a1;
+  --pf-accent: #06b6d4;
+  --pf-text: #0f172a;
+  --pf-text-muted: #64748b;
+  --pf-border: rgba(14, 165, 233, 0.15);
+  --pf-shadow: 0 1px 1px rgba(161, 161, 161, 1);
+  --pf-shadow-hover: 0 12px 32px rgba(2, 132, 199, 0.14);
+  --pf-radius: 20px;
+  --pf-radius-sm: 14px;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  background: var(--pf-bg);
+}
+
+button,
+a,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 모바일 전용: hover 스타일 비활성화 */
+@media (hover: none) {
+  .pool-card:hover,
+  .back-button:hover,
+  .directions-button:hover {
+    transform: none;
+  }
+}

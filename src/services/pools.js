@@ -1,0 +1,55 @@
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
+
+/** bigint(0/1/null) → boolean */
+export function isFlagOn(value) {
+  return value === 1 || value === true
+}
+
+export function mapRowToPool(row) {
+  return {
+    name: row.name,
+    address: row.address,
+    lat: Number(row.lat),
+    lng: Number(row.lng),
+    fee: row.fee ?? '',
+    url: row.url ?? '',
+    url2: row.url2 ?? '',
+    is50m: row.is_50m,
+    isWeekday: row.is_weekday,
+    isSaturday: row.is_saturday,
+    isSunday: row.is_sunday,
+    isHoliday: row.is_holiday,
+  }
+}
+
+export async function fetchPools() {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.')
+  }
+
+  const { data, error } = await supabase
+    .from('pools')
+    .select('*')
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return (data ?? []).map(mapRowToPool)
+}
+
+export async function fetchPoolByKey({ name, address, lat, lng }) {
+  if (!isSupabaseConfigured || !supabase) {
+    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.')
+  }
+
+  const { data, error } = await supabase
+    .from('pools')
+    .select('*')
+    .eq('name', name)
+    .eq('address', address)
+    .eq('lat', lat)
+    .eq('lng', lng)
+    .maybeSingle()
+
+  if (error) throw error
+  return data ? mapRowToPool(data) : null
+}

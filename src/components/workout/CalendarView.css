@@ -1,0 +1,27 @@
+@keyframes wave-fast-pulse {
+  0% { transform: translateX(0) scaleY(1); }
+  50% { transform: translateX(6%) scaleY(0.9); }
+  100% { transform: translateX(0) scaleY(1); }
+}
+.animate-wave-fast-pulse { animation: wave-fast-pulse 2.8s infinite ease-in-out; }
+
+@keyframes wave-rolling {
+  0% { transform: translateX(0) scaleY(1); }
+  50% { transform: translateX(-10%) scaleY(0.85); }
+  100% { transform: translateX(0) scaleY(1); }
+}
+.animate-wave-rolling { animation: wave-rolling 5.5s infinite ease-in-out; }
+
+@keyframes wave-jagged {
+  0% { transform: translateX(0) skewX(0deg); }
+  50% { transform: translateX(12%) skewX(2deg) scaleY(1.05); }
+  100% { transform: translateX(0) skewX(0deg); }
+}
+.animate-wave-jagged { animation: wave-jagged 4.8s infinite ease-in-out; }
+
+@keyframes wave-heavy {
+  0% { transform: translateX(0) scaleY(1); }
+  50% { transform: translateX(-5%) scaleY(1.2); }
+  100% { transform: translateX(0) scaleY(1); }
+}
+.animate-wave-heavy { animation: wave-heavy 8s infinite ease-in-out; }
