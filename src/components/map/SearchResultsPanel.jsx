@@ -31,12 +31,16 @@ function SearchResultsPanel({
       className={`search-results-panel ${listView ? 'search-results-panel--list-view' : ''}`}
       aria-label={`'${searchTerm}' 검색 결과`}
     >
-      <div className="search-results-panel__handle" aria-hidden />
-      <header className="search-results-panel__header">
-        <h2 className="search-results-panel__title">
-          검색 결과 <span className="search-results-panel__count">{pools.length}</span>
-        </h2>
-      </header>
+      {!listView && (
+        <div className="search-results-panel__handle" aria-hidden />
+      )}
+      {!listView && (
+        <header className="search-results-panel__header">
+          <h2 className="search-results-panel__title">
+            검색 결과 <span className="search-results-panel__count">{pools.length}</span>
+          </h2>
+        </header>
+      )}
 
       <div className="search-results-panel__list" role="list">
         {pools.length === 0 ? (

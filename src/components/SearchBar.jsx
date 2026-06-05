@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, ChevronLeft } from 'lucide-react';
 import './SearchBar.css';
 
 function SearchBar({
@@ -9,6 +9,7 @@ function SearchBar({
   totalCount,
   searching,
   variant = 'default',
+  listView = false,
   nearbyMode = false,
   nearbyRadiusKm = 10,
   locationPending = false,
@@ -29,16 +30,27 @@ function SearchBar({
 
   return (
     <div
-      className={`search-bar-wrap ${variant === 'map' ? 'search-bar-wrap--map' : ''}`}
+      className={`search-bar-wrap ${variant === 'map' ? 'search-bar-wrap--map' : ''} ${listView ? 'search-bar-wrap--list' : ''}`}
     >
       <div className="search-bar-container">
         <form className="search-bar" onSubmit={handleSubmit}>
-          <Search
-            className="search-icon"
-            size={20}
-            strokeWidth={2.5}
-            aria-hidden
-          />
+          {listView ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="search-back"
+              aria-label="뒤로 가기"
+            >
+              <ChevronLeft size={22} strokeWidth={2.5} />
+            </button>
+          ) : (
+            <Search
+              className="search-icon"
+              size={20}
+              strokeWidth={2.5}
+              aria-hidden
+            />
+          )}
           <input
             type="search"
             enterKeyHint="search"
@@ -55,22 +67,12 @@ function SearchBar({
               className="search-clear"
               aria-label="검색어 지우기"
             >
-              <X size={18} />
+              <X size={18} strokeWidth={2.5} />
             </button>
           )}
         </form>
-        {!searching && totalCount > 0 && (
-          <p className="search-meta">
-            {hasDraft
-              ? 'Enter를 눌러 검색'
-              : appliedSearchTerm.trim()
-                ? `검색 결과 ${resultCount}건`
-                : locationPending
-                  ? '내 위치 확인 중…'
-                  : nearbyMode
-                    ? `내 주변 ${nearbyRadiusKm}km · ${resultCount}개`
-                    : `전체 ${totalCount}개 수영장`}
-          </p>
+        {!searching && totalCount > 0 && listView && (
+          <p className="search-meta">검색 결과 {resultCount}건</p>
         )}
       </div>
     </div>

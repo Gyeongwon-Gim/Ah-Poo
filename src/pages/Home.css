@@ -7,6 +7,14 @@
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
+.home--list-view {
+  background: #fff;
+}
+
+.home.home--list-view.app-route {
+  padding-bottom: 0;
+}
+
 .home-map-overlay {
   position: absolute;
   top: 0;

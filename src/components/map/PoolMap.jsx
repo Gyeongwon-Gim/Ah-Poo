@@ -105,6 +105,7 @@ const PoolMap = forwardRef(function PoolMap(
       if (!nextKeys.has(key)) {
         kakao.maps.event.removeListener(entry.marker, 'click', entry.onClick)
         entry.marker.setMap(null)
+        entry.label?.setMap(null)
         store.delete(key)
       }
     }
@@ -117,13 +118,28 @@ const PoolMap = forwardRef(function PoolMap(
       const marker = new kakao.maps.Marker({ position: pos, map })
       const onClick = () => onSelectPoolRef.current(pool)
       kakao.maps.event.addListener(marker, 'click', onClick)
-      store.set(key, { marker, pool, onClick })
+
+      const labelEl = document.createElement('div')
+      labelEl.className = 'pool-marker-label'
+      labelEl.textContent = pool.name
+      const label = new kakao.maps.CustomOverlay({
+        position: pos,
+        content: labelEl,
+        yAnchor: 0,
+        zIndex: 1,
+      })
+      label.setMap(map)
+
+      store.set(key, { marker, label, labelEl, pool, onClick })
     }
   }, [ready, poolsSignature, pools])
 
   useEffect(() => {
-    for (const [key, { marker }] of markerStoreRef.current) {
-      marker.setZIndex(key === selectedKey ? 2 : 1)
+    for (const [key, { marker, label, labelEl }] of markerStoreRef.current) {
+      const isSelected = key === selectedKey
+      marker.setZIndex(isSelected ? 2 : 1)
+      label?.setZIndex(isSelected ? 3 : 1)
+      labelEl?.classList.toggle('pool-marker-label--selected', isSelected)
     }
   }, [selectedKey])
 
@@ -174,6 +190,7 @@ const PoolMap = forwardRef(function PoolMap(
       for (const [, entry] of markerStoreRef.current) {
         kakao.maps.event.removeListener(entry.marker, 'click', entry.onClick)
         entry.marker.setMap(null)
+        entry.label?.setMap(null)
       }
       markerStoreRef.current.clear()
       mapInstanceRef.current = null

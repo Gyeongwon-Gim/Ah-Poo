@@ -185,6 +185,7 @@ function Home() {
           totalCount={pools.length}
           searching={loading}
           variant="map"
+          listView={showSearchList}
           nearbyMode={isNearbyMode}
           nearbyRadiusKm={NEARBY_RADIUS_KM}
           locationPending={showLocationPending}
