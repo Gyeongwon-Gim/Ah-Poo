@@ -9,12 +9,11 @@
   margin-right: auto;
   z-index: 50;
   display: flex;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 4px 12px calc(4px + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--pf-border);
-  box-shadow: 0 -4px 24px rgba(2, 132, 199, 0.1);
 }
 
 .bottom-nav__link,
@@ -23,8 +22,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 8px;
+  gap: 2px;
+  padding: 6px 8px;
   text-decoration: none;
   color: var(--pf-text-muted);
   border-radius: 14px;

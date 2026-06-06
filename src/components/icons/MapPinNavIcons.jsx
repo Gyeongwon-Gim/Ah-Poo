@@ -7,7 +7,7 @@ export function MapPinNavInactive({ className }) {
   return (
     <MapPin
       className={className}
-      size={22}
+      size={20}
       strokeWidth={1.5}
       fill="none"
       aria-hidden
@@ -20,8 +20,8 @@ export function MapPinNavActive({ className }) {
   return (
     <svg
       className={className}
-      width="22"
-      height="22"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden

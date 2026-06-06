@@ -9,32 +9,24 @@ import {
   useCallback,
 } from 'react'
 import { useKakaoMapLoader } from '../../hooks/useKakaoMapLoader'
+import { syncBottomNavOffset } from '../../utils/bottomNavOffset'
 import { getPoolListKey } from '../../utils/poolKey'
 import './PoolMap.css'
-
-function getBottomNavOffsetPx() {
-  const raw = getComputedStyle(document.documentElement)
-    .getPropertyValue('--bottom-nav-offset')
-    .trim()
-  const parsed = Number.parseFloat(raw)
-  return Number.isFinite(parsed) ? parsed : 72
-}
 
 function syncMapLayout(mapEl, map) {
   if (!mapEl) return
 
-  const shell = mapEl.closest('.pool-map')
-  const bottomOffset = getBottomNavOffsetPx()
-  const height = Math.round(window.innerHeight - bottomOffset)
+  syncBottomNavOffset()
 
+  const shell = mapEl.closest('.pool-map')
   if (shell) {
-    shell.style.height = `${height}px`
-    shell.style.top = '0'
-    shell.style.bottom = 'auto'
+    shell.style.height = ''
+    shell.style.top = ''
+    shell.style.bottom = ''
   }
 
   mapEl.style.width = '100%'
-  mapEl.style.height = `${height}px`
+  mapEl.style.height = '100%'
   map?.relayout()
 }
 
@@ -137,6 +129,7 @@ const PoolMap = forwardRef(function PoolMap(
 
     const onResize = () => relayoutMap()
     window.addEventListener('resize', onResize)
+    window.addEventListener('bottom-nav-resize', onResize)
     window.visualViewport?.addEventListener('resize', onResize)
     window.visualViewport?.addEventListener('scroll', onResize)
 
@@ -146,9 +139,11 @@ const PoolMap = forwardRef(function PoolMap(
     document.addEventListener('visibilitychange', onVisible)
 
     const shell = el.closest('.pool-map')
+    const bottomNav = document.querySelector('.bottom-nav')
     const resizeObserver = new ResizeObserver(() => relayoutMap())
     resizeObserver.observe(el)
     if (shell) resizeObserver.observe(shell)
+    if (bottomNav) resizeObserver.observe(bottomNav)
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -162,6 +157,7 @@ const PoolMap = forwardRef(function PoolMap(
 
     return () => {
       window.removeEventListener('resize', onResize)
+      window.removeEventListener('bottom-nav-resize', onResize)
       window.visualViewport?.removeEventListener('resize', onResize)
       window.visualViewport?.removeEventListener('scroll', onResize)
       document.removeEventListener('visibilitychange', onVisible)

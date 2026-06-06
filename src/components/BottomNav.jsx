@@ -1,7 +1,9 @@
+import { useLayoutEffect, useRef } from 'react';
 import { Star } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { MapPinNavActive, MapPinNavInactive } from './icons/MapPinNavIcons';
 import { useMainTab } from '../contexts/MainTabContext';
+import { syncBottomNavOffset } from '../utils/bottomNavOffset';
 import './BottomNav.css';
 
 const FAVORITE_ICON_COLOR = '#f59e0b';
@@ -10,7 +12,7 @@ function FavoriteNavIcon({ active }) {
   return (
     <Star
       className="bottom-nav__icon"
-      size={22}
+      size={20}
       strokeWidth={1.5}
       color={active ? FAVORITE_ICON_COLOR : undefined}
       fill={active ? FAVORITE_ICON_COLOR : 'none'}
@@ -20,8 +22,29 @@ function FavoriteNavIcon({ active }) {
 }
 
 function BottomNav() {
+  const navRef = useRef(null);
   const { pathname } = useLocation();
   const { favoritesOpen, closeFavorites, toggleFavorites } = useMainTab();
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return undefined;
+
+    const update = () => {
+      syncBottomNavOffset();
+      window.dispatchEvent(new Event('bottom-nav-resize'));
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(nav);
+    window.addEventListener('resize', update);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, [pathname]);
 
   if (pathname === '/pool') {
     return null;
@@ -31,7 +54,7 @@ function BottomNav() {
   const isFavoritesActive = isHome && favoritesOpen;
 
   return (
-    <nav className="bottom-nav" aria-label="메인 메뉴">
+    <nav ref={navRef} className="bottom-nav" aria-label="메인 메뉴">
       <NavLink
         to="/"
         className={({ isActive }) =>

@@ -13,9 +13,9 @@ const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 const getViewportH = () =>
   typeof window !== 'undefined' ? window.innerHeight : 800;
 const getBottomNavOffset = () => {
-  if (typeof document === 'undefined') return 72;
+  if (typeof document === 'undefined') return 52;
   const nav = document.querySelector('.bottom-nav');
-  return nav?.offsetHeight ?? 72;
+  return nav?.offsetHeight ?? 52;
 };
 
 function SearchResultsPanel({
