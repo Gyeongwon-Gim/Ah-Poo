@@ -3,6 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- 카카오맵 SDK·지도 타일 이미지 로딩을 앞당기기 위한 사전 연결 힌트.
+         문서 파싱 시점에 DNS/TCP/TLS 핸드셰이크를 미리 끝내 둔다. -->
+    <link rel="preconnect" href="https://dapi.kakao.com" crossorigin />
+    <link rel="preconnect" href="https://t1.daumcdn.net" crossorigin />
+    <link rel="preconnect" href="https://map.daumcdn.net" crossorigin />
+    <link rel="dns-prefetch" href="https://map0.daumcdn.net" />
+    <link rel="dns-prefetch" href="https://map1.daumcdn.net" />
+    <link rel="dns-prefetch" href="https://map2.daumcdn.net" />
+    <link rel="dns-prefetch" href="https://map3.daumcdn.net" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"

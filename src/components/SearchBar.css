@@ -16,9 +16,11 @@
   border-radius: 40px;
 }
 
-.search-bar-wrap--list .search-bar {
+/* 검색 모드: 떠 있는 알약 → 상단 고정 솔리드 바 (시트가 이 아래로 지나간다) */
+.search-bar-wrap--search .search-bar {
   box-shadow: none;
-  border: 1px solid var(--pf-border);
+  border: 1px solid lightgrey;
+  margin-bottom: 30px;
 }
 
 .search-bar-container {

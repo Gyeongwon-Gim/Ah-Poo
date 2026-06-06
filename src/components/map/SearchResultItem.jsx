@@ -1,6 +1,9 @@
-import { Star, Waves } from 'lucide-react'
+import { memo } from 'react'
+import { Star } from 'lucide-react'
+import PoolThumbnails from '../PoolThumbnails'
+import { useFavorites } from '../../hooks/useFavorites'
 import { isFlagOn } from '../../services/pools'
-import { formatPoolFee } from '../../utils/formatFee'
+import { formatDailyAdmissionFee } from '../../utils/formatFee'
 import './SearchResultsPanel.css'
 
 function formatDistance(km) {
@@ -10,8 +13,12 @@ function formatDistance(km) {
 }
 
 function SearchResultItem({ pool, selected, onSelect }) {
+  const { isFavorite, toggleFavorite } = useFavorites()
+  const favorite = isFavorite(pool)
   const distanceLabel = formatDistance(pool.distanceKm)
-  const feeLabel = pool.fee ? formatPoolFee(pool.fee) : null
+  const feeLabel = pool.fee ? formatDailyAdmissionFee(pool.fee) : null
+
+  const hasTags = isFlagOn(pool.is50m) || isFlagOn(pool.isWeekday)
 
   return (
     <article
@@ -24,59 +31,69 @@ function SearchResultItem({ pool, selected, onSelect }) {
       }}
       aria-pressed={selected}
     >
-      <div className="search-result-item__header">
-        <div className="search-result-item__title-row">
+      <div className="search-result-item__body">
+        <div className="search-result-item__content">
           <h3 className="search-result-item__name">{pool.name}</h3>
-          <span className="search-result-item__category">수영장</span>
+
+          <p className="search-result-item__subline">
+            <span className="search-result-item__category">수영장</span>
+            {feeLabel && (
+              <>
+                <span className="search-result-item__dot" aria-hidden>
+                  ·
+                </span>
+                <span>{feeLabel}</span>
+              </>
+            )}
+            {distanceLabel && (
+              <>
+                <span className="search-result-item__dot" aria-hidden>
+                  ·
+                </span>
+                <span>{distanceLabel}</span>
+              </>
+            )}
+          </p>
+
+          <p className="search-result-item__address">{pool.address}</p>
+
+          {hasTags && (
+            <div className="search-result-item__tags">
+              {isFlagOn(pool.is50m) && (
+                <span className="search-result-item__tag">50m</span>
+              )}
+              {isFlagOn(pool.isWeekday) && (
+                <span className="search-result-item__tag">평일</span>
+              )}
+            </div>
+          )}
         </div>
+
         <button
           type="button"
-          className="search-result-item__favorite"
+          className={`search-result-item__favorite ${
+            favorite ? 'search-result-item__favorite--active' : ''
+          }`}
           aria-label="즐겨찾기"
-          onClick={(e) => e.stopPropagation()}
+          aria-pressed={favorite}
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleFavorite(pool)
+          }}
         >
-          <Star size={18} strokeWidth={2} />
+          <Star
+            size={18}
+            strokeWidth={1.5}
+            fill={favorite ? 'currentColor' : 'none'}
+          />
         </button>
       </div>
 
-      {feeLabel && (
-        <p className="search-result-item__tagline">{feeLabel}</p>
-      )}
-
-      <p className="search-result-item__meta">
-        {distanceLabel && (
-          <>
-            <span>{distanceLabel}</span>
-            <span className="search-result-item__dot" aria-hidden>
-              ·
-            </span>
-          </>
-        )}
-        <span className="search-result-item__meta-address">{pool.address}</span>
-      </p>
-
-      <div className="search-result-item__tags">
-        {isFlagOn(pool.is50m) && (
-          <span className="search-result-item__tag">50m</span>
-        )}
-        {isFlagOn(pool.isWeekday) && (
-          <span className="search-result-item__tag">평일</span>
-        )}
-      </div>
-
-      <div className="search-result-item__thumbs" aria-hidden>
-        <div className="search-result-item__thumb">
-          <Waves size={20} />
-        </div>
-        <div className="search-result-item__thumb search-result-item__thumb--alt">
-          <span>🏊</span>
-        </div>
-        <div className="search-result-item__thumb search-result-item__thumb--alt2">
-          <span>🦭</span>
-        </div>
-      </div>
+      <PoolThumbnails />
     </article>
   )
 }
 
-export default SearchResultItem
+// memo: 시트 드래그로 부모가 매 프레임 리렌더돼도
+// pool/selected/onSelect가 그대로면 다시 그리지 않는다.
+export default memo(SearchResultItem)

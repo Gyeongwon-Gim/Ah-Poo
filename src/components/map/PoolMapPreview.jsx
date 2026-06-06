@@ -1,29 +1,24 @@
-import { useNavigate } from 'react-router-dom'
-import { MapPin, Coins, X, ChevronRight } from 'lucide-react'
-import { poolToSearchParams } from '../../utils/poolKey'
-import { formatPoolFee } from '../../utils/formatFee'
-import './PoolMapPreview.css'
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Coins, X, ChevronRight } from 'lucide-react';
+import { poolToSearchParams } from '../../utils/poolKey';
+import { formatDailyAdmissionFee } from '../../utils/formatFee';
+import './PoolMapPreview.css';
 
 function PoolMapPreview({ pool, onClose }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  if (!pool) return null
+  if (!pool) return null;
 
   const handleOpenDetail = () => {
-    navigate(`/pool?${poolToSearchParams(pool)}`, { state: { from: 'map' } })
-  }
+    navigate(`/pool?${poolToSearchParams(pool)}`, { state: { from: 'map' } });
+  };
 
   return (
-    <div className="pool-map-preview" role="dialog" aria-label="수영장 미리보기">
-      <button
-        type="button"
-        className="pool-map-preview__close"
-        onClick={onClose}
-        aria-label="닫기"
-      >
-        <X size={18} />
-      </button>
-
+    <div
+      className="pool-map-preview"
+      role="dialog"
+      aria-label="수영장 미리보기"
+    >
       <button
         type="button"
         className="pool-map-preview__card"
@@ -41,14 +36,13 @@ function PoolMapPreview({ pool, onClose }) {
           {pool.fee && (
             <p className="pool-map-preview__fee">
               <Coins size={13} aria-hidden />
-              <span>{formatPoolFee(pool.fee)}</span>
+              <span>{formatDailyAdmissionFee(pool.fee)}</span>
             </p>
           )}
         </div>
-        <ChevronRight className="pool-map-preview__chevron" size={22} aria-hidden />
       </button>
     </div>
-  )
+  );
 }
 
-export default PoolMapPreview
+export default PoolMapPreview;

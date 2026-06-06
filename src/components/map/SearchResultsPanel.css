@@ -4,8 +4,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 36%;
-  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  top: 0;
+  /* 리스트뷰(translateY: 116px)일 때 바닥에 정확히 맞도록 높이 고정.
+     peek일 때는 아래로 더 내려가 일부가 화면 밖으로 나가며, 그만큼 스크롤된다. */
+  height: calc(100dvh - 116px - var(--bottom-nav-offset));
   z-index: 24;
   display: flex;
   flex-direction: column;
@@ -14,38 +16,43 @@
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
   pointer-events: auto;
   overflow: hidden;
+  /* 손가락을 따라 움직이는 시트 — transform은 GPU 합성이라 부드럽다 */
+  transform: translateY(36vh);
+  transition:
+    transform 0.34s cubic-bezier(0.32, 0.72, 0, 1),
+    border-radius 0.34s ease,
+    box-shadow 0.34s ease;
+  will-change: transform;
 }
 
-.search-results-panel--list-view {
-  top: 116px;
-  bottom: 0;
-  border-radius: 0;
-  box-shadow: none;
-  animation: search-list-in 0.28s ease both;
-}
-
-@keyframes search-list-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* 드래그 중에는 손가락에 1:1로 붙도록 전환 효과 제거 */
+.search-results-panel.is-dragging {
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .search-results-panel--list-view {
-    animation: none;
+  .search-results-panel,
+  .pool-map {
+    transition: none;
   }
 }
 
-.search-results-panel__handle {
+/* peek 상태에서 화면 하단에 도킹되는 바 (핸들 + "검색 결과 N건") */
+.search-results-panel__peek-bar {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.search-results-panel__handle {
+  display: block;
+  align-self: center;
   width: 40px;
   height: 4px;
-  margin: 10px auto 6px;
+  margin-bottom: 8px;
   border-radius: 999px;
   background: #d1d5db;
 }
@@ -69,9 +76,14 @@
 
 .search-results-panel__list {
   flex: 1;
-  overflow-y: auto;
+  /* peek 상태에서는 시트 드래그와 충돌하지 않도록 스크롤 잠금 */
+  overflow: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+}
+
+.search-results-panel.is-expanded .search-results-panel__list {
+  overflow-y: auto;
 }
 
 .search-results-panel__empty {
@@ -114,35 +126,56 @@
   background: #f8fafc;
 }
 
-.search-result-item__header {
+.search-result-item__body {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
-.search-result-item__title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px;
+.search-result-item__content {
+  flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .search-result-item__name {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e88e5;
   letter-spacing: -0.02em;
-  line-height: 1.3;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.search-result-item__subline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  line-height: 1.4;
 }
 
 .search-result-item__category {
-  font-size: 12px;
-  font-weight: 500;
   color: #9ca3af;
-  white-space: nowrap;
+}
+
+.search-result-item__address {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .search-result-item__favorite {
@@ -152,6 +185,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
+  margin-top: 2px;
   padding: 0;
   border: none;
   background: transparent;
@@ -159,30 +193,8 @@
   cursor: pointer;
 }
 
-.search-result-item__tagline {
-  margin-bottom: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--pf-text);
-  line-height: 1.4;
-}
-
-.search-result-item__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.45;
-}
-
-.search-result-item__meta-address {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.search-result-item__favorite--active {
+  color: #f59e0b;
 }
 
 .search-result-item__dot {
@@ -193,7 +205,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-top: 4px;
 }
 
 .search-result-item__tag {
@@ -205,38 +217,3 @@
   color: var(--pf-primary-dark);
 }
 
-.search-result-item__thumbs {
-  display: flex;
-  gap: 6px;
-}
-
-.search-result-item__thumb {
-  flex: 1;
-  max-width: 33%;
-  aspect-ratio: 4 / 5;
-  border-radius: 0;
-  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--pf-primary);
-  font-size: 22px;
-}
-
-.search-result-item__thumb:first-child {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-}
-
-.search-result-item__thumb:last-child {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.search-result-item__thumb--alt {
-  background: linear-gradient(145deg, #dbeafe, #93c5fd);
-}
-
-.search-result-item__thumb--alt2 {
-  background: linear-gradient(145deg, #cffafe, #67e8f9);
-}

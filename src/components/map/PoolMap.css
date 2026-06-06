@@ -1,8 +1,12 @@
 .pool-map {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--bottom-nav-offset);
   z-index: 0;
   background: #e8f4fc;
+  transition: opacity 0.28s ease;
 }
 
 .pool-map__canvas {
@@ -10,21 +14,30 @@
   height: 100%;
 }
 
-.pool-map--loading {
+.pool-map__status {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background: #e8f4fc;
   color: var(--pf-text-muted);
   font-size: 14px;
   font-weight: 600;
   text-align: center;
   line-height: 1.5;
+  pointer-events: none;
 }
 
-.pool-map--loading p {
+.pool-map__status p {
   max-width: 300px;
   margin: 0;
+}
+
+.pool-map--loading {
+  color: var(--pf-text-muted);
 }
 
 .pool-map--error {
@@ -32,7 +45,7 @@
 }
 
 .pool-marker-label {
-  margin-top: 4px;
+  margin-top: 6px;
   padding: 3px 8px;
   max-width: 140px;
   color: var(--pf-text);
@@ -46,4 +59,10 @@
   transform: translateY(0);
   -webkit-text-stroke: 3px #fff;
   paint-order: stroke fill;
+}
+
+.pool-marker-label--selected {
+  color: var(--pf-primary-dark);
+  font-size: 12px;
+  -webkit-text-stroke: 3.5px #fff;
 }

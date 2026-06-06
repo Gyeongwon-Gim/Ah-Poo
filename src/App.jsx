@@ -3,19 +3,25 @@ import Home from './pages/Home';
 import PoolDetail from './pages/PoolDetail';
 import SwimmingDiary from './pages/SwimmingDiary';
 import BottomNav from './components/BottomNav';
+import { MainTabProvider } from './contexts/MainTabContext';
+import { FavoritesProvider } from './hooks/useFavorites';
 import './App.css';
 
 function App() {
   return (
     <Router>
-      <div className="app">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/pool" element={<PoolDetail />} />
-          <Route path="/swimming-diary" element={<SwimmingDiary />} />
-        </Routes>
-        {/* <BottomNav /> */}
-      </div>
+      <FavoritesProvider>
+        <MainTabProvider>
+          <div className="app">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/pool" element={<PoolDetail />} />
+              <Route path="/swimming-diary" element={<SwimmingDiary />} />
+            </Routes>
+            <BottomNav />
+          </div>
+        </MainTabProvider>
+      </FavoritesProvider>
     </Router>
   );
 }

@@ -1,14 +1,37 @@
 import {
   forwardRef,
+  memo,
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
   useMemo,
+  useCallback,
 } from 'react'
 import { useKakaoMapLoader } from '../../hooks/useKakaoMapLoader'
 import { getPoolListKey } from '../../utils/poolKey'
 import './PoolMap.css'
+
+function scheduleMapRelayout(map) {
+  if (!map) return () => {}
+
+  const run = () => map.relayout()
+  run()
+
+  let raf2 = 0
+  const raf1 = requestAnimationFrame(() => {
+    run()
+    raf2 = requestAnimationFrame(run)
+  })
+
+  const timers = [0, 50, 200, 500].map((ms) => window.setTimeout(run, ms))
+
+  return () => {
+    cancelAnimationFrame(raf1)
+    cancelAnimationFrame(raf2)
+    timers.forEach((id) => window.clearTimeout(id))
+  }
+}
 
 const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 }
 const DEFAULT_LEVEL = 8
@@ -37,6 +60,10 @@ const PoolMap = forwardRef(function PoolMap(
 
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null
 
+  const relayoutMap = useCallback(() => {
+    mapInstanceRef.current?.relayout()
+  }, [])
+
   const panToUserLocation = (coords, level = USER_ZOOM_LEVEL) => {
     const map = mapInstanceRef.current
     const target = coords ?? userLocation
@@ -52,8 +79,9 @@ const PoolMap = forwardRef(function PoolMap(
     ref,
     () => ({
       panToUserLocation: (coords) => panToUserLocation(coords, USER_ZOOM_LEVEL),
+      relayout: relayoutMap,
     }),
-    [userLocation, ready]
+    [userLocation, ready, relayoutMap],
   )
 
   useLayoutEffect(() => {
@@ -68,17 +96,43 @@ const PoolMap = forwardRef(function PoolMap(
     })
     mapInstanceRef.current = map
 
-    requestAnimationFrame(() => map.relayout())
+    return scheduleMapRelayout(map)
   }, [ready, fitToUser, userLocation])
 
   useEffect(() => {
     const map = mapInstanceRef.current
-    if (!ready || !map) return
+    const el = mapRef.current
+    if (!ready || !map || !el) return
 
-    const onResize = () => map.relayout()
+    const onResize = () => relayoutMap()
     window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [ready])
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') relayoutMap()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+
+    const resizeObserver = new ResizeObserver(() => relayoutMap())
+    resizeObserver.observe(el)
+
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) relayoutMap()
+      },
+      { threshold: 0 },
+    )
+    intersectionObserver.observe(el)
+
+    const cancelRelayout = scheduleMapRelayout(map)
+
+    return () => {
+      window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVisible)
+      resizeObserver.disconnect()
+      intersectionObserver.disconnect()
+      cancelRelayout()
+    }
+  }, [ready, relayoutMap])
 
   useEffect(() => {
     const map = mapInstanceRef.current
@@ -174,53 +228,73 @@ const PoolMap = forwardRef(function PoolMap(
     }
   }, [ready, poolsSignature, pools, fitToUser, userLocation])
 
+  // 마커 선택 시: 현재 타일 로드 후 panTo로 부드럽게 이동
   useEffect(() => {
     const map = mapInstanceRef.current
     if (!ready || !map || !selectedPool || !window.kakao) return
 
-    const pos = new window.kakao.maps.LatLng(selectedPool.lat, selectedPool.lng)
-    map.panTo(pos)
+    const { kakao } = window
+    const pos = new kakao.maps.LatLng(selectedPool.lat, selectedPool.lng)
+    let cancelled = false
+
+    const panToMarker = () => {
+      if (cancelled) return
+      map.panTo(pos)
+    }
+
+    const onIdle = () => {
+      kakao.maps.event.removeListener(map, 'idle', onIdle)
+      panToMarker()
+    }
+
+    kakao.maps.event.addListener(map, 'idle', onIdle)
+    const fallback = window.setTimeout(panToMarker, 300)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(fallback)
+      kakao.maps.event.removeListener(map, 'idle', onIdle)
+    }
   }, [ready, selectedPool])
 
   useEffect(() => {
     return () => {
       const { kakao } = window
-      if (!kakao?.maps) return
-
-      for (const [, entry] of markerStoreRef.current) {
-        kakao.maps.event.removeListener(entry.marker, 'click', entry.onClick)
-        entry.marker.setMap(null)
-        entry.label?.setMap(null)
+      if (kakao?.maps) {
+        for (const [, entry] of markerStoreRef.current) {
+          kakao.maps.event.removeListener(entry.marker, 'click', entry.onClick)
+          entry.marker.setMap(null)
+          entry.label?.setMap(null)
+        }
       }
       markerStoreRef.current.clear()
       mapInstanceRef.current = null
       syncedPoolsSignatureRef.current = ''
       fittedPoolsSignatureRef.current = ''
       userLocatedRef.current = false
+      if (mapRef.current) mapRef.current.replaceChildren()
     }
   }, [])
 
-  if (sdkError) {
-    return (
-      <div className="pool-map pool-map--loading pool-map--error">
-        <p>{sdkError}</p>
-      </div>
-    )
-  }
-
-  if (!ready) {
-    return (
-      <div className="pool-map pool-map--loading">
-        <p>지도를 불러오는 중…</p>
-      </div>
-    )
-  }
-
   return (
     <div className="pool-map">
-      <div ref={mapRef} className="pool-map__canvas" />
+      {(sdkError || !ready) && (
+        <div
+          className={`pool-map__status ${
+            sdkError ? 'pool-map--error' : 'pool-map--loading'
+          }`}
+          aria-live="polite"
+        >
+          <p>{sdkError ?? '지도를 불러오는 중…'}</p>
+        </div>
+      )}
+      <div
+        ref={mapRef}
+        className="pool-map__canvas"
+        aria-hidden={!ready || Boolean(sdkError)}
+      />
     </div>
   )
 })
 
-export default PoolMap
+export default memo(PoolMap)

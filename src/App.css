@@ -4,5 +4,5 @@
 }
 
 .app-route {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--bottom-nav-offset);
 }

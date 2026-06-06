@@ -61,3 +61,10 @@ export function formatPoolFee(fee) {
   if (stripped.endsWith('₩')) return stripped
   return `${stripped}₩`
 }
+
+/** 일일입장료 라벨 + 포맷된 가격 (예: 일일입장 5,000₩) */
+export function formatDailyAdmissionFee(fee) {
+  const price = formatPoolFee(fee)
+  if (!price) return ''
+  return `일일입장 ${price}`
+}

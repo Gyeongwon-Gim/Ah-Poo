@@ -1,0 +1,337 @@
+.pool-sheet {
+  --pool-sheet-icon: #4b5563;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--bottom-nav-offset);
+  margin: 0 auto;
+  max-width: var(--mobile-width);
+  height: min(calc(82dvh - var(--bottom-nav-height)), 720px);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--pf-bg);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -8px 40px var(--pf-shadow);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.pool-sheet svg {
+  color: var(--pool-sheet-icon);
+}
+
+.pool-sheet--entering {
+  transform: translateY(100%);
+  animation: pool-sheet-enter 0.34s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes pool-sheet-enter {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(calc(100% - var(--peek-h, 280px)));
+  }
+}
+
+.pool-sheet--transition {
+  transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.pool-sheet--dragging {
+  transition: none;
+}
+
+/* ---- peek 영역 (드래그 핸들 포함) ---- */
+.pool-sheet__grabber {
+  flex-shrink: 0;
+  padding: 8px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pool-sheet__grabber:active {
+  cursor: grabbing;
+}
+
+.pool-sheet__handle {
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: var(--pf-border);
+}
+
+.pool-sheet__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pool-sheet__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pool-sheet__back {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin-left: -8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--pool-sheet-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pool-sheet__back svg {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.pool-sheet__back:active {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.pool-sheet__titles {
+  min-width: 0;
+  margin-top: -6px;
+  padding-right: 4px;
+}
+
+.pool-sheet__name {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--pf-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pool-sheet__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--pf-text-muted);
+  margin: 4px 0 0;
+}
+
+.pool-sheet__dot {
+  color: var(--pf-border);
+}
+
+.pool-sheet__meta-fee {
+  font-weight: 700;
+  color: var(--pf-primary-dark);
+}
+
+.pool-sheet__head-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pool-sheet__round {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--pf-surface);
+  color: var(--pool-sheet-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pool-sheet__round:active {
+  background: var(--pf-border);
+}
+
+.pool-sheet__round--active {
+  color: #f59e0b;
+}
+
+.pool-sheet__round--active svg {
+  color: #f59e0b;
+}
+
+.pool-sheet__location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--pf-text-muted);
+  margin: 12px 0 0;
+}
+
+.pool-sheet__location svg {
+  flex-shrink: 0;
+}
+
+.pool-sheet__distance {
+  font-weight: 700;
+  color: var(--pf-text);
+  flex-shrink: 0;
+}
+
+.pool-sheet__address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pool-sheet__location-caret {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* ---- 액션 버튼 ---- */
+.pool-sheet__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pool-sheet__actions::-webkit-scrollbar {
+  display: none;
+}
+
+.pool-sheet__action {
+  flex: 1 0 auto;
+  min-width: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 14px;
+  background: var(--pf-surface);
+  color: var(--pf-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.pool-sheet__action:active {
+  background: var(--pf-border);
+}
+
+.pool-sheet__action--primary:active {
+  background: var(--pf-border);
+}
+
+/* ---- 펼침 상세 ---- */
+.pool-sheet__detail {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--pf-border);
+}
+
+.pool-sheet__tabs {
+  display: flex;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  background: var(--pf-bg);
+  padding: 4px 0 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--pf-border);
+  z-index: 1;
+}
+
+.pool-sheet__tab {
+  padding: 12px 2px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pf-text-muted);
+  border-bottom: 2px solid transparent;
+}
+
+.pool-sheet__tab--active {
+  color: var(--pf-text);
+  border-bottom-color: var(--pf-primary);
+}
+
+.pool-sheet__section {
+  margin-bottom: 20px;
+}
+
+.pool-sheet__section h3 {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  color: var(--pf-text-muted);
+}
+
+.pool-sheet__section p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pf-text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pool-sheet__empty {
+  margin-top: 8px;
+}
+
+.pool-sheet__links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pool-sheet__link {
+  display: block;
+  padding: 14px 16px;
+  background: var(--pf-primary);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.pool-sheet__link:active {
+  background: var(--pf-primary-dark);
+}
+
+.pool-sheet__link--secondary {
+  background: var(--pf-bg);
+  color: var(--pf-text);
+  border: 1px solid var(--pf-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pool-sheet--entering {
+    animation: none;
+    transform: translateY(calc(100% - var(--peek-h, 280px)));
+  }
+
+  .pool-sheet--transition {
+    transition: none;
+  }
+}

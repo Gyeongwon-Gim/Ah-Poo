@@ -1,45 +1,46 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { Search, X, ChevronLeft } from 'lucide-react';
 import './SearchBar.css';
 
 function SearchBar({
+  value = '',
+  onValueChange,
   onSearch,
-  appliedSearchTerm = '',
-  resultCount,
-  totalCount,
-  searching,
+  onActivate,
+  onClose,
   variant = 'default',
-  listView = false,
-  nearbyMode = false,
-  nearbyRadiusKm = 10,
-  locationPending = false,
+  searchMode = false,
 }) {
-  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSearch(inputValue.trim());
+    inputRef.current?.blur();
+    onSearch?.(value.trim());
   };
 
   const handleClear = () => {
-    setInputValue('');
-    onSearch('');
+    onValueChange?.('');
+    inputRef.current?.focus();
   };
 
-  const hasDraft = inputValue.trim() !== appliedSearchTerm.trim();
+  const handleBack = () => {
+    inputRef.current?.blur();
+    onClose?.();
+  };
 
   return (
     <div
-      className={`search-bar-wrap ${variant === 'map' ? 'search-bar-wrap--map' : ''} ${listView ? 'search-bar-wrap--list' : ''}`}
+      className={`search-bar-wrap ${variant === 'map' ? 'search-bar-wrap--map' : ''} ${searchMode ? 'search-bar-wrap--search' : ''}`}
     >
       <div className="search-bar-container">
         <form className="search-bar" onSubmit={handleSubmit}>
-          {listView ? (
+          {searchMode ? (
             <button
               type="button"
-              onClick={handleClear}
+              onClick={handleBack}
               className="search-back"
-              aria-label="뒤로 가기"
+              aria-label="검색 닫기"
             >
               <ChevronLeft size={22} strokeWidth={2.5} />
             </button>
@@ -52,15 +53,17 @@ function SearchBar({
             />
           )}
           <input
+            ref={inputRef}
             type="search"
             enterKeyHint="search"
             placeholder="드디어 주말! 수영하러 가볼까요?"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            value={value}
+            onChange={(e) => onValueChange?.(e.target.value)}
+            onFocus={() => onActivate?.()}
             className="search-input"
             aria-label="수영장 검색"
           />
-          {inputValue && (
+          {value && (
             <button
               type="button"
               onClick={handleClear}
@@ -71,9 +74,6 @@ function SearchBar({
             </button>
           )}
         </form>
-        {!searching && totalCount > 0 && listView && (
-          <p className="search-meta">검색 결과 {resultCount}건</p>
-        )}
       </div>
     </div>
   );

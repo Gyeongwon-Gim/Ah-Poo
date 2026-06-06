@@ -101,9 +101,21 @@ function loadKakaoSdk(appKey) {
   return loadPromise
 }
 
+// 모듈이 평가되는 즉시 SDK 다운로드를 선제적으로 시작한다.
+// 컴포넌트 마운트·effect 실행을 기다리지 않으므로 지도 타일이 더 빨리 그려진다.
+// (loadKakaoSdk는 loadPromise로 메모이즈되어 훅에서 재호출해도 중복 요청이 없다.)
+const PREFETCH_APP_KEY = import.meta.env.VITE_KAKAO_MAP_APP_KEY
+if (typeof window !== 'undefined' && PREFETCH_APP_KEY) {
+  loadKakaoSdk(PREFETCH_APP_KEY).catch(() => {})
+}
+
+function isKakaoMapReady() {
+  return typeof window !== 'undefined' && Boolean(window.kakao?.maps?.Map)
+}
+
 export function useKakaoMapLoader() {
   const appKey = import.meta.env.VITE_KAKAO_MAP_APP_KEY
-  const [ready, setReady] = useState(false)
+  const [ready, setReady] = useState(isKakaoMapReady)
   const [error, setError] = useState(null)
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, ChevronRight, Coins } from 'lucide-react';
 import { isFlagOn } from '../services/pools';
 import { poolToSearchParams } from '../utils/poolKey';
-import { formatPoolFee } from '../utils/formatFee';
+import { formatDailyAdmissionFee } from '../utils/formatFee';
 import PoolScheduleTags from './PoolScheduleTags';
 import './PoolCard.css';
 
@@ -45,7 +45,7 @@ function PoolCard({ pool }) {
         {pool.fee && (
           <p className="pool-card__fee">
             <Coins size={14} aria-hidden />
-            <span>{formatPoolFee(pool.fee)}</span>
+            <span>{formatDailyAdmissionFee(pool.fee)}</span>
           </p>
         )}
 
