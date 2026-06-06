@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, RefreshCw } from 'lucide-react';
-import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import PoolMap from '../components/map/PoolMap';
 import PoolDetailSheet from '../components/map/PoolDetailSheet';
@@ -299,7 +298,6 @@ function Home() {
       )}
 
       <div className="home-map-overlay">
-        <Header poolCount={mapPools.length} loading={loading} variant="map" />
         <SearchBar
           value={inputValue}
           onValueChange={handleDraftChange}

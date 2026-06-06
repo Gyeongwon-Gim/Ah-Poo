@@ -1,9 +1,6 @@
 .pool-map {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: var(--bottom-nav-offset);
+  inset: 0 0 var(--bottom-nav-offset);
   z-index: 0;
   background: #e8f4fc;
   transition: opacity 0.28s ease;
