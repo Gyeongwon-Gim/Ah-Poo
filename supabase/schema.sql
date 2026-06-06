@@ -1,7 +1,7 @@
 -- 실제 Supabase 테이블 정의 (이미 생성되어 있다면 RLS만 적용)
 
 -- create table public.pools (
---   name text not null,
+--   name_ko text not null,
 --   address text not null,
 --   lat double precision not null,
 --   lng double precision not null,
@@ -13,7 +13,7 @@
 --   is_saturday bigint null,
 --   is_sunday bigint null,
 --   is_holiday bigint null,
---   constraint pool_info_pkey primary key (name, address, lat, lng)
+--   constraint pool_info_pkey primary key (name_ko, address, lat, lng)
 -- );
 
 alter table public.pools enable row level security;

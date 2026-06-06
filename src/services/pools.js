@@ -7,7 +7,7 @@ export function isFlagOn(value) {
 
 export function mapRowToPool(row) {
   return {
-    name: row.name,
+    name: row.name_ko,
     address: row.address,
     lat: Number(row.lat),
     lng: Number(row.lng),
@@ -30,7 +30,7 @@ export async function fetchPools() {
   const { data, error } = await supabase
     .from('pools')
     .select('*')
-    .order('name', { ascending: true })
+    .order('name_ko', { ascending: true })
 
   if (error) throw error
   return (data ?? []).map(mapRowToPool)
@@ -44,7 +44,7 @@ export async function fetchPoolByKey({ name, address, lat, lng }) {
   const { data, error } = await supabase
     .from('pools')
     .select('*')
-    .eq('name', name)
+    .eq('name_ko', name)
     .eq('address', address)
     .eq('lat', lat)
     .eq('lng', lng)
