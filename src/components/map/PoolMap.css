@@ -1,13 +1,13 @@
 .pool-map {
   position: fixed;
-  top: calc(-1 * var(--pwa-top-inset, env(safe-area-inset-top, 0px)));
+  top: 0;
   left: 0;
   right: 0;
+  bottom: var(--bottom-nav-offset);
   width: min(100%, var(--mobile-width));
   max-width: var(--mobile-width);
   margin-left: auto;
   margin-right: auto;
-  bottom: var(--bottom-nav-offset);
   z-index: 0;
   background: #e8f4fc;
   transition: opacity 0.28s ease;
@@ -16,8 +16,8 @@
 .pool-map__canvas {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .pool-map__status {

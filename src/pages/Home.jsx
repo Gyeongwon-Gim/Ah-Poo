@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { watchPwaSafeAreaInsets } from '../utils/pwaSafeArea';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, RefreshCw } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
@@ -72,15 +71,6 @@ function Home() {
 
   useEffect(() => {
     loadPools();
-  }, []);
-
-  useEffect(() => {
-    const cleanup = watchPwaSafeAreaInsets();
-    const t = window.setTimeout(() => mapRef.current?.relayout(), 100);
-    return () => {
-      cleanup();
-      window.clearTimeout(t);
-    };
   }, []);
 
   const mapPools = useMemo(() => {

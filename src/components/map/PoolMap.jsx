@@ -12,10 +12,39 @@ import { useKakaoMapLoader } from '../../hooks/useKakaoMapLoader'
 import { getPoolListKey } from '../../utils/poolKey'
 import './PoolMap.css'
 
-function scheduleMapRelayout(map) {
+function getBottomNavOffsetPx() {
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue('--bottom-nav-offset')
+    .trim()
+  const parsed = Number.parseFloat(raw)
+  return Number.isFinite(parsed) ? parsed : 72
+}
+
+function syncMapLayout(mapEl, map) {
+  if (!mapEl) return
+
+  const shell = mapEl.closest('.pool-map')
+  const bottomOffset = getBottomNavOffsetPx()
+  const height = Math.round(window.innerHeight - bottomOffset)
+
+  if (shell) {
+    shell.style.height = `${height}px`
+    shell.style.top = '0'
+    shell.style.bottom = 'auto'
+  }
+
+  mapEl.style.width = '100%'
+  mapEl.style.height = `${height}px`
+  map?.relayout()
+}
+
+function scheduleMapRelayout(map, mapEl) {
   if (!map) return () => {}
 
-  const run = () => map.relayout()
+  const run = () => {
+    syncMapLayout(mapEl, map)
+    map.relayout()
+  }
   run()
 
   let raf2 = 0
@@ -61,6 +90,7 @@ const PoolMap = forwardRef(function PoolMap(
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null
 
   const relayoutMap = useCallback(() => {
+    syncMapLayout(mapRef.current, mapInstanceRef.current)
     mapInstanceRef.current?.relayout()
   }, [])
 
@@ -95,8 +125,9 @@ const PoolMap = forwardRef(function PoolMap(
       level: fitToUser && userLocation ? USER_ZOOM_LEVEL : DEFAULT_LEVEL,
     })
     mapInstanceRef.current = map
+    syncMapLayout(mapRef.current, map)
 
-    return scheduleMapRelayout(map)
+    return scheduleMapRelayout(map, mapRef.current)
   }, [ready, fitToUser, userLocation])
 
   useEffect(() => {
@@ -114,8 +145,10 @@ const PoolMap = forwardRef(function PoolMap(
     }
     document.addEventListener('visibilitychange', onVisible)
 
+    const shell = el.closest('.pool-map')
     const resizeObserver = new ResizeObserver(() => relayoutMap())
     resizeObserver.observe(el)
+    if (shell) resizeObserver.observe(shell)
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -125,7 +158,7 @@ const PoolMap = forwardRef(function PoolMap(
     )
     intersectionObserver.observe(el)
 
-    const cancelRelayout = scheduleMapRelayout(map)
+    const cancelRelayout = scheduleMapRelayout(map, el)
 
     return () => {
       window.removeEventListener('resize', onResize)

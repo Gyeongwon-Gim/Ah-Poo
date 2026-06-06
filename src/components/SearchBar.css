@@ -7,7 +7,7 @@
 
 .search-bar-wrap--map {
   margin-top: 0;
-  padding: calc(8px + var(--pwa-top-inset, env(safe-area-inset-top, 0px))) 12px 8px;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px;
 }
 
 .search-bar-wrap--map .search-bar {
