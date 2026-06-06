@@ -14,7 +14,7 @@ export default defineConfig({
         name: '수영 서비스',
         short_name: '수영',
         description: '수영장 찾기 · 수영 운동 기록',
-        theme_color: '#0284c7',
+        theme_color: '#e8f4fc',
         background_color: '#e8f4fc',
         display: 'standalone',
         orientation: 'portrait',

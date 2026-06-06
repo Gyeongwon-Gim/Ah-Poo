@@ -1,22 +1,27 @@
 .home--map {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  max-width: var(--mobile-width);
-  margin: 0 auto;
-  height: 100dvh;
-  height: 100svh;
-  min-height: 100dvh;
-  overflow: hidden;
-  padding-bottom: var(--bottom-nav-offset);
-}
-
-.home-map-overlay {
-  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  /* 시트(z-index 24)보다 위에 떠 있어야 시트가 검색바 아래로 지나간다 */
+  bottom: 0;
+  width: 100%;
+  max-width: var(--mobile-width);
+  margin: 0 auto;
+  height: 100%;
+  height: 100dvh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.home-map-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: min(100%, var(--mobile-width));
+  max-width: var(--mobile-width);
+  margin-left: auto;
+  margin-right: auto;
   z-index: 30;
   pointer-events: none;
   padding-top: env(safe-area-inset-top, 0px);
@@ -49,7 +54,7 @@
 }
 
 .home-map-status {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -96,8 +101,8 @@
 }
 
 .home-location-btn {
-  position: absolute;
-  right: 12px;
+  position: fixed;
+  right: max(12px, calc((100% - var(--mobile-width)) / 2 + 12px));
   bottom: calc(var(--bottom-nav-offset) + 16px);
   z-index: 22;
   width: 42px;

@@ -106,6 +106,8 @@ const PoolMap = forwardRef(function PoolMap(
 
     const onResize = () => relayoutMap()
     window.addEventListener('resize', onResize)
+    window.visualViewport?.addEventListener('resize', onResize)
+    window.visualViewport?.addEventListener('scroll', onResize)
 
     const onVisible = () => {
       if (document.visibilityState === 'visible') relayoutMap()
@@ -127,6 +129,8 @@ const PoolMap = forwardRef(function PoolMap(
 
     return () => {
       window.removeEventListener('resize', onResize)
+      window.visualViewport?.removeEventListener('resize', onResize)
+      window.visualViewport?.removeEventListener('scroll', onResize)
       document.removeEventListener('visibilitychange', onVisible)
       resizeObserver.disconnect()
       intersectionObserver.disconnect()

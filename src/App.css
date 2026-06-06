@@ -6,3 +6,7 @@
 .app-route {
   padding-bottom: var(--bottom-nav-offset);
 }
+
+.home--map.app-route {
+  padding-bottom: 0;
+}
