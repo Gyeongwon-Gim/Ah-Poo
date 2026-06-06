@@ -24,7 +24,6 @@
   margin-right: auto;
   z-index: 30;
   pointer-events: none;
-  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* 검색 모드: 상단 검색바 영역을 솔리드 바로 만들어 시트가 그 아래로 지나가게 한다 */

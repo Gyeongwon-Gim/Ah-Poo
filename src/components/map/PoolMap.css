@@ -1,6 +1,6 @@
 .pool-map {
   position: fixed;
-  top: calc(-1 * env(safe-area-inset-top, 0px));
+  top: calc(-1 * var(--pwa-top-inset, env(safe-area-inset-top, 0px)));
   left: 0;
   right: 0;
   width: min(100%, var(--mobile-width));

@@ -8,6 +8,8 @@
 }
 
 :root {
+  --map-bg: #e8f4fc;
+  --pwa-top-inset: 0px;
   --pf-bg: #f0f9ff;
   --pf-bg-deep: #e0f2fe;
   --pf-surface: #ffffff;

@@ -22,11 +22,23 @@
     />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="description" content="수영장 찾기 · 수영 운동 기록" />
     <title>수영 서비스</title>
   </head>
   <body>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        root.style.backgroundColor = '#e8f4fc';
+        var standalone =
+          window.navigator.standalone ||
+          window.matchMedia('(display-mode: standalone)').matches;
+        if (standalone) {
+          root.style.setProperty('--pwa-top-inset', '59px');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
