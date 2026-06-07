@@ -1,15 +1,9 @@
 .home--map {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   width: 100%;
   max-width: var(--mobile-width);
   margin: 0 auto;
-  height: 100%;
-  height: 100dvh;
-  height: 100svh;
   overflow: hidden;
 }
 

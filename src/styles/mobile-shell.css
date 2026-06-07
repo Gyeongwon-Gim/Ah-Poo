@@ -6,7 +6,7 @@
 
 html {
   height: 100%;
-  height: 100dvh;
+  height: 100svh;
   background: #e8f4fc;
 }
 
@@ -14,8 +14,8 @@ body {
   width: 100%;
   max-width: var(--mobile-width);
   height: 100%;
-  height: 100dvh;
-  min-height: 100%;
+  height: 100svh;
+  max-height: 100svh;
   min-height: -webkit-fill-available;
   margin: 0 auto;
   overflow: hidden;
@@ -26,17 +26,18 @@ body {
 #root {
   width: 100%;
   height: 100%;
-  height: 100dvh;
-  min-height: 100%;
+  height: 100svh;
+  max-height: 100svh;
   min-height: -webkit-fill-available;
 }
 
 .app {
   width: 100%;
   height: 100%;
-  height: 100dvh;
-  min-height: 100%;
+  height: 100svh;
+  max-height: 100svh;
   min-height: -webkit-fill-available;
+  overflow: hidden;
 }
 
 /* fixed 하단 UI — transform 충돌 없이 가운데 정렬 */

@@ -39,10 +39,12 @@ function BottomNav() {
     const observer = new ResizeObserver(update);
     observer.observe(nav);
     window.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('resize', update);
 
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('resize', update);
     };
   }, [pathname]);
 
