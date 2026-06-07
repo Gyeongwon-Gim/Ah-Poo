@@ -1,13 +1,6 @@
 .pool-map {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: var(--bottom-nav-offset);
-  width: min(100%, var(--mobile-width));
-  max-width: var(--mobile-width);
-  margin-left: auto;
-  margin-right: auto;
+  position: absolute;
+  inset: 0;
   z-index: 0;
   background: #e8f4fc;
   transition: opacity 0.28s ease;

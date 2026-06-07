@@ -1,12 +1,17 @@
 .app {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app__main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .app-route {
-  padding-bottom: var(--bottom-nav-offset);
-}
-
-.home--map.app-route {
-  padding-bottom: 0;
+  height: 100%;
 }

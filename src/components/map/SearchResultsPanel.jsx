@@ -10,12 +10,10 @@ const MOVE_THRESHOLD = 3; // 이 이상 움직여야 드래그로 인정
 const VELOCITY_SNAP = 0.5; // px/ms — 이 속도 이상이면 방향대로 스냅
 
 const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-const getViewportH = () =>
-  typeof window !== 'undefined' ? window.innerHeight : 800;
-const getBottomNavOffset = () => {
-  if (typeof document === 'undefined') return 52;
-  const nav = document.querySelector('.bottom-nav');
-  return nav?.offsetHeight ?? 52;
+const getContainerH = (el) => {
+  if (typeof document === 'undefined') return 800;
+  const home = el?.closest?.('.home') ?? document.querySelector('.home');
+  return home?.clientHeight ?? window.innerHeight;
 };
 
 function SearchResultsPanel({
@@ -35,11 +33,9 @@ function SearchResultsPanel({
   const barRef = useRef(null);
 
   // peek = "검색 결과 N건" 바만 화면 하단에 보이는 위치 (바 높이만큼만 노출)
-  const [peekTop, setPeekTop] = useState(
-    () => getViewportH() - FALLBACK_BAR - getBottomNavOffset(),
-  );
+  const [peekTop, setPeekTop] = useState(() => getContainerH() - FALLBACK_BAR);
   const [translateY, setTranslateYState] = useState(
-    () => getViewportH() - FALLBACK_BAR - getBottomNavOffset(),
+    () => getContainerH() - FALLBACK_BAR,
   );
   const [expanded, setExpandedState] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -70,7 +66,7 @@ function SearchResultsPanel({
   // peek 위치 = 뷰포트 높이 - 바 높이 (바만 하단에 도킹, 카드는 화면 밖)
   const measurePeek = () => {
     const barH = barRef.current?.offsetHeight ?? FALLBACK_BAR;
-    const next = Math.round(getViewportH() - barH - getBottomNavOffset());
+    const next = Math.round(getContainerH(sectionRef.current) - barH);
     setPeekTop(next);
     if (!movingRef.current && !expandedRef.current) setTranslateY(next);
   };

@@ -3,7 +3,6 @@
 :root {
   --mobile-width: 430px;
   --app-vh: 100svh;
-  --viewport-bottom-gap: 0px;
 }
 
 html {

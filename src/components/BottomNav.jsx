@@ -30,10 +30,7 @@ function BottomNav() {
     const nav = navRef.current;
     if (!nav) return undefined;
 
-    const update = () => {
-      syncBottomNavOffset();
-      window.dispatchEvent(new Event('bottom-nav-resize'));
-    };
+    const update = () => syncBottomNavOffset();
 
     update();
     const observer = new ResizeObserver(update);

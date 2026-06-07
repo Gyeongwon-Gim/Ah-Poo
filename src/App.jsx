@@ -13,12 +13,14 @@ function App() {
       <FavoritesProvider>
         <MainTabProvider>
           <div className="app">
+            <div className="app__main">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/pool" element={<PoolDetail />} />
+                <Route path="/swimming-diary" element={<SwimmingDiary />} />
+              </Routes>
+            </div>
             <BottomNav />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/pool" element={<PoolDetail />} />
-              <Route path="/swimming-diary" element={<SwimmingDiary />} />
-            </Routes>
           </div>
         </MainTabProvider>
       </FavoritesProvider>

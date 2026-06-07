@@ -7,7 +7,7 @@
   top: 0;
   /* 리스트뷰(translateY: 116px)일 때 바닥에 정확히 맞도록 높이 고정.
      peek일 때는 아래로 더 내려가 일부가 화면 밖으로 나가며, 그만큼 스크롤된다. */
-  height: calc(100dvh - 116px - var(--bottom-nav-offset));
+  height: calc(100% - 116px);
   z-index: 24;
   display: flex;
   flex-direction: column;

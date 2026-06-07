@@ -3,11 +3,11 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--bottom-nav-offset);
+  bottom: 0;
   margin: 0 auto;
   max-width: var(--mobile-width);
   height: auto;
-  max-height: calc(100dvh - var(--bottom-nav-offset));
+  max-height: 100%;
   z-index: 30;
   background: var(--pf-bg);
   border-radius: 22px 22px 0 0;

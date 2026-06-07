@@ -1,23 +1,17 @@
 .home--map {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  width: 100%;
-  max-width: var(--mobile-width);
-  margin: 0 auto;
   overflow: hidden;
 }
 
 .home-map-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  width: min(100%, var(--mobile-width));
-  max-width: var(--mobile-width);
-  margin-left: auto;
-  margin-right: auto;
   z-index: 30;
   pointer-events: none;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* 검색 모드: 상단 검색바 영역을 솔리드 바로 만들어 시트가 그 아래로 지나가게 한다 */
@@ -28,7 +22,7 @@
 
 /* 연관검색어 모드: 오버레이를 전체 높이로 펼쳐 검색바 아래에 추천 리스트를 깐다 */
 .home--suggesting .home-map-overlay {
-  bottom: var(--bottom-nav-offset);
+  bottom: 0;
   z-index: 35;
   display: flex;
   flex-direction: column;
@@ -47,7 +41,7 @@
 }
 
 .home-map-status {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -94,9 +88,9 @@
 }
 
 .home-location-btn {
-  position: fixed;
-  right: max(12px, calc((100% - var(--mobile-width)) / 2 + 12px));
-  bottom: calc(var(--bottom-nav-offset) + 16px);
+  position: absolute;
+  right: 12px;
+  bottom: 16px;
   z-index: 22;
   width: 42px;
   height: 42px;
@@ -116,11 +110,11 @@
 }
 
 .home-location-btn--with-preview {
-  bottom: calc(var(--bottom-nav-offset) + 168px);
+  bottom: 168px;
 }
 
 .home-location-btn--with-search {
-  bottom: calc(var(--bottom-nav-height) + 12px + env(safe-area-inset-bottom, 0px));
+  bottom: 12px;
   z-index: 26;
 }
 
