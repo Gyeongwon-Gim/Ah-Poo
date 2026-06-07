@@ -40,11 +40,13 @@ function BottomNav() {
     observer.observe(nav);
     window.addEventListener('resize', update);
     window.visualViewport?.addEventListener('resize', update);
+    window.visualViewport?.addEventListener('scroll', update);
 
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', update);
       window.visualViewport?.removeEventListener('resize', update);
+      window.visualViewport?.removeEventListener('scroll', update);
     };
   }, [pathname]);
 

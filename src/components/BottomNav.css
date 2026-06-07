@@ -9,13 +9,13 @@
   margin-right: auto;
   z-index: 50;
   display: flex;
-  padding: 4px 12px 0;
-  padding-bottom: max(4px, env(safe-area-inset-bottom, 0px));
+  padding: 4px 12px calc(4px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--pf-border);
-  box-shadow: 0 -4px 24px rgba(2, 132, 199, 0.1);
+  /* box-shadow: 0 -4px 24px rgba(2, 132, 199, 0.1); */
 }
 
 .bottom-nav__link,
