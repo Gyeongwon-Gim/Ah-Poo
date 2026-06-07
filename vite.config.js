@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon.png', 'favicon.ico'],
       manifest: {
-        name: '수영 서비스',
-        short_name: '수영',
-        description: '수영장 찾기 · 수영 운동 기록',
+        name: '어푸!',
+        short_name: '어푸!',
+        description: '어푸! — 수영장 찾기 · 수영 운동 기록',
         theme_color: '#e8f4fc',
         background_color: '#e8f4fc',
         display: 'standalone',

@@ -7,7 +7,6 @@ import {
 import {
   Star,
   X,
-  MapPin,
   ChevronLeft,
   ChevronDown,
   Navigation,
@@ -16,24 +15,19 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 import { formatDailyAdmissionFee } from '../../utils/formatFee';
-import { isFlagOn } from '../../services/pools';
 import { useFavorites } from '../../hooks/useFavorites';
-import PoolThumbnails from '../PoolThumbnails';
-import PoolScheduleTags from '../PoolScheduleTags';
+// import PoolThumbnails from '../PoolThumbnails'; // TODO: 이미지 데이터 확보 후 복구
 import './PoolDetailSheet.css';
 
 const CLOSE_THRESHOLD = 96;
 const ENTER_MS = 340;
 const CLOSE_MS = ENTER_MS;
-const TAP_TOLERANCE = 6;
-
 function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
   const sheetRef = useRef(null);
   const grabberRef = useRef(null);
   const dragRef = useRef(null);
   const peekRef = useRef(0);
   const [sheetH, setSheetH] = useState(0);
-  const [detent, setDetent] = useState('peek');
   const [translate, setTranslate] = useState(0);
   const [phase, setPhase] = useState('entering');
   const [dragging, setDragging] = useState(false);
@@ -52,7 +46,6 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
 
     peekRef.current = peek;
     setSheetH(h);
-    setDetent('peek');
     setTranslate(peekTop);
     el.style.setProperty('--peek-h', `${peek}px`);
 
@@ -86,18 +79,9 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
     window.setTimeout(onClose, CLOSE_MS);
   }, [sheetH, onClose]);
 
-  const snapTo = useCallback(
-    (next) => {
-      if (next === 'full') {
-        setDetent('full');
-        setTranslate(0);
-      } else {
-        setDetent('peek');
-        setTranslate(sheetH - peekRef.current);
-      }
-    },
-    [sheetH],
-  );
+  const snapToPeek = useCallback(() => {
+    setTranslate(sheetH - peekRef.current);
+  }, [sheetH]);
 
   const onPointerDown = (e) => {
     if (phase !== 'interactive') return;
@@ -126,29 +110,16 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
     setDragging(false);
     if (!drag) return;
 
-    if (drag.moved < TAP_TOLERANCE) {
-      snapTo(detent === 'full' ? 'peek' : 'full');
-      return;
-    }
-
     const visible = sheetH - translate;
     if (visible < CLOSE_THRESHOLD) {
       handleClose();
       return;
     }
 
-    const mid = (peekRef.current + sheetH) / 2;
-    snapTo(visible >= mid ? 'full' : 'peek');
+    snapToPeek();
   };
 
   if (!pool) return null;
-
-  const hasSchedule =
-    isFlagOn(pool.is50m) ||
-    isFlagOn(pool.isWeekday) ||
-    isFlagOn(pool.isSaturday) ||
-    isFlagOn(pool.isSunday) ||
-    isFlagOn(pool.isHoliday);
 
   const distanceLabel =
     typeof pool.distanceKm === 'number'
@@ -260,13 +231,19 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
         </div>
 
         <p className="pool-sheet__location">
-          <MapPin size={14} aria-hidden />
           {distanceLabel && (
             <span className="pool-sheet__distance">{distanceLabel}</span>
           )}
           <span className="pool-sheet__address">{pool.address}</span>
           <ChevronDown size={15} className="pool-sheet__location-caret" />
         </p>
+
+        {/* TODO: 이미지 데이터 확보 후 복구
+        <PoolThumbnails
+          className="pool-thumbs--sheet"
+          onPointerDown={stop}
+        />
+        */}
 
         <div className="pool-sheet__actions" onPointerDown={stop}>
           <button
@@ -308,56 +285,6 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
             </a>
           )}
         </div>
-
-        <PoolThumbnails
-          className="pool-thumbs--sheet"
-          onPointerDown={stop}
-        />
-      </div>
-
-      <div className="pool-sheet__detail">
-        <div className="pool-sheet__tabs">
-          <span className="pool-sheet__tab pool-sheet__tab--active">정보</span>
-        </div>
-
-        <section className="pool-sheet__section">
-          <p>
-            {pool.fee ? formatDailyAdmissionFee(pool.fee) : '일일입장 정보 없음'}
-          </p>
-        </section>
-
-        <section className="pool-sheet__section">
-          <h3>운영정보</h3>
-          <PoolScheduleTags pool={pool} />
-          {!hasSchedule && (
-            <p className="pool-sheet__empty">등록된 운영 정보가 없습니다.</p>
-          )}
-        </section>
-
-        {(pool.url || pool.url2) && (
-          <section className="pool-sheet__section pool-sheet__links">
-            {pool.url && (
-              <a
-                href={pool.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pool-sheet__link"
-              >
-                공식 사이트
-              </a>
-            )}
-            {pool.url2 && (
-              <a
-                href={pool.url2}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pool-sheet__link pool-sheet__link--secondary"
-              >
-                추가 링크
-              </a>
-            )}
-          </section>
-        )}
       </div>
     </div>
   );

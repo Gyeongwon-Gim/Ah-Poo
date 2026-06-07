@@ -6,10 +6,9 @@
   bottom: var(--bottom-nav-offset);
   margin: 0 auto;
   max-width: var(--mobile-width);
-  height: min(calc(82dvh - var(--bottom-nav-height)), 720px);
+  height: auto;
+  max-height: calc(100dvh - var(--bottom-nav-offset));
   z-index: 30;
-  display: flex;
-  flex-direction: column;
   background: var(--pf-bg);
   border-radius: 22px 22px 0 0;
   box-shadow: 0 -8px 40px var(--pf-shadow);
@@ -237,92 +236,6 @@
 
 .pool-sheet__action--primary:active {
   background: var(--pf-border);
-}
-
-/* ---- 펼침 상세 ---- */
-.pool-sheet__detail {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 16px;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--pf-border);
-}
-
-.pool-sheet__tabs {
-  display: flex;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  background: var(--pf-bg);
-  padding: 4px 0 0;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--pf-border);
-  z-index: 1;
-}
-
-.pool-sheet__tab {
-  padding: 12px 2px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--pf-text-muted);
-  border-bottom: 2px solid transparent;
-}
-
-.pool-sheet__tab--active {
-  color: var(--pf-text);
-  border-bottom-color: var(--pf-primary);
-}
-
-.pool-sheet__section {
-  margin-bottom: 20px;
-}
-
-.pool-sheet__section h3 {
-  font-size: 14px;
-  font-weight: 500;
-  margin: 0 0 6px;
-  color: var(--pf-text-muted);
-}
-
-.pool-sheet__section p {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--pf-text);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.pool-sheet__empty {
-  margin-top: 8px;
-}
-
-.pool-sheet__links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pool-sheet__link {
-  display: block;
-  padding: 14px 16px;
-  background: var(--pf-primary);
-  color: white;
-  text-align: center;
-  text-decoration: none;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.pool-sheet__link:active {
-  background: var(--pf-primary-dark);
-}
-
-.pool-sheet__link--secondary {
-  background: var(--pf-bg);
-  color: var(--pf-text);
-  border: 1px solid var(--pf-border);
 }
 
 @media (prefers-reduced-motion: reduce) {

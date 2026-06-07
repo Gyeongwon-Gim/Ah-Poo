@@ -10,7 +10,7 @@ import {
 import { fetchPoolByKey, isFlagOn } from '../services/pools';
 import { parsePoolKeyFromSearchParams } from '../utils/poolKey';
 import { formatDailyAdmissionFee } from '../utils/formatFee';
-import PoolThumbnails from '../components/PoolThumbnails';
+// import PoolThumbnails from '../components/PoolThumbnails'; // TODO: 이미지 데이터 확보 후 복구
 import PoolScheduleTags from '../components/PoolScheduleTags';
 import PageSheet from '../components/PageSheet';
 import './PoolDetail.css';
@@ -147,7 +147,9 @@ function PoolDetailContent({ onClose, pool, poolKey, loading, error }) {
           )}
         </div>
 
+        {/* TODO: 이미지 데이터 확보 후 복구
         <PoolThumbnails className="pool-thumbs--detail" />
+        */}
       </div>
 
       <div className="pool-detail__detail">
