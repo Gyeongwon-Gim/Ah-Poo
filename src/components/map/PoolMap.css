@@ -1,9 +1,21 @@
 .pool-map {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--mobile-width);
   z-index: 0;
   background: #e8f4fc;
   transition: opacity 0.28s ease;
+}
+
+/* fixed 지도는 body 높이와 무관하게 layout viewport 전체를 채우므로 키보드 시 visual viewport에 맞춤 */
+html.keyboard-open .pool-map {
+  top: var(--vv-offset-top, 0px);
+  bottom: auto;
+  height: var(--vv-height, 100dvh);
 }
 
 .pool-map__canvas {

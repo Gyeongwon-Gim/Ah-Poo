@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import {
   Star,
   X,
@@ -22,7 +17,14 @@ import './PoolDetailSheet.css';
 const CLOSE_THRESHOLD = 96;
 const ENTER_MS = 340;
 const CLOSE_MS = ENTER_MS;
-function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
+function PoolDetailSheet({
+  pool,
+  onClose,
+  onCloseStart,
+  onBack,
+  onBackStart,
+  instantEnter = false,
+}) {
   const sheetRef = useRef(null);
   const grabberRef = useRef(null);
   const dragRef = useRef(null);
@@ -40,30 +42,38 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
     const grab = grabberRef.current;
     if (!el || !grab) return;
 
-    const h = el.offsetHeight;
-    const peek = grab.offsetHeight;
-    const peekTop = h - peek;
+    const measure = () => {
+      const h = el.offsetHeight;
+      const peek = grab.offsetHeight;
+      const peekTop = h - peek;
 
-    peekRef.current = peek;
-    setSheetH(h);
-    setTranslate(peekTop);
-    el.style.setProperty('--peek-h', `${peek}px`);
+      peekRef.current = peek;
+      setSheetH(h);
+      setTranslate(peekTop);
+      el.style.setProperty('--peek-h', `${peek}px`);
+    };
+
+    measure();
 
     const reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
     if (instantEnter || reducedMotion) {
       setPhase('interactive');
-      return;
+    } else {
+      setPhase('entering');
     }
 
-    setPhase('entering');
+    const fallback =
+      instantEnter || reducedMotion
+        ? undefined
+        : window.setTimeout(() => setPhase('interactive'), ENTER_MS + 80);
 
-    const fallback = window.setTimeout(
-      () => setPhase('interactive'),
-      ENTER_MS + 80,
-    );
-    return () => window.clearTimeout(fallback);
+    window.addEventListener('screen-resize', measure);
+    return () => {
+      window.removeEventListener('screen-resize', measure);
+      if (fallback) window.clearTimeout(fallback);
+    };
   }, [pool, instantEnter]);
 
   const handleEnterEnd = useCallback((e) => {
@@ -72,12 +82,24 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
     setPhase('interactive');
   }, []);
 
+  const runDismiss = useCallback(
+    (start, done) => {
+      start?.();
+      const h = sheetRef.current?.offsetHeight ?? sheetH;
+      setPhase('exiting');
+      setTranslate(h);
+      window.setTimeout(() => done?.(), CLOSE_MS);
+    },
+    [sheetH],
+  );
+
+  const handleBack = useCallback(() => {
+    runDismiss(onBackStart, onBack ?? onClose);
+  }, [runDismiss, onBackStart, onBack, onClose]);
+
   const handleClose = useCallback(() => {
-    const h = sheetRef.current?.offsetHeight ?? sheetH;
-    setPhase('exiting');
-    setTranslate(h);
-    window.setTimeout(onClose, CLOSE_MS);
-  }, [sheetH, onClose]);
+    runDismiss(onCloseStart, onClose);
+  }, [runDismiss, onCloseStart, onClose]);
 
   const snapToPeek = useCallback(() => {
     setTranslate(sheetH - peekRef.current);
@@ -163,7 +185,7 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
       style={
         phase === 'entering'
           ? undefined
-          : { transform: `translateY(${translate}px)` }
+          : { transform: `translate(-50%, ${translate}px)` }
       }
       onAnimationEnd={handleEnterEnd}
       role="dialog"
@@ -184,7 +206,7 @@ function PoolDetailSheet({ pool, onClose, instantEnter = false }) {
             <button
               type="button"
               className="pool-sheet__back"
-              onClick={handleClose}
+              onClick={handleBack}
               onPointerDown={stop}
               aria-label="뒤로 가기"
             >

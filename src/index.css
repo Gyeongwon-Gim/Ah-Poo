@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './styles/mobile-shell.css';
+@import './styles/glass.css';
 
 * {
   margin: 0;
@@ -21,8 +22,10 @@
   --pf-shadow-hover: 0 12px 32px rgba(2, 132, 199, 0.14);
   --pf-radius: 20px;
   --pf-radius-sm: 14px;
-  --bottom-nav-height: 52px;
-  --bottom-nav-offset: 52px;
+  --pf-pill-radius: 40px;
+  --pf-pill-height: 52px;
+  --glassforge-surface-fill: rgba(255, 255, 255, 0.18);
+  --floating-nav-indicator-fill: rgba(142, 142, 147, 0.42);
 }
 
 body {

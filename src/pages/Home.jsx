@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, RefreshCw } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
@@ -17,6 +17,7 @@ import SearchSuggestions from '../components/map/SearchSuggestions';
 import { useMainTab } from '../contexts/MainTabContext';
 import { useFavorites } from '../hooks/useFavorites';
 import { useUserLocation } from '../hooks/useUserLocation';
+import { syncAppViewport } from '../utils/appViewport';
 import './Home.css';
 
 function filterBySearchTerm(pools, searchTerm) {
@@ -25,16 +26,16 @@ function filterBySearchTerm(pools, searchTerm) {
 
   return pools.filter(
     (pool) =>
-      pool.name.toLowerCase().includes(term) ||
-      pool.address.toLowerCase().includes(term) ||
-      (pool.fee && pool.fee.toLowerCase().includes(term)),
+      (pool.name ?? '').toLowerCase().includes(term) ||
+      (pool.address ?? '').toLowerCase().includes(term) ||
+      (pool.fee ?? '').toLowerCase().includes(term),
   );
 }
 
 function Home() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { favoritesOpen, closeFavorites } = useMainTab();
+  const { favoritesOpen, closeFavorites, setFloatingNavHidden } = useMainTab();
   const { favorites } = useFavorites();
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [inputValue, setInputValue] = useState('');
@@ -44,6 +45,10 @@ function Home() {
   const [error, setError] = useState(null);
   const [selectedPool, setSelectedPool] = useState(null);
   const [sheetInstantEnter, setSheetInstantEnter] = useState(false);
+  const [detailClosing, setDetailClosing] = useState(false);
+  const [detailOrigin, setDetailOrigin] = useState(null);
+  const [favoritesExpanded, setFavoritesExpanded] = useState(false);
+  const [favoritesDismissing, setFavoritesDismissing] = useState(false);
   const {
     location: userLocation,
     status: locationStatus,
@@ -139,12 +144,23 @@ function Home() {
     [userLocation],
   );
 
+  const resolveDetailOrigin = useCallback(() => {
+    if (isSearching) return 'search';
+    if (favoritesOpen) return 'favorites';
+    if (searchActive) return 'suggestion';
+    return 'map';
+  }, [isSearching, favoritesOpen, searchActive]);
+
   const openPoolDetail = useCallback(
-    (pool, { instant = false } = {}) => {
+    (pool, { instant = false, origin } = {}) => {
+      setDetailClosing(false);
+      setDetailOrigin(origin ?? resolveDetailOrigin());
       setSheetInstantEnter(instant);
-      setSelectedPool(enrichPool(pool));
+      const enriched = enrichPool(pool);
+      setSelectedPool(enriched);
+      mapRef.current?.panToPool(enriched);
     },
-    [enrichPool],
+    [enrichPool, resolveDetailOrigin],
   );
 
   useEffect(() => {
@@ -170,11 +186,27 @@ function Home() {
       .sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0));
   }, [favorites, userLocation, locationStatus]);
 
+  const mapMarkerPools = useMemo(() => {
+    let result = isSearching ? mapPools : favoritesOpen ? favoritePools : mapPools;
+
+    if (
+      selectedPool &&
+      !result.some((p) => getPoolListKey(p) === getPoolListKey(selectedPool))
+    ) {
+      result = [...result, selectedPool];
+    }
+
+    return result;
+  }, [isSearching, favoritesOpen, mapPools, favoritePools, selectedPool]);
+
   useEffect(() => {
     if (favoritesOpen) {
       setInputValue('');
       setAppliedSearchTerm('');
       setSearchActive(false);
+    } else {
+      setFavoritesExpanded(false);
+      setFavoritesDismissing(false);
     }
   }, [favoritesOpen]);
 
@@ -182,19 +214,106 @@ function Home() {
     if (isSearching) closeFavorites();
   }, [isSearching, closeFavorites]);
 
-  const handleSelectPool = useCallback((pool) => {
-    setSheetInstantEnter(false);
-    setSelectedPool((prev) =>
-      prev && getPoolListKey(prev) === getPoolListKey(pool) ? null : enrichPool(pool),
-    );
-  }, [enrichPool]);
+  const handleCloseSearch = useCallback(() => {
+    setInputValue('');
+    setAppliedSearchTerm('');
+    setSearchActive(false);
+    setSelectedPool(null);
+  }, []);
+
+  const prepareMapBaselineUI = useCallback(() => {
+    closeFavorites();
+    setInputValue('');
+    setAppliedSearchTerm('');
+    setSearchActive(false);
+  }, [closeFavorites]);
+
+  const resetToMapBaseline = useCallback(() => {
+    prepareMapBaselineUI();
+    setSelectedPool(null);
+    setDetailClosing(false);
+    setDetailOrigin(null);
+  }, [prepareMapBaselineUI]);
+
+  const handleDetailBackStart = useCallback(() => {
+    setDetailClosing(true);
+    if (detailOrigin === 'map') {
+      prepareMapBaselineUI();
+      setFloatingNavHidden(false);
+    }
+  }, [detailOrigin, prepareMapBaselineUI, setFloatingNavHidden]);
+
+  const handleDetailBack = useCallback(() => {
+    setSelectedPool(null);
+    setDetailClosing(false);
+    setDetailOrigin(null);
+  }, []);
+
+  const handleDetailCloseStart = useCallback(() => {
+    setDetailClosing(true);
+    if (detailOrigin === 'map') {
+      prepareMapBaselineUI();
+      setFloatingNavHidden(false);
+    }
+  }, [detailOrigin, prepareMapBaselineUI, setFloatingNavHidden]);
+
+  const handleDetailClose = useCallback(() => {
+    if (detailOrigin === 'map') {
+      resetToMapBaseline();
+    } else {
+      handleDetailBack();
+    }
+  }, [detailOrigin, resetToMapBaseline, handleDetailBack]);
+
+  const handleSelectPool = useCallback(
+    (pool) => {
+      setSheetInstantEnter(false);
+      if (
+        selectedPool &&
+        getPoolListKey(selectedPool) === getPoolListKey(pool)
+      ) {
+        if (detailOrigin === 'map') {
+          resetToMapBaseline();
+        } else {
+          handleDetailBack();
+        }
+        return;
+      }
+      setDetailClosing(false);
+      setDetailOrigin(resolveDetailOrigin());
+      const enriched = enrichPool(pool);
+      setSelectedPool(enriched);
+      mapRef.current?.panToPool(enriched);
+    },
+    [
+      enrichPool,
+      resetToMapBaseline,
+      handleDetailBack,
+      resolveDetailOrigin,
+      selectedPool,
+      detailOrigin,
+    ],
+  );
 
   const handleActivateSearch = useCallback(() => {
     closeFavorites();
     setSearchActive(true);
   }, [closeFavorites]);
 
-  const handleDraftChange = useCallback((value) => setInputValue(value), []);
+  const handleSearchFocus = useCallback(() => {
+    if (!appliedSearchTerm.trim()) {
+      handleActivateSearch();
+    }
+  }, [appliedSearchTerm, handleActivateSearch]);
+
+  const handleDraftChange = useCallback((value) => {
+    setInputValue(value);
+    if (!value.trim()) {
+      setAppliedSearchTerm('');
+      setSelectedPool(null);
+      setSearchActive(true);
+    }
+  }, []);
 
   const handleSubmitSearch = useCallback(
     (term) => {
@@ -202,10 +321,15 @@ function Home() {
       setInputValue(trimmed);
       setAppliedSearchTerm(trimmed);
       setSearchActive(false);
+      setSelectedPool(null);
+
+      if (!trimmed) return;
+
+      requestAnimationFrame(() => syncAppViewport());
 
       const results = filterBySearchTerm(pools, trimmed);
       if (results.length === 1) {
-        openPoolDetail(results[0], { instant: true });
+        openPoolDetail(results[0], { instant: true, origin: 'search' });
       }
     },
     [pools, openPoolDetail],
@@ -216,16 +340,10 @@ function Home() {
       setInputValue(pool.name);
       setAppliedSearchTerm(pool.name);
       setSearchActive(false);
-      openPoolDetail(pool, { instant: true });
+      openPoolDetail(pool, { instant: true, origin: 'search' });
     },
     [openPoolDetail],
   );
-
-  const handleCloseSearch = useCallback(() => {
-    setInputValue('');
-    setAppliedSearchTerm('');
-    setSearchActive(false);
-  }, []);
 
   const handleRecenter = useCallback(async () => {
     try {
@@ -241,29 +359,76 @@ function Home() {
   const showLocationPending =
     !loading && !error && !isSearching && locationStatus === 'pending';
   const showSearchPanel =
-    isSearching && !selectedPool && !loading && !error;
+    isSearching &&
+    !loading &&
+    !error &&
+    (!selectedPool || detailOrigin === 'search');
+
+  const searchPanelBehindDetail =
+    Boolean(selectedPool) && detailOrigin === 'search' && !detailClosing;
+  const searchPanelRevealFromDetail =
+    detailClosing && detailOrigin === 'search';
   const showFavoritesPanel =
+    favoritesOpen &&
+    !favoritesDismissing &&
+    !selectedPool &&
+    !loading &&
+    !error &&
+    !isSearching;
+  const showFavoritesSheet =
     favoritesOpen && !selectedPool && !loading && !error && !isSearching;
-  const listSheetOpen = showSearchPanel || showFavoritesPanel;
   const searchMode = searchActive || isSearching;
+
+  const handleFavoritesDismissStart = useCallback(() => {
+    setFavoritesDismissing(true);
+    setFloatingNavHidden(false);
+  }, [setFloatingNavHidden]);
+
+  const handleFavoritesDismiss = useCallback(() => {
+    closeFavorites();
+    setFavoritesDismissing(false);
+  }, [closeFavorites]);
+
+  useLayoutEffect(() => {
+    if (isSearching || searchActive) {
+      setFloatingNavHidden(true);
+    } else if (Boolean(selectedPool) && !detailClosing) {
+      setFloatingNavHidden(true);
+    } else if (showFavoritesSheet && !favoritesDismissing) {
+      setFloatingNavHidden(true);
+    } else {
+      setFloatingNavHidden(false);
+    }
+  }, [
+    isSearching,
+    searchActive,
+    selectedPool,
+    detailClosing,
+    showFavoritesSheet,
+    favoritesDismissing,
+    setFloatingNavHidden,
+  ]);
 
   return (
     <div
-      className={`home home--map app-route ${listSheetOpen ? 'home--searching' : ''} ${searchActive ? 'home--suggesting' : ''}`}
+      className={`home home--map app-route ${showSearchPanel ? 'home--searching' : ''} ${searchActive ? 'home--suggesting' : ''} ${showFavoritesPanel ? 'home--favorites' : ''}`}
     >
       <PoolMap
         ref={mapRef}
-        pools={mapPools}
+        pools={mapMarkerPools}
         selectedPool={selectedPool}
         onSelectPool={handleSelectPool}
         userLocation={canRecenter ? userLocation : null}
         fitToUser={isNearbyMode}
       />
 
-      {!listSheetOpen && canRecenter && !selectedPool && (
+      {!showSearchPanel &&
+        !(showFavoritesPanel && favoritesExpanded) &&
+        !selectedPool &&
+        canRecenter && (
         <button
           type="button"
-          className="home-location-btn"
+          className="home-location-btn glassforge-glass"
           onClick={handleRecenter}
           aria-label="현재 위치로 이동"
         >
@@ -281,19 +446,30 @@ function Home() {
           countSuffix="건"
           emptyMessage="검색 결과가 없습니다"
           ariaLabel={`'${appliedSearchTerm}' 검색 결과`}
+          reservePeekWhenEmpty
+          behindDetail={searchPanelBehindDetail}
+          behindDetailInstant={sheetInstantEnter && searchPanelBehindDetail}
+          revealFromDetail={searchPanelRevealFromDetail}
+          interactionDisabled={searchPanelBehindDetail}
         />
       )}
 
-      {showFavoritesPanel && (
+      {showFavoritesSheet && (
         <SearchResultsPanel
           pools={favoritePools}
-          resetKey={`favorites-${favorites.length}`}
+          resetKey={`favorites-${favoritesOpen}-${favorites.length}`}
           selectedPool={selectedPool}
           onSelectPool={handleSelectPool}
           titlePrefix="즐겨찾기"
           countSuffix="곳"
-          emptyMessage="아직 즐겨찾기한 수영장이 없어요"
+          emptyMessage="즐겨찾기한 수영장이 없어요"
           ariaLabel="즐겨찾기"
+          reservePeekWhenEmpty
+          enterFromBottom
+          softSheet
+          onExpandedChange={setFavoritesExpanded}
+          onDismissStart={handleFavoritesDismissStart}
+          onDismiss={handleFavoritesDismiss}
         />
       )}
 
@@ -302,7 +478,7 @@ function Home() {
           value={inputValue}
           onValueChange={handleDraftChange}
           onSearch={handleSubmitSearch}
-          onActivate={handleActivateSearch}
+          onActivate={handleSearchFocus}
           onClose={handleCloseSearch}
           variant="map"
           searchMode={searchMode}
@@ -380,7 +556,10 @@ function Home() {
           key={getPoolListKey(selectedPool)}
           pool={selectedPool}
           instantEnter={sheetInstantEnter}
-          onClose={() => setSelectedPool(null)}
+          onCloseStart={handleDetailCloseStart}
+          onClose={handleDetailClose}
+          onBackStart={handleDetailBackStart}
+          onBack={handleDetailBack}
         />
       )}
     </div>

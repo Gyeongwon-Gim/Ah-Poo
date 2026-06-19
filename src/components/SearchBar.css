@@ -7,19 +7,34 @@
 
 .search-bar-wrap--map {
   margin-top: 0;
-  padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px;
+  padding: 8px 12px;
 }
 
-.search-bar-wrap--map .search-bar {
-  box-shadow: var(--pf-shadow);
-  /* border: 1px solid var(--pf-border); */
-  border-radius: 40px;
+.search-bar-wrap--map .search-bar--glass {
+  --glassforge-radius: var(--pf-pill-radius);
+  width: 100%;
+  height: var(--pf-pill-height);
+  padding: 0 4px 0 16px;
+  border-radius: var(--pf-pill-radius);
+  background: transparent;
+  border-color: transparent;
+}
+
+.search-bar-wrap--map .search-bar--glass:hover {
+  transform: none;
+  filter: none;
+}
+
+.search-bar-wrap--map .search-bar--glass > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* 검색 모드: 떠 있는 알약 → 상단 고정 솔리드 바 (시트가 이 아래로 지나간다) */
 .search-bar-wrap--search .search-bar {
   box-shadow: none;
   border: 1px solid lightgrey;
+  border-radius: var(--pf-pill-radius);
   margin-bottom: 30px;
 }
 
@@ -34,9 +49,12 @@
   background: var(--pf-surface);
   border-radius: var(--pf-radius);
   border: 1px solid transparent;
-  /* box-shadow: var(--pf-shadow); */
-  /* border: 1px solid var(--pf-border); */
   padding: 4px 4px 4px 16px;
+}
+
+.search-bar-wrap--map .search-bar--glass .search-input {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .search-icon {

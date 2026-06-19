@@ -1,5 +1,7 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Search, X, ChevronLeft } from 'lucide-react';
+import { disableInputAccessoryView } from '../utils/disableInputAccessoryView';
+import { setIosKeyboardInputFocused } from '../utils/iosKeyboardScrollLock';
 import './SearchBar.css';
 
 function SearchBar({
@@ -13,10 +15,16 @@ function SearchBar({
 }) {
   const inputRef = useRef(null);
 
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return undefined;
+    return disableInputAccessoryView(input);
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    inputRef.current?.blur();
     onSearch?.(value.trim());
+    inputRef.current?.blur();
   };
 
   const handleClear = () => {
@@ -34,7 +42,10 @@ function SearchBar({
       className={`search-bar-wrap ${variant === 'map' ? 'search-bar-wrap--map' : ''} ${searchMode ? 'search-bar-wrap--search' : ''}`}
     >
       <div className="search-bar-container">
-        <form className="search-bar" onSubmit={handleSubmit}>
+        <form
+          className={`search-bar ${variant === 'map' && !searchMode ? 'glassforge-glass search-bar--glass' : ''}`}
+          onSubmit={handleSubmit}
+        >
           {searchMode ? (
             <button
               type="button"
@@ -56,10 +67,17 @@ function SearchBar({
             ref={inputRef}
             type="search"
             enterKeyHint="search"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="드디어 주말! 수영하러 가볼까요?"
             value={value}
             onChange={(e) => onValueChange?.(e.target.value)}
-            onFocus={() => onActivate?.()}
+            onFocus={() => {
+              setIosKeyboardInputFocused(true);
+              onActivate?.();
+            }}
+            onBlur={() => setIosKeyboardInputFocused(false)}
             className="search-input"
             aria-label="수영장 검색"
           />

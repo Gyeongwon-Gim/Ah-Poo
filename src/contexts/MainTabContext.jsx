@@ -12,6 +12,7 @@ const MainTabContext = createContext(null);
 export function MainTabProvider({ children }) {
   const navigate = useNavigate();
   const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [floatingNavHidden, setFloatingNavHidden] = useState(false);
 
   const closeFavorites = useCallback(() => {
     setFavoritesOpen(false);
@@ -24,17 +25,30 @@ export function MainTabProvider({ children }) {
 
   const toggleFavorites = useCallback(() => {
     navigate('/');
-    setFavoritesOpen((open) => !open);
+    setFavoritesOpen((open) => {
+      if (open) {
+        setFloatingNavHidden(false);
+      }
+      return !open;
+    });
   }, [navigate]);
 
   const value = useMemo(
     () => ({
       favoritesOpen,
+      floatingNavHidden,
+      setFloatingNavHidden,
       openFavorites,
       closeFavorites,
       toggleFavorites,
     }),
-    [favoritesOpen, openFavorites, closeFavorites, toggleFavorites],
+    [
+      favoritesOpen,
+      floatingNavHidden,
+      openFavorites,
+      closeFavorites,
+      toggleFavorites,
+    ],
   );
 
   return (

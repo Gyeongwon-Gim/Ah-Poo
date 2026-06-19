@@ -1,13 +1,13 @@
 .pool-sheet {
   --pool-sheet-icon: #4b5563;
-  position: absolute;
-  left: 0;
-  right: 0;
+  --pool-sheet-bottom-pad: var(--safe-bottom);
+  position: fixed;
+  left: 50%;
   bottom: 0;
-  margin: 0 auto;
+  width: min(100%, var(--mobile-width));
   max-width: var(--mobile-width);
   height: auto;
-  max-height: 100%;
+  max-height: 100dvh;
   z-index: 30;
   background: var(--pf-bg);
   border-radius: 22px 22px 0 0;
@@ -21,16 +21,16 @@
 }
 
 .pool-sheet--entering {
-  transform: translateY(100%);
+  transform: translate(-50%, 100%);
   animation: pool-sheet-enter 0.34s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }
 
 @keyframes pool-sheet-enter {
   from {
-    transform: translateY(100%);
+    transform: translate(-50%, 100%);
   }
   to {
-    transform: translateY(calc(100% - var(--peek-h, 280px)));
+    transform: translate(-50%, calc(100% - var(--peek-h, 280px)));
   }
 }
 
@@ -45,7 +45,9 @@
 /* ---- peek 영역 (드래그 핸들 포함) ---- */
 .pool-sheet__grabber {
   flex-shrink: 0;
-  padding: 8px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 50px;
   cursor: grab;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
@@ -241,7 +243,7 @@
 @media (prefers-reduced-motion: reduce) {
   .pool-sheet--entering {
     animation: none;
-    transform: translateY(calc(100% - var(--peek-h, 280px)));
+    transform: translate(-50%, calc(100% - var(--peek-h, 280px)));
   }
 
   .pool-sheet--transition {

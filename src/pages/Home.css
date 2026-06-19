@@ -4,6 +4,12 @@
   overflow: hidden;
 }
 
+/* 연관검색 중 fixed 지도가 키보드 영역까지 비치지 않도록 숨김 */
+.home--suggesting .pool-map {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .home-map-overlay {
   position: absolute;
   top: 0;
@@ -11,7 +17,7 @@
   right: 0;
   z-index: 30;
   pointer-events: none;
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: var(--safe-top);
 }
 
 /* 검색 모드: 상단 검색바 영역을 솔리드 바로 만들어 시트가 그 아래로 지나가게 한다 */
@@ -23,6 +29,7 @@
 /* 연관검색어 모드: 오버레이를 전체 높이로 펼쳐 검색바 아래에 추천 리스트를 깐다 */
 .home--suggesting .home-map-overlay {
   bottom: 0;
+  height: var(--screen-h, 100dvh);
   z-index: 35;
   display: flex;
   flex-direction: column;
@@ -90,7 +97,10 @@
 .home-location-btn {
   position: absolute;
   right: 12px;
-  bottom: 16px;
+  bottom: calc(
+    var(--floating-nav-offset) + var(--floating-nav-height) + 16px +
+      var(--safe-bottom)
+  );
   z-index: 22;
   width: 42px;
   height: 42px;
@@ -107,15 +117,6 @@
   transition:
     transform 0.15s ease,
     background 0.15s ease;
-}
-
-.home-location-btn--with-preview {
-  bottom: 168px;
-}
-
-.home-location-btn--with-search {
-  bottom: 12px;
-  z-index: 26;
 }
 
 .home-location-btn:active {

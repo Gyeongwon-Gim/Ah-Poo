@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import PoolDetail from './pages/PoolDetail';
 import SwimmingDiary from './pages/SwimmingDiary';
-import BottomNav from './components/BottomNav';
 import { MainTabProvider } from './contexts/MainTabContext';
 import { FavoritesProvider } from './hooks/useFavorites';
+import FloatingNav from './components/FloatingNav';
 import './App.css';
 
 function App() {
@@ -16,11 +16,11 @@ function App() {
             <div className="app__main">
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/pool" element={<PoolDetail />} />
-                <Route path="/swimming-diary" element={<SwimmingDiary />} />
+                {/* <Route path="/pool" element={<PoolDetail />} /> */}
+                {/* <Route path="/swimming-diary" element={<SwimmingDiary />} /> */}
               </Routes>
             </div>
-            <BottomNav />
+            <FloatingNav />
           </div>
         </MainTabProvider>
       </FavoritesProvider>

@@ -1,8 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" rx="96" fill="#0284c7"/>
-  <path d="M64 320c48-32 96-32 144 0s96 32 144 0 96-32 144 0v64H64v-64z" fill="#06b6d4" opacity="0.9"/>
-  <path d="M64 256c40-24 80-24 120 0s80 24 120 0 80-24 120 0v48H64v-48z" fill="#38bdf8" opacity="0.85"/>
-  <path d="M64 192c32-16 64-16 96 0s64 16 96 0 64-16 96 0v48H64v-48z" fill="#7dd3fc" opacity="0.8"/>
-  <circle cx="256" cy="160" r="36" fill="#f0f9ff"/>
-  <path d="M220 160c0-20 16-36 36-36s36 16 36 36" stroke="#0284c7" stroke-width="8" stroke-linecap="round" fill="none"/>
+<svg width="1102" height="1101" viewBox="0 0 1102 1101" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1" y="0.5" width="1100" height="1100" rx="83" fill="url(#paint0_linear_2040_60)" stroke="url(#paint1_linear_2040_60)"/>
+  <path d="M300.5 354.5C542.125 354.5 738 550.375 738 792C738 912.377 689.382 1021.4 610.713 1100.5H0V474.028C78.3755 399.933 184.132 354.5 300.5 354.5Z" fill="white"/>
+  <ellipse cx="369.725" cy="729.682" rx="50" ry="78.9308" transform="rotate(15 369.725 729.682)" fill="black"/>
+  <ellipse cx="375.051" cy="732.897" rx="50" ry="80.1887" transform="rotate(15 375.051 732.897)" fill="black"/>
+  <ellipse cx="364.402" cy="760.973" rx="11.8769" ry="19.0479" transform="rotate(15 364.402 760.973)" fill="white"/>
+  <ellipse cx="384.99" cy="688.834" rx="19.5435" ry="31.3433" transform="rotate(15 384.99 688.834)" fill="white"/>
+  <ellipse cx="548.051" cy="702.897" rx="50" ry="80.1887" transform="rotate(15 548.051 702.897)" fill="black"/>
+  <ellipse cx="537.402" cy="730.973" rx="11.8769" ry="19.0479" transform="rotate(15 537.402 730.973)" fill="white"/>
+  <ellipse cx="557.99" cy="658.834" rx="19.5435" ry="31.3433" transform="rotate(15 557.99 658.834)" fill="white"/>
+  <path d="M300.5 354.5C424.146 354.5 535.813 405.793 615.381 488.262L0 740.745V474.028C78.3755 399.933 184.132 354.5 300.5 354.5Z" fill="#FFFF00"/>
+  <path d="M541.158 816.007C622.927 801.908 704.213 872.153 545.529 935.966C635.45 899.805 719.893 980.939 565.973 1050.09" stroke="black" stroke-width="5"/>
+  <defs>
+    <linearGradient id="paint0_linear_2040_60" x1="1" y1="1100.5" x2="1466" y2="-80.5" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0088FF"/>
+      <stop offset="0.581746" stop-color="#86C6FF"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear_2040_60" x1="86" y1="51.5" x2="1042" y2="1063.5" gradientUnits="userSpaceOnUse">
+      <stop/>
+      <stop offset="0.533668" stop-color="#5B5B5B"/>
+      <stop offset="1" stop-color="#666666"/>
+    </linearGradient>
+  </defs>
 </svg>

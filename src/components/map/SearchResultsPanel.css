@@ -1,5 +1,9 @@
 /* Figma 「검색결과」 — 지도 위 하단 시트 + 리스트 카드 */
 
+.home--searching .search-results-panel {
+  z-index: 8;
+}
+
 .search-results-panel {
   position: absolute;
   left: 0;
@@ -7,8 +11,8 @@
   top: 0;
   /* 리스트뷰(translateY: 116px)일 때 바닥에 정확히 맞도록 높이 고정.
      peek일 때는 아래로 더 내려가 일부가 화면 밖으로 나가며, 그만큼 스크롤된다. */
-  height: calc(100% - 116px);
-  z-index: 24;
+  height: calc(100%);
+  z-index: 28;
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -16,13 +20,28 @@
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
   pointer-events: auto;
   overflow: hidden;
-  /* 손가락을 따라 움직이는 시트 — transform은 GPU 합성이라 부드럽다 */
-  transform: translateY(36vh);
-  transition:
-    transform 0.34s cubic-bezier(0.32, 0.72, 0, 1),
-    border-radius 0.34s ease,
-    box-shadow 0.34s ease;
   will-change: transform;
+}
+
+.search-results-panel.is-ready:not(.is-dragging):not(.is-instant) {
+  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.search-results-panel.is-revealing {
+  z-index: 26;
+}
+
+/* 상세 시트 뒤로가기와 동기화된 슬라이드 업 (PoolDetailSheet CLOSE_MS = 340ms) */
+.search-results-panel.is-revealing.is-ready:not(.is-dragging):not(.is-instant) {
+  transition-duration: 0.34s;
+}
+
+.search-results-panel.is-instant {
+  transition: none !important;
+}
+
+.search-results-panel.is-inert {
+  pointer-events: none;
 }
 
 /* 드래그 중에는 손가락에 1:1로 붙도록 전환 효과 제거 */
@@ -37,7 +56,7 @@
   }
 }
 
-/* peek 상태에서 화면 하단에 도킹되는 바 (핸들 + "검색 결과 N건") */
+/* peek 상태: 핸들 + "검색 결과 N건" + 첫 결과 카드 1건 */
 .search-results-panel__peek-bar {
   flex-shrink: 0;
   display: flex;
@@ -78,12 +97,34 @@
   flex: 1;
   /* peek 상태에서는 시트 드래그와 충돌하지 않도록 스크롤 잠금 */
   overflow: hidden;
-  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  scroll-snap-type: none;
+  overflow-anchor: none;
 }
 
-.search-results-panel.is-expanded .search-results-panel__list {
+.search-results-panel.is-expanded .search-results-panel__list,
+.search-results-panel.is-list-scrollable .search-results-panel__list {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-bottom: var(--sheet-bottom-reserve, 0px);
+}
+
+/* 검색 중에는 하단 네비가 숨겨지므로 예약 공간 불필요 */
+.home--searching
+  .search-results-panel.is-expanded
+  .search-results-panel__list {
+  padding-bottom: 0;
+}
+
+/* 즐겨찾기: 네비가 내려가므로 safe area만 확보 */
+.home--favorites
+  .search-results-panel.is-expanded
+  .search-results-panel__list,
+.home--favorites
+  .search-results-panel.is-list-scrollable
+  .search-results-panel__list {
+  padding-bottom: calc(var(--safe-bottom) + 16px);
 }
 
 .search-results-panel__empty {
@@ -92,6 +133,29 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--pf-text-muted);
+}
+
+/* soft sheet: peek·닫기 드래그 중 자식(버튼·리스트)이 터치를 가로채지 않도록 */
+.search-results-panel.is-soft-sheet:not(.is-list-scrollable) {
+  touch-action: none;
+}
+
+.search-results-panel.is-soft-sheet:not(.is-list-scrollable)
+  .search-results-panel__list,
+.search-results-panel.is-soft-sheet:not(.is-list-scrollable)
+  .search-result-item {
+  touch-action: none;
+}
+.search-results-panel__empty-slot {
+  flex-shrink: 0;
+  /* SearchResultItem(텍스트+썸네일) 1행 peek 높이에 맞춤 */
+  min-height: 240px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-results-panel__empty-slot .search-results-panel__empty {
+  padding: 14px 16px;
+  text-align: left;
 }
 
 .search-results-panel__detail-btn {
@@ -216,4 +280,3 @@
   background: rgba(2, 132, 199, 0.1);
   color: var(--pf-primary-dark);
 }
-
