@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useLayoutEffect,
   useRef,
+  useState,
   useMemo,
   useCallback,
 } from 'react';
@@ -28,12 +29,25 @@ function syncMapLayout(mapEl, map) {
   map?.relayout();
 }
 
+/**
+ * relayout()은 내부 레이어 크기만 맞출 뿐, 잘못된 크기로 한 번 요청된
+ * 빈 타일은 다시 받아오지 않는다. 같은 중심으로 setCenter를 호출하면
+ * 카카오가 현재 뷰포트 기준으로 타일을 재요청한다. (콜드 런치/뷰포트 정착 후
+ * 빈 타일·미충전 화면을 강제로 복구하기 위함)
+ */
+function refreshMapTiles(map) {
+  if (!map) return;
+  const center = map.getCenter?.();
+  if (center) map.setCenter(center);
+}
+
 function scheduleMapRelayout(map, mapEl) {
   if (!map) return () => {};
 
   const run = () => {
     syncMapLayout(mapEl, map);
     map.relayout();
+    refreshMapTiles(map);
   };
   run();
 
@@ -56,6 +70,21 @@ const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
 const DEFAULT_LEVEL = 8;
 const USER_ZOOM_LEVEL = 6;
 const MAP_PADDING = 48;
+/** 카카오맵 level이 작을수록 확대됨. 이 값 이하일 때만 이름 라벨 표시 */
+const LABEL_VISIBLE_MAX_LEVEL = 5;
+
+function shouldShowMarkerLabels(level) {
+  return level <= LABEL_VISIBLE_MAX_LEVEL;
+}
+
+function syncMarkerLabelVisibility(map, store) {
+  if (!map) return;
+
+  const showLabels = shouldShowMarkerLabels(map.getLevel());
+  for (const [, { label }] of store) {
+    label?.setMap(showLabels ? map : null);
+  }
+}
 
 const PoolMap = forwardRef(function PoolMap(
   { pools, selectedPool, onSelectPool, userLocation, fitToUser = false },
@@ -68,6 +97,7 @@ const PoolMap = forwardRef(function PoolMap(
   const syncedPoolsSignatureRef = useRef('');
   const fittedPoolsSignatureRef = useRef('');
   const userLocatedRef = useRef(false);
+  const [containerReady, setContainerReady] = useState(false);
   const { ready, error: sdkError } = useKakaoMapLoader();
 
   onSelectPoolRef.current = onSelectPool;
@@ -86,6 +116,7 @@ const PoolMap = forwardRef(function PoolMap(
   const relayoutMap = useCallback(() => {
     syncMapLayout(mapRef.current, mapInstanceRef.current);
     mapInstanceRef.current?.relayout();
+    refreshMapTiles(mapInstanceRef.current);
   }, []);
 
   const panToUserLocation = (coords, level = USER_ZOOM_LEVEL) => {
@@ -108,8 +139,31 @@ const PoolMap = forwardRef(function PoolMap(
     [userLocation, ready, relayoutMap],
   );
 
+  // 컨테이너가 0 크기일 때 지도를 만들면 카카오가 잘못된 뷰포트로 타일을
+  // 요청해 빈 타일/미충전 화면이 고정된다. (특히 iOS PWA 콜드 런치에서 뷰포트가
+  // 늦게 정착) 실측 크기가 잡힐 때까지 초기화를 보류하고 ResizeObserver로 재시도.
   useLayoutEffect(() => {
-    if (!ready || !mapRef.current || mapInstanceRef.current) return;
+    if (!ready || mapInstanceRef.current || containerReady) return;
+    const el = mapRef.current;
+    if (!el) return;
+
+    if (el.clientWidth > 0 && el.clientHeight > 0) {
+      setContainerReady(true);
+      return;
+    }
+
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth > 0 && el.clientHeight > 0) {
+        setContainerReady(true);
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ready, containerReady]);
+
+  useLayoutEffect(() => {
+    if (!ready || !containerReady || !mapRef.current || mapInstanceRef.current)
+      return;
 
     const { kakao } = window;
     const centerPoint =
@@ -121,8 +175,22 @@ const PoolMap = forwardRef(function PoolMap(
     mapInstanceRef.current = map;
     syncMapLayout(mapRef.current, map);
 
-    return scheduleMapRelayout(map, mapRef.current);
-  }, [ready, fitToUser, userLocation]);
+    // 첫 타일 로드가 끝난 시점(=뷰포트가 사실상 정착된 뒤)에 한 번 더 재배치·
+    // 타일 재요청해 콜드 런치 시 남는 빈 타일/미충전 영역을 마저 복구한다.
+    const onFirstTilesLoaded = () => {
+      kakao.maps.event.removeListener(map, 'tilesloaded', onFirstTilesLoaded);
+      syncMapLayout(mapRef.current, map);
+      refreshMapTiles(map);
+    };
+    kakao.maps.event.addListener(map, 'tilesloaded', onFirstTilesLoaded);
+
+    const cancelRelayout = scheduleMapRelayout(map, mapRef.current);
+
+    return () => {
+      kakao.maps.event.removeListener(map, 'tilesloaded', onFirstTilesLoaded);
+      cancelRelayout();
+    };
+  }, [ready, containerReady, fitToUser, userLocation]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -229,11 +297,29 @@ const PoolMap = forwardRef(function PoolMap(
         yAnchor: 0,
         zIndex: 1,
       });
-      label.setMap(map);
 
       store.set(key, { marker, label, labelEl, pool, onClick });
     }
+
+    syncMarkerLabelVisibility(map, store);
   }, [ready, poolsSignature, pools]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!ready || !map || !window.kakao) return;
+
+    const { kakao } = window;
+    const onZoomChanged = () => {
+      syncMarkerLabelVisibility(map, markerStoreRef.current);
+    };
+
+    kakao.maps.event.addListener(map, 'zoom_changed', onZoomChanged);
+    onZoomChanged();
+
+    return () => {
+      kakao.maps.event.removeListener(map, 'zoom_changed', onZoomChanged);
+    };
+  }, [ready]);
 
   useEffect(() => {
     for (const [key, { marker, label, labelEl }] of markerStoreRef.current) {
@@ -273,6 +359,8 @@ const PoolMap = forwardRef(function PoolMap(
     } else {
       map.setBounds(bounds, MAP_PADDING, MAP_PADDING, MAP_PADDING, MAP_PADDING);
     }
+
+    syncMarkerLabelVisibility(map, markerStoreRef.current);
   }, [ready, poolsSignature, pools, fitToUser, userLocation]);
 
   // 마커 선택 시: 현재 타일 로드 후 panTo로 부드럽게 이동
