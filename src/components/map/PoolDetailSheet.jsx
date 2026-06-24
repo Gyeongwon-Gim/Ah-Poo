@@ -6,8 +6,7 @@ import {
   ChevronDown,
   Navigation,
   Share2,
-  Globe,
-  Link as LinkIcon,
+  Home,
 } from 'lucide-react';
 import { formatDailyAdmissionFee } from '../../utils/formatFee';
 import { useFavorites } from '../../hooks/useFavorites';
@@ -268,14 +267,17 @@ function PoolDetailSheet({
         */}
 
         <div className="pool-sheet__actions" onPointerDown={stop}>
-          <button
-            type="button"
-            className="pool-sheet__action pool-sheet__action--primary"
-            onClick={handleDirections}
-          >
-            <Navigation size={18} />
-            <span>길찾기</span>
-          </button>
+          {pool.official_url && (
+            <a
+              className="pool-sheet__action"
+              href={pool.official_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Home size={18} />
+              <span>홈페이지</span>
+            </a>
+          )}
           <button
             type="button"
             className="pool-sheet__action"
@@ -284,28 +286,14 @@ function PoolDetailSheet({
             <Share2 size={18} />
             <span>공유</span>
           </button>
-          {pool.official_url && (
-            <a
-              className="pool-sheet__action"
-              href={pool.official_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Globe size={18} />
-              <span>사이트</span>
-            </a>
-          )}
-          {pool.url2 && (
-            <a
-              className="pool-sheet__action"
-              href={pool.url2}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <LinkIcon size={18} />
-              <span>링크</span>
-            </a>
-          )}
+          <button
+            type="button"
+            className="pool-sheet__action pool-sheet__action--primary"
+            onClick={handleDirections}
+          >
+            <Navigation size={18} />
+            <span>길찾기</span>
+          </button>
         </div>
       </div>
     </div>
