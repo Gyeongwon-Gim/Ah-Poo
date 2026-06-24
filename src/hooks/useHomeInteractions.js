@@ -10,6 +10,9 @@ import { filterBySearchTerm } from '../utils/poolSearch';
 import { enrichWithDistance } from '../utils/geo';
 import { syncAppViewport } from '../utils/appViewport';
 
+/** 딥링크 진입 시 해당 수영장으로 확대할 카카오맵 줌 레벨 (작을수록 확대) */
+const DEEPLINK_ZOOM_LEVEL = 5;
+
 /**
  * 홈 화면의 상호작용 상태 머신: 검색, 상세 시트, 즐겨찾기 시트, 플로팅 네비 숨김을
  * 한곳에서 관리한다. 이 세 영역은 같은 setter를 공유하며 서로를 닫고 여는 관계라
@@ -56,13 +59,13 @@ export function useHomeInteractions({
   }, [isSearching, favoritesOpen, searchActive]);
 
   const openPoolDetail = useCallback(
-    (pool, { instant = false, origin } = {}) => {
+    (pool, { instant = false, origin, zoom } = {}) => {
       setDetailClosing(false);
       setDetailOrigin(origin ?? resolveDetailOrigin());
       setSheetInstantEnter(instant);
       const enriched = enrichPool(pool);
       setSelectedPool(enriched);
-      mapRef.current?.panToPool(enriched);
+      mapRef.current?.panToPool(enriched, zoom);
     },
     [enrichPool, resolveDetailOrigin],
   );
@@ -73,6 +76,38 @@ export function useHomeInteractions({
     openPoolDetail(openPool, { instant: true });
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state?.openPool, openPoolDetail, navigate]);
+
+  // 공유 딥링크(/?pool=<id>)로 유입된 경우: 목록 로딩이 끝난 뒤 한 번만
+  // 해당 수영장 시트를 열고, 파라미터는 즉시 제거해 이후엔 평범한 세션처럼
+  // 동작하게 한다. (origin: 'map' → 닫아도 그 위치에 지도가 머무름)
+  const deepLinkHandledRef = useRef(false);
+  useEffect(() => {
+    if (deepLinkHandledRef.current) return;
+    if (loading) return;
+
+    const poolId = new URLSearchParams(location.search).get('pool');
+    deepLinkHandledRef.current = true;
+
+    if (!poolId) return;
+
+    const target = pools.find((pool) => String(pool.id) === poolId);
+    if (target) {
+      openPoolDetail(target, {
+        instant: true,
+        origin: 'map',
+        zoom: DEEPLINK_ZOOM_LEVEL,
+      });
+    }
+
+    navigate(location.pathname, { replace: true });
+  }, [
+    loading,
+    pools,
+    location.search,
+    location.pathname,
+    openPoolDetail,
+    navigate,
+  ]);
 
   useEffect(() => {
     if (favoritesOpen) {

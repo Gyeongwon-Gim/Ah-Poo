@@ -130,9 +130,21 @@ const PoolMap = forwardRef(function PoolMap(
     return true;
   };
 
+  // level을 넘기지 않으면 현재 줌을 유지하고 위치만 이동한다.
+  const panToPool = (pool, level) => {
+    const map = mapInstanceRef.current;
+    if (!map || !pool || !window.kakao) return false;
+
+    const pos = new window.kakao.maps.LatLng(pool.lat, pool.lng);
+    map.panTo(pos);
+    if (level != null) map.setLevel(level);
+    return true;
+  };
+
   useImperativeHandle(
     ref,
     () => ({
+      panToPool: (pool, level) => panToPool(pool, level),
       panToUserLocation: (coords) => panToUserLocation(coords, USER_ZOOM_LEVEL),
       relayout: relayoutMap,
     }),

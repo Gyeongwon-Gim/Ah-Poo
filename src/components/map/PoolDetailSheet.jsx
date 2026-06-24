@@ -153,10 +153,13 @@ function PoolDetailSheet({
   };
 
   const handleShare = async () => {
+    const shareUrl = pool.id
+      ? `${window.location.origin}/?pool=${pool.id}`
+      : window.location.href;
     const shareData = {
       title: pool.name,
       text: `${pool.name} · ${pool.address}`,
-      url: pool.official_url || window.location.href,
+      url: shareUrl,
     };
     try {
       if (navigator.share) {

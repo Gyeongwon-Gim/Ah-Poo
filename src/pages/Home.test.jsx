@@ -129,9 +129,9 @@ vi.mock('../components/SearchBar', () => ({
 import Home from './Home';
 
 const POOLS = [
-  { name: '강남수영장', address: '서울 강남구', fee: '5000원', lat: 37.498, lng: 127.027 },
-  { name: '송파수영장', address: '서울 송파구', fee: '무료', lat: 37.514, lng: 127.105 },
-  { name: '부산수영장', address: '부산 해운대구', fee: '3000원', lat: 35.16, lng: 129.16 },
+  { id: 1, name: '강남수영장', address: '서울 강남구', fee: '5000원', lat: 37.498, lng: 127.027 },
+  { id: 2, name: '송파수영장', address: '서울 송파구', fee: '무료', lat: 37.514, lng: 127.105 },
+  { id: 3, name: '부산수영장', address: '부산 해운대구', fee: '3000원', lat: 35.16, lng: 129.16 },
 ];
 
 function setLocation({ status = 'pending', location = null } = {}) {
@@ -142,9 +142,9 @@ function setLocation({ status = 'pending', location = null } = {}) {
   });
 }
 
-function renderHome() {
+function renderHome(initialEntries = ['/']) {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
       <Home />
     </MemoryRouter>,
   );
@@ -270,5 +270,22 @@ describe('Home - 수영장 선택', () => {
 
     expect(await screen.findByTestId('detail-sheet')).toHaveTextContent('강남수영장');
     expect(mocks.panToPool).toHaveBeenCalled();
+  });
+});
+
+describe('Home - 공유 딥링크 진입', () => {
+  it('?pool=<id>로 들어오면 해당 수영장 시트를 자동으로 연다', async () => {
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome(['/?pool=2']);
+
+    expect(await screen.findByTestId('detail-sheet')).toHaveTextContent('송파수영장');
+  });
+
+  it('존재하지 않는 id면 시트를 열지 않고 정상 동작한다', async () => {
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome(['/?pool=9999']);
+
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+    expect(screen.queryByTestId('detail-sheet')).not.toBeInTheDocument();
   });
 });

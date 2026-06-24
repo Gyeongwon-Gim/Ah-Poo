@@ -7,6 +7,7 @@ export function isFlagOn(value) {
 
 export function mapRowToPool(row) {
   return {
+    id: row.id,
     name: row.name_ko,
     address: row.address,
     lat: Number(row.lat),
