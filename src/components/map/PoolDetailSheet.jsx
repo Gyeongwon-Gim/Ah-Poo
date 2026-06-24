@@ -157,7 +157,7 @@ function PoolDetailSheet({
     const shareData = {
       title: pool.name,
       text: `${pool.name} · ${pool.address}`,
-      url: pool.url || window.location.href,
+      url: pool.official_url || window.location.href,
     };
     try {
       if (navigator.share) {
@@ -284,10 +284,10 @@ function PoolDetailSheet({
             <Share2 size={18} />
             <span>공유</span>
           </button>
-          {pool.url && (
+          {pool.official_url && (
             <a
               className="pool-sheet__action"
-              href={pool.url}
+              href={pool.official_url}
               target="_blank"
               rel="noopener noreferrer"
             >

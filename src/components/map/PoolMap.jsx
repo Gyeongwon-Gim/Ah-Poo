@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { useKakaoMapLoader } from '../../hooks/useKakaoMapLoader';
 import { getPoolListKey } from '../../utils/poolKey';
+import { attachMapInertia } from '../../utils/mapInertia';
 import './PoolMap.css';
 
 function syncMapLayout(mapEl, map) {
@@ -122,6 +123,14 @@ const PoolMap = forwardRef(function PoolMap(
 
     return scheduleMapRelayout(map, mapRef.current);
   }, [ready, fitToUser, userLocation]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const el = mapRef.current;
+    if (!ready || !map || !el || !window.kakao) return;
+
+    return attachMapInertia(map, el);
+  }, [ready]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;

@@ -1,19 +1,18 @@
 import { useMemo } from 'react';
 import { Search, MapPin } from 'lucide-react';
 import { getPoolListKey } from '../../utils/poolKey';
+import { poolMatchesQuery } from '../../utils/poolSearch';
 import './SearchSuggestions.css';
 
 const MAX_SUGGESTIONS = 12;
 
 function buildSuggestions(pools, term) {
-  const q = term.trim().toLowerCase();
+  const q = term.trim();
   if (!q) return [];
 
   const matches = [];
   for (const pool of pools) {
-    const name = (pool.name ?? '').toLowerCase();
-    const address = (pool.address ?? '').toLowerCase();
-    if (name.includes(q) || address.includes(q)) {
+    if (poolMatchesQuery(pool, q)) {
       matches.push(pool);
       if (matches.length >= MAX_SUGGESTIONS) break;
     }

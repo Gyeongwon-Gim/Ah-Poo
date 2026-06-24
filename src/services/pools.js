@@ -12,7 +12,7 @@ export function mapRowToPool(row) {
     lat: Number(row.lat),
     lng: Number(row.lng),
     fee: row.fee ?? '',
-    url: row.url ?? '',
+    official_url: row.official_url ?? '',
     url2: row.url2 ?? '',
     is50m: row.is_50m,
     isWeekday: row.is_weekday,

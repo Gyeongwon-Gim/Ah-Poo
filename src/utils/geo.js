@@ -14,6 +14,20 @@ export function getDistanceKm(lat1, lng1, lat2, lng2) {
 /** 기본 주변 반경(km) — 첫 화면 마커 필터 */
 export const NEARBY_RADIUS_KM = 10
 
+/** origin이 있으면 pool에 distanceKm를 부여, 없으면 원본 그대로 반환 */
+export function enrichWithDistance(pool, origin) {
+  if (!origin) return pool
+  return {
+    ...pool,
+    distanceKm: getDistanceKm(origin.lat, origin.lng, pool.lat, pool.lng),
+  }
+}
+
+/** distanceKm 오름차순 정렬 (원본 불변) */
+export function sortByDistanceAsc(pools) {
+  return [...pools].sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0))
+}
+
 export function filterPoolsWithinKm(pools, origin, radiusKm = NEARBY_RADIUS_KM) {
   if (!origin?.lat || !origin?.lng) return pools
 

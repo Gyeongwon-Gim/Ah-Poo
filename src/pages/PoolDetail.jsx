@@ -123,10 +123,10 @@ function PoolDetailContent({ onClose, pool, poolKey, loading, error }) {
             <Navigation size={18} color={ICON_COLOR} />
             <span>길찾기</span>
           </button>
-          {pool.url && (
+          {pool.official_url && (
             <a
               className="pool-detail__action"
-              href={pool.url}
+              href={pool.official_url}
               target="_blank"
               rel="noopener noreferrer"
             >

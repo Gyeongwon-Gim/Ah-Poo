@@ -6,7 +6,7 @@
 --   lat double precision not null,
 --   lng double precision not null,
 --   fee text null,
---   url text null,
+--   official_url text null,
 --   url2 text null,
 --   is_50m bigint null,
 --   is_weekday bigint null,
