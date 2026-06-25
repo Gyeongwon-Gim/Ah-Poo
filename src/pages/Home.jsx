@@ -105,8 +105,7 @@ function Home() {
 
       {!showSearchPanel &&
         !(showFavoritesPanel && favoritesExpanded) &&
-        !selectedPool &&
-        canRecenter && (
+        !selectedPool && (
           <button
             type="button"
             className="home-location-btn glassforge-glass"

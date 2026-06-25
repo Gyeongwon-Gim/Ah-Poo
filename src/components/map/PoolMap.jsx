@@ -210,7 +210,7 @@ const PoolMap = forwardRef(function PoolMap(
     if (!ready || !map || !el || !window.kakao) return;
 
     return attachMapInertia(map, el);
-  }, [ready]);
+  }, [ready, containerReady]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -253,7 +253,7 @@ const PoolMap = forwardRef(function PoolMap(
       intersectionObserver.disconnect();
       cancelRelayout();
     };
-  }, [ready, relayoutMap]);
+  }, [ready, containerReady, relayoutMap]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;
@@ -331,7 +331,7 @@ const PoolMap = forwardRef(function PoolMap(
     return () => {
       kakao.maps.event.removeListener(map, 'zoom_changed', onZoomChanged);
     };
-  }, [ready]);
+  }, [ready, containerReady]);
 
   useEffect(() => {
     for (const [key, { marker, label, labelEl }] of markerStoreRef.current) {

@@ -124,6 +124,17 @@ export function useHomeInteractions({
     if (isSearching) closeFavorites();
   }, [isSearching, closeFavorites]);
 
+  // 연관검색 모드에서는 .home--suggesting .pool-map 이 visibility:hidden 이 된다.
+  // visibility 변화는 ResizeObserver·IntersectionObserver 가 감지하지 못해
+  // 검색을 빠져나와 지도가 다시 보일 때 빈 타일이 남는다. 이때 직접 relayout 한다.
+  const prevSearchActiveRef = useRef(searchActive);
+  useEffect(() => {
+    if (prevSearchActiveRef.current && !searchActive) {
+      requestAnimationFrame(() => mapRef.current?.relayout());
+    }
+    prevSearchActiveRef.current = searchActive;
+  }, [searchActive]);
+
   const handleCloseSearch = useCallback(() => {
     setInputValue('');
     setAppliedSearchTerm('');
@@ -237,9 +248,12 @@ export function useHomeInteractions({
 
       requestAnimationFrame(() => syncAppViewport());
 
+      // 결과가 1건이면 목록 패널을 건너뛰고 상세 시트를 바로 연다.
+      // origin을 'map'으로 둬야 검색 결과 패널이 뒤에 깔리지 않고,
+      // 시트를 닫으면 지도 기본 상태로 복귀한다.
       const results = filterBySearchTerm(pools, trimmed);
       if (results.length === 1) {
-        openPoolDetail(results[0], { instant: true, origin: 'search' });
+        openPoolDetail(results[0], { instant: true, origin: 'map' });
       }
     },
     [pools, openPoolDetail],
@@ -260,7 +274,7 @@ export function useHomeInteractions({
       const loc = await refreshLocation();
       mapRef.current?.panToUserLocation(loc);
     } catch {
-      /* 위치 권한 없음 — 버튼 숨김 상태 */
+      /* 위치 권한 거부/미지원 — 버튼은 유지되며 다음 클릭에 재요청한다 */
     }
   }, [refreshLocation]);
 

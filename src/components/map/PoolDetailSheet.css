@@ -11,7 +11,7 @@
   z-index: 30;
   background: var(--pf-bg);
   border-radius: 22px 22px 0 0;
-  box-shadow: 0 -8px 40px var(--pf-shadow);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   will-change: transform;
 }
