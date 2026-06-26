@@ -9,7 +9,7 @@ export function mapRowToPool(row) {
   return {
     id: row.id,
     name: row.name_ko,
-    address: row.address,
+    roadAddress: row.road_address,
     lat: Number(row.lat),
     lng: Number(row.lng),
     fee: row.fee ?? '',
@@ -37,7 +37,7 @@ export async function fetchPools() {
   return (data ?? []).map(mapRowToPool)
 }
 
-export async function fetchPoolByKey({ name, address, lat, lng }) {
+export async function fetchPoolByKey({ name, roadAddress, lat, lng }) {
   if (!isSupabaseConfigured || !supabase) {
     throw new Error('Supabase 환경 변수가 설정되지 않았습니다.')
   }
@@ -46,7 +46,7 @@ export async function fetchPoolByKey({ name, address, lat, lng }) {
     .from('pools')
     .select('*')
     .eq('name_ko', name)
-    .eq('address', address)
+    .eq('road_address', roadAddress)
     .eq('lat', lat)
     .eq('lng', lng)
     .maybeSingle()

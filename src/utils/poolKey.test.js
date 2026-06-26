@@ -7,13 +7,13 @@ import {
 
 const pool = {
   name: '올림픽수영장',
-  address: '서울시 송파구',
+  roadAddress: '서울시 송파구',
   lat: 37.5215,
   lng: 127.1213,
 };
 
 describe('getPoolListKey', () => {
-  it('name|address|lat|lng 형식의 키를 만든다', () => {
+  it('name|roadAddress|lat|lng 형식의 키를 만든다', () => {
     expect(getPoolListKey(pool)).toBe('올림픽수영장|서울시 송파구|37.5215|127.1213');
   });
 
@@ -39,7 +39,7 @@ describe('poolToSearchParams / parsePoolKeyFromSearchParams', () => {
   it('좌표가 숫자가 아니면 null을 반환한다', () => {
     const params = new URLSearchParams({
       name: '풀',
-      address: '주소',
+      roadAddress: '주소',
       lat: 'abc',
       lng: '2',
     });

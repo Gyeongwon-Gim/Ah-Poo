@@ -111,7 +111,7 @@ function PoolDetailContent({ onClose, pool, poolKey, loading, error }) {
 
         <p className="pool-detail__address">
           <MapPin size={14} aria-hidden />
-          <span>{pool.address}</span>
+          <span>{pool.roadAddress}</span>
         </p>
 
         <div className="pool-detail__actions">

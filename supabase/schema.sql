@@ -2,7 +2,7 @@
 
 -- create table public.pools (
 --   name_ko text not null,
---   address text not null,
+--   road_address text not null,
 --   lat double precision not null,
 --   lng double precision not null,
 --   fee text null,
@@ -13,7 +13,7 @@
 --   is_saturday bigint null,
 --   is_sunday bigint null,
 --   is_holiday bigint null,
---   constraint pool_info_pkey primary key (name_ko, address, lat, lng)
+--   constraint pool_info_pkey primary key (name_ko, road_address, lat, lng)
 -- );
 
 alter table public.pools enable row level security;

@@ -55,7 +55,7 @@ function SearchResultItem({ pool, selected, onSelect }) {
             )}
           </p>
 
-          <p className="search-result-item__address">{pool.address}</p>
+          <p className="search-result-item__address">{pool.roadAddress}</p>
 
           {hasTags && (
             <div className="search-result-item__tags">

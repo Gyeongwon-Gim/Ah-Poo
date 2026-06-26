@@ -64,7 +64,7 @@ function districtTokens(tokens) {
 /** 검색 토큰 하나가 수영장과 매칭되는지 판정. */
 function tokenMatchesPool(token, pool) {
   const lower = token.toLowerCase();
-  const tokens = addressTokens(pool.address);
+  const tokens = addressTokens(pool.roadAddress);
 
   // 시/도: 주소 첫 토큰과 정규화 비교
   if (tokens.length > 0 && normalizeSido(tokens[0]) === normalizeSido(token)) {
@@ -101,7 +101,7 @@ export function poolMatchesQuery(pool, searchTerm) {
 function tokenScore(token, pool) {
   const lower = token.toLowerCase();
   const name = (pool.name ?? '').toLowerCase();
-  const addrTokens = addressTokens(pool.address);
+  const addrTokens = addressTokens(pool.roadAddress);
 
   if (name === lower) return 100;
   if (name.startsWith(lower)) return 80;

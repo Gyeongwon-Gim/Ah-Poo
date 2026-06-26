@@ -129,9 +129,9 @@ vi.mock('../components/SearchBar', () => ({
 import Home from './Home';
 
 const POOLS = [
-  { id: 1, name: '강남수영장', address: '서울 강남구', fee: '5000원', lat: 37.498, lng: 127.027 },
-  { id: 2, name: '송파수영장', address: '서울 송파구', fee: '무료', lat: 37.514, lng: 127.105 },
-  { id: 3, name: '부산수영장', address: '부산 해운대구', fee: '3000원', lat: 35.16, lng: 129.16 },
+  { id: 1, name: '강남수영장', roadAddress: '서울 강남구', fee: '5000원', lat: 37.498, lng: 127.027 },
+  { id: 2, name: '송파수영장', roadAddress: '서울 송파구', fee: '무료', lat: 37.514, lng: 127.105 },
+  { id: 3, name: '부산수영장', roadAddress: '부산 해운대구', fee: '3000원', lat: 35.16, lng: 129.16 },
 ];
 
 function setLocation({ status = 'pending', location = null } = {}) {

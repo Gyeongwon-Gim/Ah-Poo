@@ -89,10 +89,10 @@ function SearchSuggestions({ draft, pools, onPick }) {
                   <span className="search-suggestions__name">
                     {highlight(pool.name ?? '', draft)}
                   </span>
-                  {pool.address && (
+                  {pool.roadAddress && (
                     <span className="search-suggestions__address">
                       <MapPin size={12} strokeWidth={2.5} aria-hidden />
-                      {highlight(pool.address, draft)}
+                      {highlight(pool.roadAddress, draft)}
                     </span>
                   )}
                 </span>

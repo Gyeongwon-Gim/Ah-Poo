@@ -2,7 +2,7 @@
 export const MOCK_POOLS = [
   {
     name: '올림픽수영장',
-    address: '서울 송파구 올림픽로 424',
+    roadAddress: '서울 송파구 올림픽로 424',
     lat: 37.5215,
     lng: 127.1255,
     fee: '5000',
@@ -15,7 +15,7 @@ export const MOCK_POOLS = [
   },
   {
     name: '강남구민체육센터 수영장',
-    address: '서울 강남구 삼성로 521',
+    roadAddress: '서울 강남구 삼성로 521',
     lat: 37.5102,
     lng: 127.0631,
     fee: '성인 4500원',
@@ -28,7 +28,7 @@ export const MOCK_POOLS = [
   },
   {
     name: '잠실종합운동장 실내수영장',
-    address: '서울 송파구 올림픽로 25',
+    roadAddress: '서울 송파구 올림픽로 25',
     lat: 37.5159,
     lng: 127.0731,
     fee: '무료',

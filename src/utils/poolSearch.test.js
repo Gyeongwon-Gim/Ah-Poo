@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { filterBySearchTerm, poolMatchesQuery } from './poolSearch';
 
 const pools = [
-  { name: '강남수영장', address: '서울 강남구 테헤란로 1', fee: '5000원' },
-  { name: 'Olympic Pool', address: '서울 송파구 올림픽로 25', fee: '무료' },
-  { name: '없음풀', address: null, fee: undefined },
+  { name: '강남수영장', roadAddress: '서울 강남구 테헤란로 1', fee: '5000원' },
+  { name: 'Olympic Pool', roadAddress: '서울 송파구 올림픽로 25', fee: '무료' },
+  { name: '없음풀', roadAddress: null, fee: undefined },
 ];
 
 describe('filterBySearchTerm', () => {
@@ -39,7 +39,7 @@ describe('filterBySearchTerm', () => {
     expect(filterBySearchTerm(pools, 'OLYMPIC')).toHaveLength(1);
   });
 
-  it('name/address/fee가 null·undefined여도 에러 없이 처리한다', () => {
+  it('name/roadAddress/fee가 null·undefined여도 에러 없이 처리한다', () => {
     expect(() => filterBySearchTerm(pools, '없음')).not.toThrow();
     expect(filterBySearchTerm(pools, '없음')).toHaveLength(1);
   });
@@ -51,10 +51,10 @@ describe('filterBySearchTerm', () => {
 
 describe('위치 인식 검색 (region 칼럼 없이 주소 토큰 기반)', () => {
   const regionPools = [
-    { name: '두류수영장', address: '대구 달서구 두류공원로 1', fee: '3000원' },
-    { name: '수성못수영장', address: '대구 수성구 무학로 2', fee: '3000원' },
-    { name: '해운대수영장', address: '부산 해운대구 우동 3', fee: '4000원' },
-    { name: '경산시민수영장', address: '경상북도 경산시 경안로 43', fee: '2000원' },
+    { name: '두류수영장', roadAddress: '대구 달서구 두류공원로 1', fee: '3000원' },
+    { name: '수성못수영장', roadAddress: '대구 수성구 무학로 2', fee: '3000원' },
+    { name: '해운대수영장', roadAddress: '부산 해운대구 우동 3', fee: '4000원' },
+    { name: '경산시민수영장', roadAddress: '경상북도 경산시 경안로 43', fee: '2000원' },
   ];
 
   it("'대구' 검색이 '해운대구' 풀을 잡지 않는다", () => {

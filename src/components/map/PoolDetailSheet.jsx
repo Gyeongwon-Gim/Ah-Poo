@@ -158,7 +158,7 @@ function PoolDetailSheet({
       : window.location.href;
     const shareData = {
       title: pool.name,
-      text: `${pool.name} · ${pool.address}`,
+      text: `${pool.name} · ${pool.roadAddress}`,
       url: shareUrl,
     };
     try {
@@ -258,7 +258,7 @@ function PoolDetailSheet({
           {distanceLabel && (
             <span className="pool-sheet__distance">{distanceLabel}</span>
           )}
-          <span className="pool-sheet__address">{pool.address}</span>
+          <span className="pool-sheet__address">{pool.roadAddress}</span>
           <ChevronDown size={15} className="pool-sheet__location-caret" />
         </p>
 
