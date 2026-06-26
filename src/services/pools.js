@@ -1,15 +1,15 @@
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 /** bigint(0/1/null) → boolean */
 export function isFlagOn(value) {
-  return value === 1 || value === true
+  return value === 1 || value === true;
 }
 
 export function mapRowToPool(row) {
   return {
     id: row.id,
     name: row.name_ko,
-    roadAddress: row.road_address,
+    roadAddress: row.roadAddress,
     lat: Number(row.lat),
     lng: Number(row.lng),
     fee: row.fee ?? '',
@@ -20,26 +20,26 @@ export function mapRowToPool(row) {
     isSaturday: row.is_saturday,
     isSunday: row.is_sunday,
     isHoliday: row.is_holiday,
-  }
+  };
 }
 
 export async function fetchPools() {
   if (!isSupabaseConfigured || !supabase) {
-    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.')
+    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.');
   }
 
   const { data, error } = await supabase
     .from('pools')
     .select('*')
-    .order('name_ko', { ascending: true })
+    .order('name_ko', { ascending: true });
 
-  if (error) throw error
-  return (data ?? []).map(mapRowToPool)
+  if (error) throw error;
+  return (data ?? []).map(mapRowToPool);
 }
 
 export async function fetchPoolByKey({ name, roadAddress, lat, lng }) {
   if (!isSupabaseConfigured || !supabase) {
-    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.')
+    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.');
   }
 
   const { data, error } = await supabase
@@ -49,8 +49,8 @@ export async function fetchPoolByKey({ name, roadAddress, lat, lng }) {
     .eq('road_address', roadAddress)
     .eq('lat', lat)
     .eq('lng', lng)
-    .maybeSingle()
+    .maybeSingle();
 
-  if (error) throw error
-  return data ? mapRowToPool(data) : null
+  if (error) throw error;
+  return data ? mapRowToPool(data) : null;
 }
