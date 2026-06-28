@@ -1,10 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import PoolDetail from './pages/PoolDetail';
-import SwimmingDiary from './pages/SwimmingDiary';
 import { MainTabProvider } from './contexts/MainTabContext';
 import { FavoritesProvider } from './hooks/useFavorites';
-import FloatingNav from './components/FloatingNav';
+// import FloatingNav from './components/FloatingNav';
+import './components/FloatingNav.css';
 import './App.css';
 
 function App() {
@@ -20,7 +19,7 @@ function App() {
                 {/* <Route path="/swimming-diary" element={<SwimmingDiary />} /> */}
               </Routes>
             </div>
-            <FloatingNav />
+            {/* <FloatingNav /> */}
           </div>
         </MainTabProvider>
       </FavoritesProvider>

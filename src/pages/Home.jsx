@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LocateFixed } from 'lucide-react';
+import { LocateFixed, Star } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import PoolMap from '../components/map/PoolMap';
 import PoolDetailSheet from '../components/map/PoolDetailSheet';
@@ -13,12 +13,18 @@ import { useUserLocation } from '../hooks/useUserLocation';
 import { usePoolData } from '../hooks/usePoolData';
 import { useMapPools } from '../hooks/useMapPools';
 import { useHomeInteractions } from '../hooks/useHomeInteractions';
+import { useMapFabLift } from '../hooks/useMapFabLift';
 import './Home.css';
 
 function Home() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { favoritesOpen, closeFavorites, setFloatingNavHidden } = useMainTab();
+  const {
+    favoritesOpen,
+    closeFavorites,
+    toggleFavorites,
+    setFloatingNavHidden,
+  } = useMainTab();
   const { favorites } = useFavorites();
   const {
     location: userLocation,
@@ -66,6 +72,7 @@ function Home() {
     setFavoritesExpanded,
     handleFavoritesDismissStart,
     handleFavoritesDismiss,
+    favoritesDismissing,
     isNearbyMode,
     canRecenter,
     showLocationPending,
@@ -75,7 +82,30 @@ function Home() {
     showFavoritesPanel,
     showFavoritesSheet,
     handleRecenter,
+    showUserLocationMarker,
+    detailClosing,
   } = interactions;
+
+  const showMapFabs = !searchActive && !loading && !error;
+
+  const {
+    fabInteractive,
+    fabStyle,
+    defaultFabBottom,
+    sheetDragging,
+    onSearchSheetTopChange,
+    onFavoritesSheetTopChange,
+    onDetailSheetTopChange,
+    onSearchSheetDragChange,
+    onFavoritesSheetDragChange,
+    onDetailSheetDragChange,
+  } = useMapFabLift({
+    enabled: showMapFabs,
+    detailOpen: Boolean(selectedPool) && !detailClosing,
+    searchPanelOpen: showSearchPanel,
+    searchPanelHidden: searchPanelBehindDetail,
+    favoritesPanelOpen: showFavoritesSheet && !favoritesDismissing,
+  });
 
   const { mapPools, favoritePools, mapMarkerPools } = useMapPools({
     pools,
@@ -100,21 +130,46 @@ function Home() {
         selectedPool={selectedPool}
         onSelectPool={handleSelectPool}
         userLocation={canRecenter ? userLocation : null}
+        userLocationMarker={
+          showUserLocationMarker && canRecenter ? userLocation : null
+        }
         fitToUser={isNearbyMode}
       />
 
-      {!showSearchPanel &&
-        !(showFavoritesPanel && favoritesExpanded) &&
-        !selectedPool && (
+      {!searchActive && !loading && !error && (
+        <div
+          className={`home-map-actions${fabInteractive ? '' : ' home-map-actions--inert'}${sheetDragging ? ' home-map-actions--dragging' : ''}`}
+          style={{
+            ...fabStyle,
+            '--map-fab-default-bottom': defaultFabBottom,
+          }}
+          aria-hidden={!fabInteractive}
+        >
           <button
             type="button"
-            className="home-location-btn glassforge-glass"
+            className={`home-map-fab${favoritesOpen ? ' home-map-fab--active' : ''}`}
+            onClick={toggleFavorites}
+            aria-label="즐겨찾기"
+            aria-pressed={favoritesOpen}
+          >
+            <Star
+              size={17}
+              strokeWidth={1.5}
+              color="#ffcc00"
+              fill="#ffcc00"
+              aria-hidden
+            />
+          </button>
+          <button
+            type="button"
+            className="home-map-fab"
             onClick={handleRecenter}
             aria-label="현재 위치로 이동"
           >
-            <LocateFixed size={20} strokeWidth={1.5} />
+            <LocateFixed size={18} strokeWidth={1.5} />
           </button>
-        )}
+        </div>
+      )}
 
       {showSearchPanel && (
         <SearchResultsPanel
@@ -131,6 +186,8 @@ function Home() {
           behindDetailInstant={sheetInstantEnter && searchPanelBehindDetail}
           revealFromDetail={searchPanelRevealFromDetail}
           interactionDisabled={searchPanelBehindDetail}
+          onTopChange={onSearchSheetTopChange}
+          onDragChange={onSearchSheetDragChange}
         />
       )}
 
@@ -150,6 +207,8 @@ function Home() {
           onExpandedChange={setFavoritesExpanded}
           onDismissStart={handleFavoritesDismissStart}
           onDismiss={handleFavoritesDismiss}
+          onTopChange={onFavoritesSheetTopChange}
+          onDragChange={onFavoritesSheetDragChange}
         />
       )}
 
@@ -193,6 +252,8 @@ function Home() {
           onClose={handleDetailClose}
           onBackStart={handleDetailBackStart}
           onBack={handleDetailBack}
+          onTopChange={onDetailSheetTopChange}
+          onDragChange={onDetailSheetDragChange}
         />
       )}
     </div>

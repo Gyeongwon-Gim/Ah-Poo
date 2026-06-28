@@ -158,6 +158,7 @@ beforeEach(() => {
   mocks.useMainTab.mockReturnValue({
     favoritesOpen: false,
     closeFavorites: vi.fn(),
+    toggleFavorites: vi.fn(),
     setFloatingNavHidden: vi.fn(),
   });
   setLocation({ status: 'pending' });

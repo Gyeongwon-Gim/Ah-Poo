@@ -40,6 +40,7 @@ export function useHomeInteractions({
   const [detailOrigin, setDetailOrigin] = useState(null);
   const [favoritesExpanded, setFavoritesExpanded] = useState(false);
   const [favoritesDismissing, setFavoritesDismissing] = useState(false);
+  const [showUserLocationMarker, setShowUserLocationMarker] = useState(false);
   const mapRef = useRef(null);
 
   const isSearching = Boolean(appliedSearchTerm.trim());
@@ -272,6 +273,7 @@ export function useHomeInteractions({
   const handleRecenter = useCallback(async () => {
     try {
       const loc = await refreshLocation();
+      setShowUserLocationMarker(true);
       mapRef.current?.panToUserLocation(loc);
     } catch {
       /* 위치 권한 거부/미지원 — 버튼은 유지되며 다음 클릭에 재요청한다 */
@@ -371,5 +373,6 @@ export function useHomeInteractions({
     showFavoritesPanel,
     showFavoritesSheet,
     handleRecenter,
+    showUserLocationMarker,
   };
 }

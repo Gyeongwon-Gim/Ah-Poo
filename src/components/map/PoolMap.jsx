@@ -86,13 +86,51 @@ function syncMarkerLabelVisibility(map, store) {
   }
 }
 
+function createPoolMarkerIconEl() {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'pool-marker-icon';
+
+  const symbol = document.createElement('span');
+  symbol.className = 'pool-marker-icon__symbol material-symbols-outlined';
+  symbol.textContent = 'pool';
+  symbol.setAttribute('aria-hidden', 'true');
+
+  button.appendChild(symbol);
+  return button;
+}
+
+function createUserLocationMarkerEl() {
+  const root = document.createElement('div');
+  root.className = 'user-location-marker';
+  root.setAttribute('aria-hidden', 'true');
+
+  const pulse = document.createElement('span');
+  pulse.className = 'user-location-marker__pulse';
+
+  const dot = document.createElement('span');
+  dot.className = 'user-location-marker__dot';
+
+  root.appendChild(pulse);
+  root.appendChild(dot);
+  return root;
+}
+
 const PoolMap = forwardRef(function PoolMap(
-  { pools, selectedPool, onSelectPool, userLocation, fitToUser = false },
+  {
+    pools,
+    selectedPool,
+    onSelectPool,
+    userLocation,
+    userLocationMarker,
+    fitToUser = false,
+  },
   ref,
 ) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markerStoreRef = useRef(new Map());
+  const userLocationOverlayRef = useRef(null);
   const onSelectPoolRef = useRef(onSelectPool);
   const syncedPoolsSignatureRef = useRef('');
   const fittedPoolsSignatureRef = useRef('');
@@ -275,6 +313,40 @@ const PoolMap = forwardRef(function PoolMap(
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!ready || !map || !window.kakao) return;
+
+    const { kakao } = window;
+
+    if (!userLocationMarker) {
+      userLocationOverlayRef.current?.setMap(null);
+      return;
+    }
+
+    const pos = new kakao.maps.LatLng(
+      userLocationMarker.lat,
+      userLocationMarker.lng,
+    );
+
+    if (userLocationOverlayRef.current) {
+      userLocationOverlayRef.current.setPosition(pos);
+      userLocationOverlayRef.current.setMap(map);
+      return;
+    }
+
+    const overlay = new kakao.maps.CustomOverlay({
+      position: pos,
+      content: createUserLocationMarkerEl(),
+      yAnchor: 0.5,
+      xAnchor: 0.5,
+      zIndex: 10,
+      clickable: false,
+    });
+    overlay.setMap(map);
+    userLocationOverlayRef.current = overlay;
+  }, [ready, userLocationMarker]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!ready || !map || !window.kakao) return;
     if (poolsSignature === syncedPoolsSignatureRef.current) return;
 
     syncedPoolsSignatureRef.current = poolsSignature;
@@ -284,8 +356,8 @@ const PoolMap = forwardRef(function PoolMap(
 
     for (const [key, entry] of store) {
       if (!nextKeys.has(key)) {
-        kakao.maps.event.removeListener(entry.marker, 'click', entry.onClick);
-        entry.marker.setMap(null);
+        entry.iconEl.removeEventListener('click', entry.onClick);
+        entry.iconOverlay.setMap(null);
         entry.label?.setMap(null);
         store.delete(key);
       }
@@ -296,9 +368,20 @@ const PoolMap = forwardRef(function PoolMap(
       if (store.has(key)) continue;
 
       const pos = new kakao.maps.LatLng(pool.lat, pool.lng);
-      const marker = new kakao.maps.Marker({ position: pos, map });
+      const iconEl = createPoolMarkerIconEl();
+      iconEl.setAttribute('aria-label', pool.name);
       const onClick = () => onSelectPoolRef.current(pool);
-      kakao.maps.event.addListener(marker, 'click', onClick);
+      iconEl.addEventListener('click', onClick);
+
+      const iconOverlay = new kakao.maps.CustomOverlay({
+        position: pos,
+        content: iconEl,
+        yAnchor: 1,
+        xAnchor: 0.5,
+        zIndex: 1,
+        clickable: true,
+      });
+      iconOverlay.setMap(map);
 
       const labelEl = document.createElement('div');
       labelEl.className = 'pool-marker-label';
@@ -307,10 +390,11 @@ const PoolMap = forwardRef(function PoolMap(
         position: pos,
         content: labelEl,
         yAnchor: 0,
+        xAnchor: 0.5,
         zIndex: 1,
       });
 
-      store.set(key, { marker, label, labelEl, pool, onClick });
+      store.set(key, { iconOverlay, iconEl, label, labelEl, pool, onClick });
     }
 
     syncMarkerLabelVisibility(map, store);
@@ -334,10 +418,11 @@ const PoolMap = forwardRef(function PoolMap(
   }, [ready, containerReady]);
 
   useEffect(() => {
-    for (const [key, { marker, label, labelEl }] of markerStoreRef.current) {
+    for (const [key, { iconOverlay, iconEl, label, labelEl }] of markerStoreRef.current) {
       const isSelected = key === selectedKey;
-      marker.setZIndex(isSelected ? 2 : 1);
+      iconOverlay.setZIndex(isSelected ? 2 : 1);
       label?.setZIndex(isSelected ? 3 : 1);
+      iconEl.classList.toggle('pool-marker-icon--selected', isSelected);
       labelEl?.classList.toggle('pool-marker-label--selected', isSelected);
     }
   }, [selectedKey]);
@@ -407,10 +492,12 @@ const PoolMap = forwardRef(function PoolMap(
   useEffect(() => {
     return () => {
       const { kakao } = window;
+      userLocationOverlayRef.current?.setMap(null);
+      userLocationOverlayRef.current = null;
       if (kakao?.maps) {
         for (const [, entry] of markerStoreRef.current) {
-          kakao.maps.event.removeListener(entry.marker, 'click', entry.onClick);
-          entry.marker.setMap(null);
+          entry.iconEl.removeEventListener('click', entry.onClick);
+          entry.iconOverlay.setMap(null);
           entry.label?.setMap(null);
         }
       }

@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import { syncAppViewport } from './utils/appViewport.js';
+import { applyAppDisplayModeClass } from './utils/platform.js';
 import './index.css';
 
+applyAppDisplayModeClass();
 syncAppViewport();
 window.addEventListener('resize', syncAppViewport);
 window.visualViewport?.addEventListener('resize', syncAppViewport);

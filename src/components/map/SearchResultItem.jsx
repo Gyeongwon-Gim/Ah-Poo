@@ -1,8 +1,8 @@
-import { memo } from 'react'
-import { Star } from 'lucide-react'
-import PoolThumbnails from '../PoolThumbnails'
+import { memo, useEffect, useState } from 'react'
+import { Star, Waves } from 'lucide-react'
 import { useFavorites } from '../../hooks/useFavorites'
 import { isFlagOn } from '../../services/pools'
+import { fetchPoolImageUrl } from '../../services/poolImages'
 import { formatDailyAdmissionFee } from '../../utils/formatFee'
 import './SearchResultsPanel.css'
 
@@ -17,8 +17,31 @@ function SearchResultItem({ pool, selected, onSelect }) {
   const favorite = isFavorite(pool)
   const distanceLabel = formatDistance(pool.distanceKm)
   const feeLabel = pool.fee ? formatDailyAdmissionFee(pool.fee) : null
+  const [poolImageUrl, setPoolImageUrl] = useState(null)
+  const [poolImageFailed, setPoolImageFailed] = useState(false)
 
-  const hasTags = isFlagOn(pool.is50m) || isFlagOn(pool.isWeekday)
+  useEffect(() => {
+    if (!pool?.id) return undefined
+
+    const controller = new AbortController()
+    setPoolImageUrl(null)
+    setPoolImageFailed(false)
+
+    fetchPoolImageUrl(pool.id, { signal: controller.signal })
+      .then((url) => {
+        if (!controller.signal.aborted) {
+          setPoolImageUrl(url)
+        }
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return
+        setPoolImageUrl(null)
+      })
+
+    return () => controller.abort()
+  }, [pool?.id])
+
+  const show50mTag = isFlagOn(pool.is50m)
 
   return (
     <article
@@ -32,41 +55,46 @@ function SearchResultItem({ pool, selected, onSelect }) {
       aria-pressed={selected}
     >
       <div className="search-result-item__body">
-        <div className="search-result-item__content">
-          <h3 className="search-result-item__name">{pool.name}</h3>
+        {poolImageUrl && !poolImageFailed ? (
+          <div className="search-result-item__media">
+            <img
+              className="search-result-item__media-img"
+              src={poolImageUrl}
+              alt=""
+              loading="lazy"
+              onError={() => setPoolImageFailed(true)}
+            />
+          </div>
+        ) : (
+          <div
+            className="search-result-item__media search-result-item__media--placeholder"
+            aria-hidden
+          >
+            <Waves size={20} />
+          </div>
+        )}
 
-          <p className="search-result-item__subline">
-            <span className="search-result-item__category">수영장</span>
-            {feeLabel && (
-              <>
+        <div className="search-result-item__content">
+          <div className="search-result-item__title-row">
+            <h3 className="search-result-item__name">{pool.name}</h3>
+            {show50mTag && (
+              <span className="search-result-item__tag">50m</span>
+            )}
+          </div>
+
+          {(feeLabel || distanceLabel) && (
+            <p className="search-result-item__subline">
+              {feeLabel && <span>{feeLabel}</span>}
+              {feeLabel && distanceLabel && (
                 <span className="search-result-item__dot" aria-hidden>
                   ·
                 </span>
-                <span>{feeLabel}</span>
-              </>
-            )}
-            {distanceLabel && (
-              <>
-                <span className="search-result-item__dot" aria-hidden>
-                  ·
-                </span>
-                <span>{distanceLabel}</span>
-              </>
-            )}
-          </p>
+              )}
+              {distanceLabel && <span>{distanceLabel}</span>}
+            </p>
+          )}
 
           <p className="search-result-item__address">{pool.roadAddress}</p>
-
-          {hasTags && (
-            <div className="search-result-item__tags">
-              {isFlagOn(pool.is50m) && (
-                <span className="search-result-item__tag">50m</span>
-              )}
-              {isFlagOn(pool.isWeekday) && (
-                <span className="search-result-item__tag">평일</span>
-              )}
-            </div>
-          )}
         </div>
 
         <button
@@ -88,8 +116,6 @@ function SearchResultItem({ pool, selected, onSelect }) {
           />
         </button>
       </div>
-
-      <PoolThumbnails />
     </article>
   )
 }

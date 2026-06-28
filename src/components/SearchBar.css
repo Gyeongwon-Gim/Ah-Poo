@@ -10,6 +10,98 @@
   padding: 8px 12px;
 }
 
+/* 모바일 브라우저: 상단 네모 배경 + 솔리드 검색바 */
+html.app--browser .search-bar-wrap--map {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: var(--mobile-width);
+  box-sizing: border-box;
+  margin-top: calc(-1 * var(--safe-top));
+  padding: calc(17px + var(--safe-top)) 12px 8px;
+  height: calc(77px + var(--safe-top));
+  background: var(--pf-surface);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+html.app--browser .search-bar-wrap--map.search-bar-wrap--with-logo {
+  height: auto;
+  min-height: calc(110px + var(--safe-top));
+  padding: calc(10px + var(--safe-top)) 12px 8px;
+}
+
+html.app--browser .search-bar-wrap--map.search-bar-wrap--search {
+  height: calc(107px + var(--safe-top));
+}
+
+.search-bar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px 4px;
+  user-select: none;
+}
+
+.search-bar-logo__word {
+  font-family: 'Bagel Fat One', cursive;
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--pf-primary);
+}
+
+.search-bar-logo__mark {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.search-bar-logo__cursor {
+  display: inline-block;
+  margin-left: 1px;
+  font-weight: 400;
+  color: var(--pf-primary);
+  animation: search-bar-logo-blink 0.75s step-end infinite;
+}
+
+@keyframes search-bar-logo-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-bar-logo__cursor {
+    animation: none;
+  }
+}
+
+html.app--browser .search-bar-wrap--map .search-bar {
+  height: var(--pf-pill-height);
+  padding: 0 4px 0 16px;
+  border-radius: var(--pf-pill-radius);
+  background: rgba(80, 133, 232, 0.15);
+  border: none;
+  box-shadow: none;
+}
+
+html.app--browser .search-bar-wrap--map.search-bar-wrap--search .search-bar {
+  border: none;
+}
+
+html.app--browser .search-bar-wrap--map .search-icon {
+  color: var(--pf-primary);
+  opacity: 1;
+}
+
+html.app--browser .search-bar-wrap--map .search-input {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .search-bar-wrap--map .search-bar--glass {
   --glassforge-radius: var(--pf-pill-radius);
   width: 100%;

@@ -97,17 +97,11 @@ function PoolDetailContent({ onClose, pool, poolKey, loading, error }) {
       </div>
 
       <div className="pool-detail__intro">
-        <p className="pool-detail__subline">
-          <span className="pool-detail__category">수영장</span>
-          {pool.fee && (
-            <>
-              <span className="pool-detail__dot" aria-hidden>
-                ·
-              </span>
-              <span>{formatDailyAdmissionFee(pool.fee)}</span>
-            </>
-          )}
-        </p>
+        {pool.fee && (
+          <p className="pool-detail__subline">
+            <span>{formatDailyAdmissionFee(pool.fee)}</span>
+          </p>
+        )}
 
         <p className="pool-detail__address">
           <MapPin size={14} aria-hidden />

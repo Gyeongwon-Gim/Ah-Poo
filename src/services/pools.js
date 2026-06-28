@@ -5,16 +5,22 @@ export function isFlagOn(value) {
   return value === 1 || value === true;
 }
 
+/** Supabase `pools.roadaddress` → 앱 모델 `roadAddress` */
+function roadAddressFromRow(row) {
+  return row.roadaddress ?? '';
+}
+
 export function mapRowToPool(row) {
   return {
     id: row.id,
     name: row.name_ko,
-    roadAddress: row.roadAddress,
+    roadAddress: roadAddressFromRow(row),
     lat: Number(row.lat),
     lng: Number(row.lng),
     fee: row.fee ?? '',
     official_url: row.official_url ?? '',
     url2: row.url2 ?? '',
+    phone: String(row.phone ?? '').trim(),
     is50m: row.is_50m,
     isWeekday: row.is_weekday,
     isSaturday: row.is_saturday,
@@ -46,7 +52,7 @@ export async function fetchPoolByKey({ name, roadAddress, lat, lng }) {
     .from('pools')
     .select('*')
     .eq('name_ko', name)
-    .eq('road_address', roadAddress)
+    .eq('roadaddress', roadAddress)
     .eq('lat', lat)
     .eq('lng', lng)
     .maybeSingle();

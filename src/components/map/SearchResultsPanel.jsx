@@ -56,6 +56,8 @@ function SearchResultsPanel({
   onExpandedChange,
   onDismissStart,
   onDismiss,
+  onTopChange,
+  onDragChange,
 }) {
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null;
 
@@ -91,6 +93,8 @@ function SearchResultsPanel({
   const listScrollTopAtStartRef = useRef(0);
   const onDismissRef = useRef(onDismiss);
   const onDismissStartRef = useRef(onDismissStart);
+  const onTopChangeRef = useRef(onTopChange);
+  const onDragChangeRef = useRef(onDragChange);
   const dismissingRef = useRef(false);
   const enteringRef = useRef(enterFromBottom);
   const softSheetRef = useRef(softSheet);
@@ -99,12 +103,15 @@ function SearchResultsPanel({
 
   onDismissRef.current = onDismiss;
   onDismissStartRef.current = onDismissStart;
+  onTopChangeRef.current = onTopChange;
+  onDragChangeRef.current = onDragChange;
 
   peekTopRef.current = peekTop;
 
   const setTranslateY = (v) => {
     translateRef.current = v;
     setTranslateYState(v);
+    onTopChangeRef.current?.(v);
   };
 
   const setInstant = (instant) => {
@@ -153,6 +160,15 @@ function SearchResultsPanel({
   const resetListScroll = () => {
     if (listRef.current) listRef.current.scrollTop = 0;
   };
+
+  useEffect(() => {
+    onTopChangeRef.current?.(translateRef.current);
+  }, [translateY, ready, behindDetail, revealFromDetail]);
+
+  useEffect(() => {
+    onDragChangeRef.current?.(dragging);
+    return () => onDragChangeRef.current?.(false);
+  }, [dragging]);
 
   // peek 위치 = 뷰포트 높이 - (바 + 첫 결과 카드) 높이
   const measurePeek = () => {

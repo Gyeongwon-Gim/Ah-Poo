@@ -13,6 +13,7 @@
   border-radius: 22px 22px 0 0;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  transform-origin: bottom center;
   will-change: transform;
 }
 
@@ -62,6 +63,23 @@
   margin: 0 auto 8px;
   border-radius: 999px;
   background: var(--pf-border);
+}
+
+.pool-sheet__hero-wrap {
+  width: 100%;
+  height: 160px;
+  margin: 8px 0 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--pf-surface);
+  flex-shrink: 0;
+}
+
+.pool-sheet__hero {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .pool-sheet__head {
@@ -176,10 +194,16 @@
   font-size: 14px;
   color: var(--pf-text-muted);
   margin: 14px 0 0;
+  -webkit-touch-callout: none;
 }
 
-.pool-sheet__location svg {
-  flex-shrink: 0;
+/* iOS Safari 주소 자동 링크(점선 밑줄) 비활성화 */
+.pool-sheet__location a,
+.pool-sheet__location a[x-apple-data-detectors],
+.pool-sheet__location a[x-apple-data-detectors='true'] {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: none;
 }
 
 .pool-sheet__distance {
@@ -188,15 +212,59 @@
   flex-shrink: 0;
 }
 
+.pool-sheet__address-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
 .pool-sheet__address {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-decoration: none;
 }
 
-.pool-sheet__location-caret {
+.pool-sheet__copy-address {
   flex-shrink: 0;
-  opacity: 0.5;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--pf-text-muted);
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pool-sheet__copy-address:active {
+  opacity: 0.65;
+}
+
+.pool-sheet__contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pf-text);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pool-sheet__contact:active {
+  opacity: 0.75;
+}
+
+.pool-sheet__contact-icon {
+  flex-shrink: 0;
+  color: var(--pf-text-muted);
 }
 
 /* ---- 액션 버튼 ---- */
@@ -237,6 +305,96 @@
 
 .pool-sheet__action--primary:active {
   background: var(--pf-border);
+}
+
+/* ---- 블로그 리뷰 ---- */
+.pool-sheet__blog {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pf-border);
+}
+
+.pool-sheet__blog-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pf-text);
+}
+
+.pool-sheet__blog-status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--pf-text-muted);
+}
+
+.pool-sheet__blog-status--error {
+  color: #dc2626;
+}
+
+.pool-sheet__blog-link {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--pf-text);
+}
+
+.pool-sheet__blog-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--pf-surface);
+  text-decoration: none;
+  color: inherit;
+}
+
+.pool-sheet__blog-thumb {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--pf-border);
+}
+
+.pool-sheet__blog-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pool-sheet__blog-card:active {
+  background: var(--pf-border);
+}
+
+.pool-sheet__blog-desc {
+  display: -webkit-box;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--pf-text-muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pool-sheet__blog-meta {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--pf-text-muted);
+}
+
+.pool-sheet__blog-meta-dot {
+  margin: 0 4px;
+}
+
+.pool-sheet__blog-attribution {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: var(--pf-text-muted);
+  opacity: 0.75;
 }
 
 @media (prefers-reduced-motion: reduce) {

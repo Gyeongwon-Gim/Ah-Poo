@@ -55,8 +55,70 @@ html.keyboard-open .pool-map {
   color: #b91c1c;
 }
 
+.pool-marker-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #ff7f54;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
+  transition:
+    width 0.15s ease,
+    height 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    border-width 0.15s ease;
+}
+
+.pool-marker-icon__symbol {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
+  color: #fff;
+  transition: font-size 0.15s ease;
+}
+
+.pool-marker-icon--selected {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+  background: #f06b42;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.28);
+}
+
+.pool-marker-icon--selected .pool-marker-icon__symbol {
+  font-size: 18px;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
+}
+
 .pool-marker-label {
-  margin-top: 6px;
+  margin-top: 2px;
   padding: 3px 8px;
   max-width: 140px;
   color: var(--pf-text);
@@ -76,4 +138,50 @@ html.keyboard-open .pool-map {
   color: var(--pf-primary-dark);
   font-size: 12px;
   -webkit-text-stroke: 3.5px #fff;
+}
+
+.user-location-marker {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.user-location-marker__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.22);
+  animation: user-location-pulse 2.4s ease-out infinite;
+}
+
+.user-location-marker__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #007aff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.22);
+}
+
+@keyframes user-location-pulse {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.85;
+  }
+
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
 }

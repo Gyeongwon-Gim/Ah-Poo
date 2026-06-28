@@ -69,3 +69,34 @@ export const SearchMode = {
     value: '올림픽수영장',
   },
 };
+
+export const MapBrowserSearchMode = {
+  render: ControlledSearchBar,
+  args: {
+    variant: 'map',
+    searchMode: true,
+    value: '올림픽수영장',
+  },
+  decorators: [
+    (Story) => {
+      document.documentElement.classList.add('app--browser');
+      document.documentElement.classList.remove('app--pwa');
+      return <Story />;
+    },
+  ],
+};
+
+export const MapBrowserWithLogo = {
+  render: ControlledSearchBar,
+  args: {
+    variant: 'map',
+    searchMode: false,
+  },
+  decorators: [
+    (Story) => {
+      document.documentElement.classList.add('app--browser');
+      document.documentElement.classList.remove('app--pwa');
+      return <Story />;
+    },
+  ],
+};
