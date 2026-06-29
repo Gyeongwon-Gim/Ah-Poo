@@ -90,7 +90,7 @@
 }
 
 .search-results-panel__count {
-  color: var(--pf-primary);
+  color: var(--pf-primary-dark);
 }
 
 .search-results-panel__list {
@@ -111,16 +111,12 @@
 }
 
 /* 검색 중에는 하단 네비가 숨겨지므로 예약 공간 불필요 */
-.home--searching
-  .search-results-panel.is-expanded
-  .search-results-panel__list {
+.home--searching .search-results-panel.is-expanded .search-results-panel__list {
   padding-bottom: 0;
 }
 
 /* 즐겨찾기: 네비가 내려가므로 safe area만 확보 */
-.home--favorites
-  .search-results-panel.is-expanded
-  .search-results-panel__list,
+.home--favorites .search-results-panel.is-expanded .search-results-panel__list,
 .home--favorites
   .search-results-panel.is-list-scrollable
   .search-results-panel__list {
@@ -214,7 +210,7 @@
 .search-result-item__name {
   font-size: 16px;
   font-weight: 600;
-  color: #1e88e5;
+  color: var(--pf-primary-dark);
   letter-spacing: -0.02em;
   line-height: 1.35;
   margin: 0;

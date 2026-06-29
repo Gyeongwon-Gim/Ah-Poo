@@ -18,6 +18,7 @@ html {
   inset: 0;
   overflow: hidden;
   background: #e8f4fc;
+  /* background: #ffffff; */
   height: var(--screen-h, 100dvh);
 }
 
@@ -36,7 +37,7 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
-  background: #e8f4fc;
+  /* background: #e8f4fc; */
   height: var(--screen-h, 100dvh);
 }
 

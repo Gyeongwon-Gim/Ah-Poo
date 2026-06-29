@@ -12,8 +12,8 @@
   --pf-bg: #f0f9ff;
   --pf-bg-deep: #e0f2fe;
   --pf-surface: #ffffff;
-  --pf-primary: #5085E8;
-  --pf-primary-dark: #3D6FD1;
+  --pf-primary: #5085e8;
+  --pf-primary-dark: #3d6fd1;
   --pf-accent: #06b6d4;
   --pf-text: #0f172a;
   --pf-text-muted: #64748b;
@@ -38,7 +38,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  background: #e8f4fc;
+  /* background: #e8f4fc; */
+  background: #ffffff;
 }
 
 button,
