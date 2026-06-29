@@ -225,6 +225,14 @@ describe('Home - 위치 상태', () => {
     ).toBeInTheDocument();
   });
 
+  it('위치를 확인할 수 없으면 마커를 표시하지 않는다', async () => {
+    setLocation({ status: 'unavailable' });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+    expect(screen.getByTestId('marker-count')).toHaveTextContent('0');
+    expect(await screen.findByText('위치를 확인할 수 없습니다')).toBeInTheDocument();
+  });
+
   it('주변 모드에서는 반경 내 수영장만 마커로 표시한다', async () => {
     // 서울 위치 → 강남/송파만 반경 내, 부산은 제외
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });

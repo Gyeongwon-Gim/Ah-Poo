@@ -56,17 +56,100 @@ export function pickBestBlogReview(items, pool) {
   return items.find((item) => mentionsPool(item.description, variants)) ?? null;
 }
 
-export async function fetchPoolBlogReviews(
-  pool,
-  { display = 10, signal } = {},
-) {
+const CLIENT_TIMEOUT_MS = 15000;
+const MAX_NETWORK_RETRIES = 2;
+const RETRY_DELAY_MS = 800;
+
+export function isNetworkFetchError(err) {
+  if (err?.name === 'AbortError') return false;
+  if (err instanceof TypeError) return true;
+  const msg = String(err?.message ?? '');
+  return (
+    msg === 'Failed to fetch' ||
+    msg === 'NetworkError when attempting to fetch resource.' ||
+    msg === 'Load failed'
+  );
+}
+
+export function toBlogFetchErrorMessage(err) {
+  if (err?.name === 'AbortError') throw err;
+
+  const msg = String(err?.message ?? '');
+
+  if (msg === 'REQUEST_TIMEOUT') {
+    return '응답 시간이 초과됐어요. 다시 시도해 주세요.';
+  }
+  if (isNetworkFetchError(err)) {
+    return '네트워크 연결을 확인한 뒤 다시 시도해 주세요.';
+  }
+  if (msg.includes('네이버 API') || msg.startsWith('HTTP 502')) {
+    return '블로그 검색 서비스에 일시적인 문제가 있어요. 잠시 후 다시 시도해 주세요.';
+  }
+  if (msg.includes('환경 변수') || msg.includes('NAVER_CLIENT')) {
+    return '블로그 리뷰를 일시적으로 불러올 수 없어요.';
+  }
+  if (msg.startsWith('HTTP ')) {
+    return '리뷰를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+  }
+
+  return msg || '리뷰를 불러오지 못했습니다.';
+}
+
+function delay(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timer);
+        reject(new DOMException('Aborted', 'AbortError'));
+      },
+      { once: true },
+    );
+  });
+}
+
+async function fetchWithTimeout(url, { signal, timeoutMs = CLIENT_TIMEOUT_MS } = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  if (signal?.aborted) {
+    clearTimeout(timeoutId);
+    throw new DOMException('Aborted', 'AbortError');
+  }
+
+  const onAbort = () => controller.abort();
+  signal?.addEventListener('abort', onAbort, { once: true });
+
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    if (err?.name === 'AbortError') {
+      throw new Error('REQUEST_TIMEOUT');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+    signal?.removeEventListener('abort', onAbort);
+  }
+}
+
+async function fetchPoolBlogReviewsOnce(pool, { display = 10, signal } = {}) {
   const params = new URLSearchParams({
     query: buildBlogSearchQuery(pool),
     display: String(display),
     sort: 'date',
   });
 
-  const response = await fetch(`/api/naver-blog?${params}`, { signal });
+  const response = await fetchWithTimeout(`/api/naver-blog?${params}`, {
+    signal,
+  });
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
@@ -75,6 +158,34 @@ export async function fetchPoolBlogReviews(
 
   const data = await response.json();
   return data.items ?? [];
+}
+
+export async function fetchPoolBlogReviews(
+  pool,
+  { display = 10, signal } = {},
+) {
+  let lastError;
+
+  for (let attempt = 0; attempt <= MAX_NETWORK_RETRIES; attempt += 1) {
+    try {
+      return await fetchPoolBlogReviewsOnce(pool, { display, signal });
+    } catch (err) {
+      if (err?.name === 'AbortError') throw err;
+
+      lastError = err;
+      const canRetry =
+        isNetworkFetchError(err) ||
+        String(err?.message ?? '') === 'REQUEST_TIMEOUT';
+
+      if (!canRetry || attempt === MAX_NETWORK_RETRIES) {
+        throw new Error(toBlogFetchErrorMessage(err));
+      }
+
+      await delay(RETRY_DELAY_MS, signal);
+    }
+  }
+
+  throw new Error(toBlogFetchErrorMessage(lastError));
 }
 
 export async function fetchPoolBlogReview(pool, options = {}) {

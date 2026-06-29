@@ -33,7 +33,11 @@ export function useMapPools({
       return [];
     } else if (isNearbyMode) {
       return filterPoolsWithinKm(pools, userLocation, NEARBY_RADIUS_KM);
-    } else if (locationStatus === 'denied' || locationStatus === 'unsupported') {
+    } else if (
+      locationStatus === 'denied' ||
+      locationStatus === 'unsupported' ||
+      locationStatus === 'unavailable'
+    ) {
       return [];
     } else {
       result = filterBySearchTerm(pools, appliedSearchTerm);

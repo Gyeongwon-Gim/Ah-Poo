@@ -29,7 +29,7 @@ export function sortByDistanceAsc(pools) {
 }
 
 export function filterPoolsWithinKm(pools, origin, radiusKm = NEARBY_RADIUS_KM) {
-  if (!origin?.lat || !origin?.lng) return pools
+  if (!origin?.lat || !origin?.lng) return []
 
   return pools
     .map((pool) => ({

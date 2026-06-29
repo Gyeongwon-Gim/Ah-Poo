@@ -53,6 +53,7 @@ function PoolDetailSheet({
   const [blogLoading, setBlogLoading] = useState(false);
   const [blogError, setBlogError] = useState(null);
   const [blogThumbFailed, setBlogThumbFailed] = useState(false);
+  const [blogRetryKey, setBlogRetryKey] = useState(0);
   const [poolImageUrl, setPoolImageUrl] = useState(null);
 
   useEffect(() => {
@@ -67,7 +68,9 @@ function PoolDetailSheet({
 
     fetchPoolBlogReview(pool, { signal: controller.signal })
       .then((review) => {
-        setBlogReview(review);
+        if (!controller.signal.aborted) {
+          setBlogReview(review);
+        }
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
@@ -91,7 +94,7 @@ function PoolDetailSheet({
       });
 
     return () => controller.abort();
-  }, [pool]);
+  }, [pool, blogRetryKey]);
 
   useEffect(
     () => () => {
@@ -534,9 +537,18 @@ function PoolDetailSheet({
             <p className="pool-sheet__blog-status">리뷰를 불러오는 중…</p>
           )}
           {!blogLoading && blogError && (
-            <p className="pool-sheet__blog-status pool-sheet__blog-status--error">
-              {blogError}
-            </p>
+            <div className="pool-sheet__blog-error">
+              <p className="pool-sheet__blog-status pool-sheet__blog-status--error">
+                {blogError}
+              </p>
+              <button
+                type="button"
+                className="pool-sheet__blog-retry"
+                onClick={() => setBlogRetryKey((key) => key + 1)}
+              >
+                다시 시도
+              </button>
+            </div>
           )}
           {!blogLoading && !blogError && blogReview && (
             <a

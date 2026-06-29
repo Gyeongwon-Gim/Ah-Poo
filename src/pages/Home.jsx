@@ -131,7 +131,9 @@ function Home() {
         onSelectPool={handleSelectPool}
         userLocation={canRecenter ? userLocation : null}
         userLocationMarker={
-          showUserLocationMarker && canRecenter ? userLocation : null
+          canRecenter && (isNearbyMode || showUserLocationMarker)
+            ? userLocation
+            : null
         }
         fitToUser={isNearbyMode}
       />
@@ -235,6 +237,7 @@ function Home() {
         loading={loading}
         error={error}
         onRetry={reload}
+        onLocationRetry={refreshLocation}
         showLocationPending={showLocationPending}
         isSearching={isSearching}
         locationStatus={locationStatus}

@@ -100,6 +100,14 @@ html.keyboard-open .pool-map {
   transition: font-size 0.15s ease;
 }
 
+.pool-marker-icon--50m {
+  background: #22c55e;
+}
+
+.pool-marker-icon--50m.pool-marker-icon--selected {
+  background: #16a34a;
+}
+
 .pool-marker-icon--selected {
   width: 32px;
   height: 32px;

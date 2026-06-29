@@ -21,7 +21,7 @@ export function toMobileBlogUrl(link) {
   return link;
 }
 
-export async function fetchBlogThumbnail(link, { timeoutMs = 2500 } = {}) {
+export async function fetchBlogThumbnail(link, { timeoutMs = 1200 } = {}) {
   const mobileUrl = toMobileBlogUrl(link);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

@@ -17,7 +17,10 @@ function PoolScheduleTags({ pool }) {
   return (
     <div className="pool-schedule-tags">
       {active.map(({ key, label }) => (
-        <span key={key} className="pool-schedule-tag">
+        <span
+          key={key}
+          className={`pool-schedule-tag${key === 'is50m' ? ' pool-schedule-tag--50m' : ''}`}
+        >
           {label}
         </span>
       ))}

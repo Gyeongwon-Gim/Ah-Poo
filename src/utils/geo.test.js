@@ -31,10 +31,10 @@ describe('filterPoolsWithinKm', () => {
   const near = { name: '가까운풀', lat: 37.51, lng: 127.01 };
   const far = { name: '먼풀', lat: 38.5, lng: 128.0 };
 
-  it('origin이 없으면 원본 배열을 그대로 반환한다', () => {
+  it('origin이 없으면 빈 배열을 반환한다', () => {
     const pools = [near, far];
-    expect(filterPoolsWithinKm(pools, null)).toBe(pools);
-    expect(filterPoolsWithinKm(pools, { lat: 0, lng: undefined })).toBe(pools);
+    expect(filterPoolsWithinKm(pools, null)).toEqual([]);
+    expect(filterPoolsWithinKm(pools, { lat: 0, lng: undefined })).toEqual([]);
   });
 
   it('반경 내 수영장만 남긴다', () => {

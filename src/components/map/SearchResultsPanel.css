@@ -278,6 +278,11 @@
   color: var(--pf-primary-dark);
 }
 
+.search-result-item__tag--50m {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+
 .search-result-item__media {
   flex-shrink: 0;
   width: 72px;

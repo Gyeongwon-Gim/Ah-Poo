@@ -7,6 +7,7 @@ function HomeStatusOverlay({
   loading,
   error,
   onRetry,
+  onLocationRetry,
   showLocationPending,
   isSearching,
   locationStatus,
@@ -50,8 +51,30 @@ function HomeStatusOverlay({
           <div className="home-map-status">
             <p>위치 권한이 필요합니다</p>
             <p className="home-map-status__hint">
-              브라우저에서 위치를 허용하면 주변 수영장을 볼 수 있어요
+              Safari 설정 → 웹사이트 → 위치에서 이 사이트를 허용해 주세요
             </p>
+          </div>
+        )}
+
+      {!loading &&
+        !error &&
+        !isSearching &&
+        locationStatus === 'unavailable' && (
+          <div className="home-map-status">
+            <p>위치를 확인할 수 없습니다</p>
+            <p className="home-map-status__hint">
+              아래 현재 위치 버튼을 눌러 다시 시도해 보세요
+            </p>
+            {onLocationRetry && (
+              <button
+                type="button"
+                className="home-retry"
+                onClick={onLocationRetry}
+              >
+                <RefreshCw size={16} />
+                위치 다시 확인
+              </button>
+            )}
           </div>
         )}
 

@@ -78,7 +78,7 @@ function SearchResultItem({ pool, selected, onSelect }) {
           <div className="search-result-item__title-row">
             <h3 className="search-result-item__name">{pool.name}</h3>
             {show50mTag && (
-              <span className="search-result-item__tag">50m</span>
+              <span className="search-result-item__tag search-result-item__tag--50m">50m</span>
             )}
           </div>
 

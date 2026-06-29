@@ -69,12 +69,29 @@ export async function searchNaverBlog(
   url.searchParams.set('display', String(safeDisplay));
   url.searchParams.set('sort', safeSort);
 
-  const response = await fetch(url, {
-    headers: {
-      'X-Naver-Client-Id': id,
-      'X-Naver-Client-Secret': secret,
-    },
-  });
+  let response;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+  try {
+    response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'X-Naver-Client-Id': id,
+        'X-Naver-Client-Secret': secret,
+      },
+    });
+  } catch (err) {
+    const message =
+      err?.name === 'AbortError'
+        ? '네이버 API 응답 시간 초과'
+        : '네이버 API 연결에 실패했습니다.';
+    const apiErr = new Error(message);
+    apiErr.code = 'NAVER_API_ERROR';
+    throw apiErr;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const err = new Error(`네이버 API 오류 (${response.status})`);
@@ -87,7 +104,11 @@ export async function searchNaverBlog(
   let items = normalizeBlogItems(data.items);
 
   if (includeThumbnails && items.length > 0) {
-    items = await enrichBlogThumbnails(items, { limit: 5 });
+    try {
+      items = await enrichBlogThumbnails(items, { limit: 3 });
+    } catch {
+      /* 썸네일은 부가 정보 — 실패해도 검색 결과는 반환 */
+    }
   }
 
   return {

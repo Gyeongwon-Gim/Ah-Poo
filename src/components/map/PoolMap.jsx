@@ -10,6 +10,7 @@ import {
   useCallback,
 } from 'react';
 import { useKakaoMapLoader } from '../../hooks/useKakaoMapLoader';
+import { isFlagOn } from '../../services/pools';
 import { getPoolListKey } from '../../utils/poolKey';
 import { attachMapInertia } from '../../utils/mapInertia';
 import './PoolMap.css';
@@ -86,10 +87,12 @@ function syncMarkerLabelVisibility(map, store) {
   }
 }
 
-function createPoolMarkerIconEl() {
+function createPoolMarkerIconEl(pool) {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = 'pool-marker-icon';
+  button.className = isFlagOn(pool?.is50m)
+    ? 'pool-marker-icon pool-marker-icon--50m'
+    : 'pool-marker-icon';
 
   const symbol = document.createElement('span');
   symbol.className = 'pool-marker-icon__symbol material-symbols-outlined';
@@ -368,7 +371,7 @@ const PoolMap = forwardRef(function PoolMap(
       if (store.has(key)) continue;
 
       const pos = new kakao.maps.LatLng(pool.lat, pool.lng);
-      const iconEl = createPoolMarkerIconEl();
+      const iconEl = createPoolMarkerIconEl(pool);
       iconEl.setAttribute('aria-label', pool.name);
       const onClick = () => onSelectPoolRef.current(pool);
       iconEl.addEventListener('click', onClick);
