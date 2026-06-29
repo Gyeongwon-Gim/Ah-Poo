@@ -1,9 +1,5 @@
 /* Figma 「검색결과」 — 지도 위 하단 시트 + 리스트 카드 */
 
-.home--searching .search-results-panel {
-  z-index: 8;
-}
-
 .search-results-panel {
   position: absolute;
   left: 0;

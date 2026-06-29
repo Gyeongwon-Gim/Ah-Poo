@@ -10,8 +10,8 @@
   padding: 8px 12px;
 }
 
-/* 모바일 브라우저: 상단 네모 배경 + 솔리드 검색바 */
-html.app--browser .search-bar-wrap--map {
+/* map variant: 상단 네모 배경 + 솔리드 검색바 */
+.search-bar-wrap--browser.search-bar-wrap--map {
   position: relative;
   top: 0;
   left: 0;
@@ -25,13 +25,13 @@ html.app--browser .search-bar-wrap--map {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-html.app--browser .search-bar-wrap--map.search-bar-wrap--with-logo {
+.search-bar-wrap--browser.search-bar-wrap--map.search-bar-wrap--with-logo {
   height: auto;
   min-height: calc(110px + var(--safe-top));
   padding: calc(10px + var(--safe-top)) 12px 8px;
 }
 
-html.app--browser .search-bar-wrap--map.search-bar-wrap--search {
+.search-bar-wrap--browser.search-bar-wrap--map.search-bar-wrap--search {
   height: calc(107px + var(--safe-top));
 }
 
@@ -79,7 +79,7 @@ html.app--browser .search-bar-wrap--map.search-bar-wrap--search {
   }
 }
 
-html.app--browser .search-bar-wrap--map .search-bar {
+.search-bar-wrap--browser.search-bar-wrap--map .search-bar {
   height: var(--pf-pill-height);
   padding: 0 4px 0 16px;
   border-radius: var(--pf-pill-radius);
@@ -88,41 +88,21 @@ html.app--browser .search-bar-wrap--map .search-bar {
   box-shadow: none;
 }
 
-html.app--browser .search-bar-wrap--map.search-bar-wrap--search .search-bar {
+.search-bar-wrap--browser.search-bar-wrap--map.search-bar-wrap--search .search-bar {
   border: none;
 }
 
-html.app--browser .search-bar-wrap--map .search-icon {
+.search-bar-wrap--browser.search-bar-wrap--map .search-icon {
   color: var(--pf-primary);
   opacity: 1;
 }
 
-html.app--browser .search-bar-wrap--map .search-input {
+.search-bar-wrap--browser.search-bar-wrap--map .search-input {
   padding-top: 0;
   padding-bottom: 0;
 }
 
-.search-bar-wrap--map .search-bar--glass {
-  --glassforge-radius: var(--pf-pill-radius);
-  width: 100%;
-  height: var(--pf-pill-height);
-  padding: 0 4px 0 16px;
-  border-radius: var(--pf-pill-radius);
-  background: transparent;
-  border-color: transparent;
-}
-
-.search-bar-wrap--map .search-bar--glass:hover {
-  transform: none;
-  filter: none;
-}
-
-.search-bar-wrap--map .search-bar--glass > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* 검색 모드: 떠 있는 알약 → 상단 고정 솔리드 바 (시트가 이 아래로 지나간다) */
+/* 검색 모드: 상단 고정 솔리드 바 (시트가 이 아래로 지나간다) */
 .search-bar-wrap--search .search-bar {
   box-shadow: none;
   border: 1px solid lightgrey;
@@ -142,11 +122,6 @@ html.app--browser .search-bar-wrap--map .search-input {
   border-radius: var(--pf-radius);
   border: 1px solid transparent;
   padding: 4px 4px 4px 16px;
-}
-
-.search-bar-wrap--map .search-bar--glass .search-input {
-  padding-top: 0;
-  padding-bottom: 0;
 }
 
 .search-icon {

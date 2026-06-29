@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Search, X, ChevronLeft } from 'lucide-react';
 import { disableInputAccessoryView } from '../utils/disableInputAccessoryView';
 import { setIosKeyboardInputFocused } from '../utils/iosKeyboardScrollLock';
-import { isPwa } from '../utils/platform';
 import './SearchBar.css';
 
 const LOGO_TEXT = 'Ah-Poo!';
@@ -90,20 +89,16 @@ function SearchBar({
     onClose?.();
   };
 
-  const pwa = isPwa();
-  const useGlassPill = variant === 'map' && !searchMode && pwa;
-  const showBrowserLogo = variant === 'map' && !pwa && !searchMode;
+  const isMapVariant = variant === 'map';
+  const showLogo = isMapVariant && !searchMode;
 
   return (
     <div
-      className={`search-bar-wrap ${variant === 'map' ? 'search-bar-wrap--map' : ''} ${searchMode ? 'search-bar-wrap--search' : ''} ${!pwa ? 'search-bar-wrap--browser' : ''} ${showBrowserLogo ? 'search-bar-wrap--with-logo' : ''}`}
+      className={`search-bar-wrap ${isMapVariant ? 'search-bar-wrap--map search-bar-wrap--browser' : ''} ${searchMode ? 'search-bar-wrap--search' : ''} ${showLogo ? 'search-bar-wrap--with-logo' : ''}`}
     >
-      {showBrowserLogo && <SearchBarLogo />}
+      {showLogo && <SearchBarLogo />}
       <div className="search-bar-container">
-        <form
-          className={`search-bar ${useGlassPill ? 'glassforge-glass search-bar--glass' : ''}`}
-          onSubmit={handleSubmit}
-        >
+        <form className="search-bar" onSubmit={handleSubmit}>
           {searchMode ? (
             <button
               type="button"
