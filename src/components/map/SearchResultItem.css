@@ -1,0 +1,134 @@
+/* ——— 개별 검색 결과 카드 ——— */
+
+.search-result-item {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.search-result-item:active,
+.search-result-item--selected {
+  background: #f8fafc;
+}
+
+.search-result-item__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.search-result-item__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.search-result-item__title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.search-result-item__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--pf-primary-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  margin: 0;
+  min-width: 0;
+}
+
+.search-result-item__subline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--pf-text-muted);
+  line-height: 1.4;
+}
+
+.search-result-item__category {
+  color: #9ca3af;
+}
+
+.search-result-item__address {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--pf-text-muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-result-item__favorite {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-top: 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.search-result-item__favorite--active {
+  color: #f59e0b;
+}
+
+.search-result-item__dot {
+  color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
+}
+
+.search-result-item__tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(2, 132, 199, 0.1);
+  color: var(--pf-primary-dark);
+}
+
+.search-result-item__tag--50m {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+
+.search-result-item__media {
+  flex-shrink: 0;
+  width: 72px;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--pf-surface);
+}
+
+.search-result-item__media--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
+  color: var(--pf-primary);
+}
+
+.search-result-item__media-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

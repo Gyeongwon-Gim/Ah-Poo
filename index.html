@@ -36,8 +36,88 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <meta name="description" content="어푸! — 수영장 찾기 · 수영 운동 기록" />
-    <title>어푸!</title>
+
+    <title>어푸! | 전국 일일입장·자유수영 수영장 찾기</title>
+    <meta
+      name="description"
+      content="어푸!는 전국 수영장 일일입장·자유수영 정보를 지도에서 찾아볼 수 있는 서비스입니다. 내 주변 공공·민간 수영장, 입장료, 주소, 길찾기를 한눈에 확인하세요."
+    />
+    <meta
+      name="keywords"
+      content="수영장, 일일입장, 자유수영, 수영장 찾기, 공공수영장, 수영장 입장료, 수영장 지도, 어푸"
+    />
+    <link rel="canonical" href="https://ah-poo.kr/" />
+
+    <meta property="og:title" content="어푸! | 전국 일일입장·자유수영 수영장 찾기" />
+    <meta
+      property="og:description"
+      content="어푸!는 전국 수영장 일일입장·자유수영 정보를 지도에서 찾아볼 수 있는 서비스입니다. 내 주변 공공·민간 수영장, 입장료, 주소, 길찾기를 한눈에 확인하세요."
+    />
+    <meta property="og:url" content="https://ah-poo.kr/" />
+    <meta property="og:image" content="https://ah-poo.kr/pwa-512x512.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content="어푸!" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="어푸! | 전국 일일입장·자유수영 수영장 찾기" />
+    <meta
+      name="twitter:description"
+      content="어푸!는 전국 수영장 일일입장·자유수영 정보를 지도에서 찾아볼 수 있는 서비스입니다. 내 주변 공공·민간 수영장, 입장료, 주소, 길찾기를 한눈에 확인하세요."
+    />
+    <meta name="twitter:image" content="https://ah-poo.kr/pwa-512x512.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "어푸!",
+        "url": "https://ah-poo.kr/",
+        "description": "어푸!는 전국 수영장 일일입장·자유수영 정보를 지도에서 찾아볼 수 있는 서비스입니다.",
+        "inLanguage": "ko-KR"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "어푸!",
+        "url": "https://ah-poo.kr/",
+        "applicationCategory": "SportsApplication",
+        "operatingSystem": "Web",
+        "description": "전국 수영장 일일입장·자유수영 정보를 지도에서 검색하는 웹 앱",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "KRW"
+        }
+      }
+    </script>
+
+    <style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      body.app-mounted #crawler-intro {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
   </head>
   <body>
     <svg width="0" height="0" style="position: absolute" aria-hidden="true">
@@ -67,7 +147,23 @@
         </filter>
       </defs>
     </svg>
+
+    <div id="crawler-intro" class="sr-only">
+      <h1>어푸! — 전국 일일입장·자유수영 수영장 찾기</h1>
+      <p>
+        어푸!는 대한민국 전역의 공공·민간 수영장 일일입장, 자유수영, 입장료,
+        주소 정보를 지도에서 검색할 수 있는 무료 웹 서비스입니다. 내 주변
+        수영장을 찾고 길찾기와 홈페이지 링크까지 확인하세요.
+      </p>
+      <noscript>
+        <p>
+          이 서비스는 JavaScript가 필요합니다. 브라우저에서 JavaScript를
+          활성화해 주세요.
+        </p>
+      </noscript>
+    </div>
+
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

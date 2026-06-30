@@ -194,11 +194,3 @@
   background: var(--pf-primary);
   color: #fff;
 }
-
-.search-meta {
-  margin-top: 10px;
-  padding: 0 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--pf-text-muted);
-}

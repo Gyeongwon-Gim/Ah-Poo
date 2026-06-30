@@ -5,9 +5,7 @@
   left: 0;
   right: 0;
   top: 0;
-  /* 리스트뷰(translateY: 116px)일 때 바닥에 정확히 맞도록 높이 고정.
-     peek일 때는 아래로 더 내려가 일부가 화면 밖으로 나가며, 그만큼 스크롤된다. */
-  height: calc(100%);
+  height: auto;
   z-index: 28;
   display: flex;
   flex-direction: column;
@@ -17,6 +15,7 @@
   pointer-events: auto;
   overflow: hidden;
   will-change: transform;
+  touch-action: none;
 }
 
 .search-results-panel.is-ready:not(.is-dragging):not(.is-instant) {
@@ -69,13 +68,13 @@
   height: 4px;
   margin-bottom: 8px;
   border-radius: 999px;
-  background: #d1d5db;
+  background: color-mix(in srgb, var(--pf-text-muted) 35%, var(--pf-surface));
 }
 
 .search-results-panel__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
 .search-results-panel__title {
@@ -90,33 +89,17 @@
 }
 
 .search-results-panel__list {
-  flex: 1;
-  /* peek 상태에서는 시트 드래그와 충돌하지 않도록 스크롤 잠금 */
-  overflow: hidden;
-  overscroll-behavior: contain;
-  scroll-snap-type: none;
-  overflow-anchor: none;
-}
-
-.search-results-panel.is-expanded .search-results-panel__list,
-.search-results-panel.is-list-scrollable .search-results-panel__list {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  flex: none;
+  overflow: visible;
   padding-bottom: var(--sheet-bottom-reserve, 0px);
 }
 
-/* 검색 중에는 하단 네비가 숨겨지므로 예약 공간 불필요 */
-.home--searching .search-results-panel.is-expanded .search-results-panel__list {
+.home--searching .search-results-panel__list {
   padding-bottom: 0;
 }
 
-/* 즐겨찾기: 네비가 내려가므로 safe area만 확보 */
-.home--favorites .search-results-panel.is-expanded .search-results-panel__list,
-.home--favorites
-  .search-results-panel.is-list-scrollable
-  .search-results-panel__list {
-  padding-bottom: calc(var(--safe-bottom) + 16px);
+.home--favorites .search-results-panel__list {
+  padding-bottom: 0;
 }
 
 .search-results-panel__empty {
@@ -127,178 +110,18 @@
   color: var(--pf-text-muted);
 }
 
-/* soft sheet: peek·닫기 드래그 중 자식(버튼·리스트)이 터치를 가로채지 않도록 */
-.search-results-panel.is-soft-sheet:not(.is-list-scrollable) {
-  touch-action: none;
+.search-results-panel.is-soft-sheet .search-result-item {
+  touch-action: manipulation;
 }
 
-.search-results-panel.is-soft-sheet:not(.is-list-scrollable)
-  .search-results-panel__list,
-.search-results-panel.is-soft-sheet:not(.is-list-scrollable)
-  .search-result-item {
-  touch-action: none;
-}
 .search-results-panel__empty-slot {
   flex-shrink: 0;
   /* SearchResultItem(썸네일+텍스트) 1행 peek 높이에 맞춤 */
   min-height: 120px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
 .search-results-panel__empty-slot .search-results-panel__empty {
   padding: 14px 16px;
   text-align: left;
-}
-
-.search-results-panel__detail-btn {
-  display: block;
-  width: calc(100% - 32px);
-  margin: 0 16px 12px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-  background: var(--pf-primary);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.search-results-panel__detail-btn:active {
-  background: var(--pf-primary-dark);
-}
-
-/* ——— 개별 검색 결과 카드 ——— */
-
-.search-result-item {
-  padding: 14px 16px 12px;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.search-result-item:active,
-.search-result-item--selected {
-  background: #f8fafc;
-}
-
-.search-result-item__body {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.search-result-item__content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.search-result-item__title-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.search-result-item__name {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--pf-primary-dark);
-  letter-spacing: -0.02em;
-  line-height: 1.35;
-  margin: 0;
-  min-width: 0;
-}
-
-.search-result-item__subline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-  margin: 0;
-  font-size: 12px;
-  font-weight: 500;
-  color: #6b7280;
-  line-height: 1.4;
-}
-
-.search-result-item__category {
-  color: #9ca3af;
-}
-
-.search-result-item__address {
-  margin: 2px 0 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: #6b7280;
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.search-result-item__favorite {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-top: 2px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  cursor: pointer;
-}
-
-.search-result-item__favorite--active {
-  color: #f59e0b;
-}
-
-.search-result-item__dot {
-  color: #d1d5db;
-}
-
-.search-result-item__tag {
-  flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(2, 132, 199, 0.1);
-  color: var(--pf-primary-dark);
-}
-
-.search-result-item__tag--50m {
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
-}
-
-.search-result-item__media {
-  flex-shrink: 0;
-  width: 72px;
-  aspect-ratio: 1 / 1;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--pf-surface);
-}
-
-.search-result-item__media--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
-  color: var(--pf-primary);
-}
-
-.search-result-item__media-img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
