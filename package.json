@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node scripts/generate-sitemap.mjs",
     "dev": "vite",
-    "build": "vite build && playwright install chromium && node scripts/prerender.mjs",
+    "build": "vite build",
+    "build:seo": "node scripts/generate-sitemap.mjs && vite build && playwright install chromium && node scripts/prerender.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
