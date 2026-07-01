@@ -27,6 +27,11 @@ import { useFavorites } from '../../hooks/useFavorites';
 import { isFlagOn } from '../../services/pools';
 import { clamp } from '../../utils/clamp';
 import {
+  applyThemeColor,
+  getSheetThemeColor,
+  restoreDefaultThemeColor,
+} from '../../utils/themeColor';
+import {
   fetchMorePoolBlogReviews,
   fetchPoolBlogReviewsForPool,
   formatPostDate,
@@ -397,6 +402,16 @@ export default function PoolDetailSheet({
   useEffect(() => {
     isFullscreenRef.current = isFullscreen;
   }, [isFullscreen]);
+
+  useEffect(() => {
+    const useSheetTheme = isFullscreen && phase !== 'exiting';
+    if (useSheetTheme) {
+      applyThemeColor(getSheetThemeColor());
+    } else {
+      restoreDefaultThemeColor();
+    }
+    return () => restoreDefaultThemeColor();
+  }, [isFullscreen, phase]);
 
   useEffect(() => {
     if (!pool) return undefined;
