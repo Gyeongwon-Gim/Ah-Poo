@@ -13,5 +13,5 @@
       "permanent": true
     }
   ],
-  "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/((?!api/|assets/).*)", "destination": "/index.html" }]
 }
