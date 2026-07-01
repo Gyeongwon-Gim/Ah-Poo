@@ -19,6 +19,7 @@
   "include": [
     "src",
     "api",
+    "lib",
     "vite.config.ts",
     "vite-plugin-naver-blog-api.ts",
     ".storybook"

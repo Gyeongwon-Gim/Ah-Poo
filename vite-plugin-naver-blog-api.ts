@@ -3,7 +3,7 @@ import { loadEnv, type Plugin } from 'vite';
 import {
   isNaverBlogSearchError,
   searchNaverBlog,
-} from './api/lib/naverBlogSearch';
+} from './lib/naver-blog/naverBlogSearch.js';
 
 function sendJson(res: ServerResponse, status: number, body: unknown): void {
   res.statusCode = status;

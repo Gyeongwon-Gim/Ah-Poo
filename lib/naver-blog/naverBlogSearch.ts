@@ -1,4 +1,4 @@
-import { enrichBlogThumbnails } from './fetchBlogThumbnail';
+import { enrichBlogThumbnails } from './fetchBlogThumbnail.js';
 
 export type NaverBlogSearchErrorCode =
   | 'INVALID_QUERY'
