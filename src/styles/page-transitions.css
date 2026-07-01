@@ -4,7 +4,7 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: rgba(15, 23, 42, 0.35);
+  background: var(--pf-overlay);
   animation: backdrop-fade-in 0.35s ease forwards;
   -webkit-tap-highlight-color: transparent;
 }
@@ -27,13 +27,13 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--pf-bg);
-  box-shadow: 0 -8px 40px rgba(2, 132, 199, 0.15);
+  box-shadow: var(--pf-shadow-page-sheet);
   will-change: transform;
-  animation: sheet-slide-up 0.42s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  animation: sheet-slide-up 0.42s var(--pf-ease-sheet) forwards;
 }
 
 .page-sheet--exit {
-  animation: sheet-slide-down 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: sheet-slide-down 0.32s var(--pf-ease-out) forwards;
 }
 
 @keyframes sheet-slide-up {

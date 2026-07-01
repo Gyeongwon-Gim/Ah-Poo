@@ -1,4 +1,5 @@
 import { RefreshCw } from 'lucide-react';
+import { Button } from '../ui';
 import { isSupabaseConfigured } from '../../lib/supabase';
 import { NEARBY_RADIUS_KM } from '../../utils/geo';
 
@@ -50,10 +51,10 @@ export default function HomeStatusOverlay({
               <code>.env</code>에 Supabase 설정을 확인하세요.
             </p>
           )}
-          <button type="button" className="home-retry" onClick={onRetry}>
+          <Button variant="primary" size="sm" className="home-retry" onClick={onRetry}>
             <RefreshCw size={16} />
             다시 시도
-          </button>
+          </Button>
         </div>
       )}
 
@@ -79,14 +80,15 @@ export default function HomeStatusOverlay({
               아래 현재 위치 버튼을 눌러 다시 시도해 보세요
             </p>
             {onLocationRetry && (
-              <button
-                type="button"
+              <Button
+                variant="primary"
+                size="sm"
                 className="home-retry"
                 onClick={onLocationRetry}
               >
                 <RefreshCw size={16} />
                 위치 다시 확인
-              </button>
+              </Button>
             )}
           </div>
         )}

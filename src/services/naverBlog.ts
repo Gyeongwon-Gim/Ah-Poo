@@ -10,8 +10,28 @@ export interface PoolBlogReviewItem {
   thumbnailUrl?: string;
 }
 
+export interface PoolBlogReviewsResult {
+  items: PoolBlogReviewItem[];
+  total: number;
+  query: string;
+  /** API가 반환한 raw 건수 (다음 start 계산용) */
+  fetchedCount: number;
+}
+
 export function buildBlogSearchQuery(pool: Pick<Pool, 'name'>): string {
   return `"${pool.name}" 자유수영`;
+}
+
+/** 1차 검색 실패 시 순차 시도할 fallback 검색어 */
+export function buildBlogSearchQueryFallbacks(
+  pool: Pick<Pool, 'name'>,
+): string[] {
+  const name = pool.name.trim();
+  return [
+    `"${name}" 자유수영`,
+    `"${name}"`,
+    `${name} 수영장`,
+  ];
 }
 
 /** YYYYMMDD → YYYY.MM.DD */
@@ -39,41 +59,57 @@ function mentionsPool(text: string | null | undefined, variants: string[]): bool
   return variants.some((name) => text.includes(name));
 }
 
+function blogReviewScore(
+  item: PoolBlogReviewItem,
+  variants: string[],
+): number {
+  if (isLowQualityTitle(item.title)) return 0;
+  const titleMention = mentionsPool(item.title, variants);
+  const descMention = mentionsPool(item.description, variants);
+  if (titleMention) return 100;
+  if (descMention) return 80;
+  if (!isLowQualityTitle(item.title)) return 40;
+  if (descMention) return 20;
+  return 10;
+}
+
+/** 관련 블로그 리뷰 복수 건 필터·정렬. 0건이면 raw items fallback */
+export function filterRelevantBlogReviews(
+  items: PoolBlogReviewItem[] | null | undefined,
+  pool: Pick<Pool, 'name'>,
+): PoolBlogReviewItem[] {
+  if (!items?.length) return [];
+
+  const variants = poolNameVariants(pool);
+  const scored = items
+    .map((item) => ({ item, score: blogReviewScore(item, variants) }))
+    .sort((a, b) => b.score - a.score);
+
+  const relevant = scored.filter(({ score }) => score >= 40).map(({ item }) => item);
+  if (relevant.length) return relevant;
+
+  const withKoreanTitle = items.filter((item) => !isLowQualityTitle(item.title));
+  if (withKoreanTitle.length) return withKoreanTitle;
+
+  return items.slice(0, 10);
+}
+
 /** display 여러 건 중 수영장 이름이 언급된 글 우선 선택 */
 export function pickBestBlogReview(
   items: PoolBlogReviewItem[] | null | undefined,
   pool: Pick<Pool, 'name'>,
 ): PoolBlogReviewItem | null {
-  if (!items?.length) return null;
-
-  const variants = poolNameVariants(pool);
-  const withPoolMention = items.filter(
-    (item) =>
-      !isLowQualityTitle(item.title) &&
-      (mentionsPool(item.title, variants) ||
-        mentionsPool(item.description, variants)),
+  const filtered = filterRelevantBlogReviews(items, pool);
+  if (!filtered.length) return null;
+  return (
+    filtered.find((item) => item.thumbnailUrl) ?? filtered[0] ?? null
   );
-  if (withPoolMention.length) {
-    return (
-      withPoolMention.find((item) => item.thumbnailUrl) ?? withPoolMention[0] ?? null
-    );
-  }
-
-  const withKoreanTitle = items.filter(
-    (item) => !isLowQualityTitle(item.title),
-  );
-  if (withKoreanTitle.length) {
-    return (
-      withKoreanTitle.find((item) => item.thumbnailUrl) ?? withKoreanTitle[0] ?? null
-    );
-  }
-
-  return items.find((item) => mentionsPool(item.description, variants)) ?? null;
 }
 
 const CLIENT_TIMEOUT_MS = 15000;
 const MAX_NETWORK_RETRIES = 2;
 const RETRY_DELAY_MS = 800;
+const DEFAULT_DISPLAY = 30;
 
 export function isNetworkFetchError(err: unknown): boolean {
   if (err instanceof Error && err.name === 'AbortError') return false;
@@ -172,16 +208,23 @@ async function fetchWithTimeout(
 
 interface FetchPoolBlogReviewsOptions {
   display?: number;
+  start?: number;
+  query?: string;
   signal?: AbortSignal;
 }
 
-async function fetchPoolBlogReviewsOnce(
-  pool: Pick<Pool, 'name'>,
-  { display = 10, signal }: FetchPoolBlogReviewsOptions = {},
-): Promise<PoolBlogReviewItem[]> {
+async function fetchPoolBlogReviewsPageOnce(
+  {
+    query,
+    display = DEFAULT_DISPLAY,
+    start = 1,
+    signal,
+  }: FetchPoolBlogReviewsOptions & { query: string },
+): Promise<PoolBlogReviewsResult> {
   const params = new URLSearchParams({
-    query: buildBlogSearchQuery(pool),
+    query,
     display: String(display),
+    start: String(start),
     sort: 'date',
   });
 
@@ -196,19 +239,26 @@ async function fetchPoolBlogReviewsOnce(
     throw new Error(body.error ?? `HTTP ${response.status}`);
   }
 
-  const data = (await response.json()) as { items?: PoolBlogReviewItem[] };
-  return data.items ?? [];
+  const data = (await response.json()) as {
+    items?: PoolBlogReviewItem[];
+    total?: number;
+  };
+  return {
+    items: data.items ?? [],
+    total: data.total ?? 0,
+    query: query ?? '',
+    fetchedCount: (data.items ?? []).length,
+  };
 }
 
-export async function fetchPoolBlogReviews(
-  pool: Pick<Pool, 'name'>,
-  { display = 10, signal }: FetchPoolBlogReviewsOptions = {},
-): Promise<PoolBlogReviewItem[]> {
+async function fetchPoolBlogReviewsPage(
+  options: FetchPoolBlogReviewsOptions,
+): Promise<PoolBlogReviewsResult> {
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= MAX_NETWORK_RETRIES; attempt += 1) {
     try {
-      return await fetchPoolBlogReviewsOnce(pool, { display, signal });
+      return await fetchPoolBlogReviewsPageOnce(options);
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') throw err;
 
@@ -221,17 +271,71 @@ export async function fetchPoolBlogReviews(
         throw new Error(toBlogFetchErrorMessage(err));
       }
 
-      await delay(RETRY_DELAY_MS, signal);
+      await delay(RETRY_DELAY_MS, options.signal);
     }
   }
 
   throw new Error(toBlogFetchErrorMessage(lastError));
 }
 
+export async function fetchPoolBlogReviews(
+  pool: Pick<Pool, 'name'>,
+  { display = DEFAULT_DISPLAY, start = 1, signal }: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
+): Promise<PoolBlogReviewItem[]> {
+  const result = await fetchPoolBlogReviewsForPool(pool, { display, start, signal });
+  return result.items;
+}
+
+/** fallback 검색어를 순차 시도해 첫 성공 결과 반환 */
+export async function fetchPoolBlogReviewsForPool(
+  pool: Pick<Pool, 'name'>,
+  { display = DEFAULT_DISPLAY, start = 1, signal }: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
+): Promise<PoolBlogReviewsResult> {
+  const queries = buildBlogSearchQueryFallbacks(pool);
+  let lastResult: PoolBlogReviewsResult = {
+    items: [],
+    total: 0,
+    query: queries[0] ?? '',
+    fetchedCount: 0,
+  };
+
+  for (const query of queries) {
+    const result = await fetchPoolBlogReviewsPage({ query, display, start, signal });
+    lastResult = result;
+    if (result.items.length > 0) {
+      const filtered = filterRelevantBlogReviews(result.items, pool);
+      return {
+        ...result,
+        items: filtered,
+        query,
+      };
+    }
+  }
+
+  return lastResult;
+}
+
+export async function fetchMorePoolBlogReviews(
+  pool: Pick<Pool, 'name'>,
+  {
+    query,
+    start,
+    display = 10,
+    signal,
+  }: { query: string; start: number; display?: number; signal?: AbortSignal },
+): Promise<PoolBlogReviewsResult> {
+  const result = await fetchPoolBlogReviewsPage({ query, display, start, signal });
+  return {
+    ...result,
+    items: filterRelevantBlogReviews(result.items, pool),
+    query,
+  };
+}
+
 export async function fetchPoolBlogReview(
   pool: Pick<Pool, 'name'>,
-  options: FetchPoolBlogReviewsOptions = {},
+  options: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
 ): Promise<PoolBlogReviewItem | null> {
-  const items = await fetchPoolBlogReviews(pool, options);
-  return pickBestBlogReview(items, pool);
+  const { items } = await fetchPoolBlogReviewsForPool(pool, options);
+  return items[0] ?? null;
 }

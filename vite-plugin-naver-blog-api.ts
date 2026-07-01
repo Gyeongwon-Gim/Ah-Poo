@@ -36,11 +36,17 @@ export function naverBlogApiPlugin(): Plugin {
         const url = new URL(req.url ?? '', 'http://localhost');
         const query = url.searchParams.get('query');
         const display = url.searchParams.get('display');
+        const start = url.searchParams.get('start');
         const sort = url.searchParams.get('sort');
 
         try {
           const result = await searchNaverBlog(
-            { query: query ?? undefined, display: display ?? undefined, sort: sort ?? undefined },
+            {
+              query: query ?? undefined,
+              display: display ?? undefined,
+              start: start ?? undefined,
+              sort: sort ?? undefined,
+            },
             {
               clientId: env.NAVER_CLIENT_ID,
               clientSecret: env.NAVER_CLIENT_SECRET,

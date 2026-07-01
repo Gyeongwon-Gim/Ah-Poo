@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, Star } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
+import { Button } from '../components/ui';
 import PoolMap from '../components/map/PoolMap';
 import PoolDetailSheet from '../components/map/PoolDetailSheet';
 import SearchResultsPanel from '../components/map/SearchResultsPanel';
@@ -130,6 +131,8 @@ function Home() {
             : null
         }
         fitToUser={isNearbyMode}
+        fitMode={isSearching ? 'search' : 'default'}
+        searchTerm={appliedSearchTerm}
       />
 
       {!searchActive && !loading && !error && (
@@ -141,9 +144,11 @@ function Home() {
           } as CSSProperties}
           aria-hidden={!fabInteractive}
         >
-          <button
+          <Button
             type="button"
-            className={`home-map-fab${favoritesOpen ? ' home-map-fab--active' : ''}`}
+            variant="icon"
+            favorite
+            active={favoritesOpen}
             onClick={toggleFavorites}
             aria-label="즐겨찾기"
             aria-pressed={favoritesOpen}
@@ -151,19 +156,18 @@ function Home() {
             <Star
               size={17}
               strokeWidth={1.5}
-              color="#ffcc00"
-              fill="#ffcc00"
+              fill="currentColor"
               aria-hidden
             />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="home-map-fab"
+            variant="icon"
             onClick={handleRecenter}
             aria-label="현재 위치로 이동"
           >
             <LocateFixed size={18} strokeWidth={1.5} />
-          </button>
+          </Button>
         </div>
       )}
 
@@ -182,6 +186,7 @@ function Home() {
           behindDetailInstant={sheetInstantEnter && searchPanelBehindDetail}
           revealFromDetail={searchPanelRevealFromDetail}
           interactionDisabled={searchPanelBehindDetail}
+          onDismiss={handleCloseSearch}
           onTopChange={onSearchSheetTopChange}
           onDragChange={onSearchSheetDragChange}
         />
@@ -198,6 +203,7 @@ function Home() {
           emptyMessage="즐겨찾기한 수영장이 없어요"
           ariaLabel="즐겨찾기"
           reservePeekWhenEmpty
+          onDismiss={closeFavorites}
           onTopChange={onFavoritesSheetTopChange}
           onDragChange={onFavoritesSheetDragChange}
         />

@@ -13,6 +13,12 @@ const meta = {
   },
   parameters: {
     layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          '검색어 입력 중 연관 수영장 목록. draft 문자열과 pools 배열을 받아 하이라이트된 추천 항목을 표시합니다.',
+      },
+    },
   },
 } satisfies Meta<typeof SearchSuggestions>;
 

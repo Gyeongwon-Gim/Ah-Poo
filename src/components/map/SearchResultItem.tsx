@@ -35,26 +35,26 @@ function SearchResultItem({ pool, selected, onSelect }: SearchResultItemProps) {
       }}
       aria-pressed={selected}
     >
-      <div className="search-result-item__body">
-        {poolImageUrl && !poolImageFailed ? (
-          <div className="search-result-item__media">
-            <img
-              className="search-result-item__media-img"
-              src={poolImageUrl}
-              alt=""
-              loading="lazy"
-              onError={markPoolImageFailed}
-            />
-          </div>
-        ) : (
-          <div
-            className="search-result-item__media search-result-item__media--placeholder"
-            aria-hidden
-          >
-            <Waves size={20} />
-          </div>
-        )}
+      {poolImageUrl && !poolImageFailed ? (
+        <div className="search-result-item__media">
+          <img
+            className="search-result-item__media-img"
+            src={poolImageUrl}
+            alt=""
+            loading="lazy"
+            onError={markPoolImageFailed}
+          />
+        </div>
+      ) : (
+        <div
+          className="search-result-item__media search-result-item__media--placeholder"
+          aria-hidden
+        >
+          <Waves size={20} />
+        </div>
+      )}
 
+      <div className="search-result-item__body">
         <div className="search-result-item__content">
           <div className="search-result-item__title-row">
             <h3 className="search-result-item__name">{pool.name}</h3>
@@ -67,17 +67,23 @@ function SearchResultItem({ pool, selected, onSelect }: SearchResultItemProps) {
 
           {(feeLabel || distanceLabel) && (
             <p className="search-result-item__subline">
-              {feeLabel && <span>{feeLabel}</span>}
+              {feeLabel && (
+                <span x-apple-data-detectors="none">{feeLabel}</span>
+              )}
               {feeLabel && distanceLabel && (
                 <span className="search-result-item__dot" aria-hidden>
                   ·
                 </span>
               )}
-              {distanceLabel && <span>{distanceLabel}</span>}
+              {distanceLabel && (
+                <span x-apple-data-detectors="none">{distanceLabel}</span>
+              )}
             </p>
           )}
 
-          <p className="search-result-item__address">{pool.roadAddress}</p>
+          <p className="search-result-item__address" x-apple-data-detectors="none">
+            {pool.roadAddress}
+          </p>
         </div>
 
         <button

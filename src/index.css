@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './styles/tokens.css';
 @import './styles/mobile-shell.css';
 
 * {
@@ -7,38 +8,11 @@
   box-sizing: border-box;
 }
 
-:root {
-  --pf-bg: #f0f9ff;
-  --pf-bg-deep: #e0f2fe;
-  --pf-surface: #ffffff;
-  --pf-primary: #5085e8;
-  --pf-primary-dark: #3d6fd1;
-  --pf-accent: #06b6d4;
-  --pf-text: #0f172a;
-  --pf-text-muted: #64748b;
-  --pf-border: rgba(80, 133, 232, 0.15);
-  --pf-shadow: 0 1px 1px rgba(161, 161, 161, 1);
-  --pf-shadow-hover: 0 12px 32px rgba(80, 133, 232, 0.14);
-  --pf-radius: 20px;
-  --pf-radius-sm: 14px;
-  --pf-pill-radius: 40px;
-  --pf-pill-height: 52px;
-  --glassforge-surface-fill: rgba(255, 255, 255, 0.18);
-  --floating-nav-indicator-fill: rgba(142, 142, 147, 0.42);
-  --floating-nav-height: calc(var(--pf-pill-height) * 1.3);
-  --floating-nav-offset: 16px;
-  --ios-label-secondary: rgba(60, 60, 67, 0.6);
-  --ios-system-orange: #ff9500;
-  --floating-nav-pad: 3px;
-  --sheet-bottom-reserve: calc(var(--safe-bottom) + 16px);
-}
-
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  /* background: #e8f4fc; */
-  background: #ffffff;
+  background: var(--pf-surface);
 }
 
 button,

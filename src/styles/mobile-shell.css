@@ -17,8 +17,8 @@ html {
   position: static;
   inset: 0;
   overflow: hidden;
-  background: #e8f4fc;
-  /* background: #ffffff; */
+  background: var(--pf-bg-map);
+  /* background: red; */
   height: var(--screen-h, 100dvh);
 }
 
@@ -37,7 +37,7 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
-  /* background: #e8f4fc; */
+  background: red;
   height: var(--screen-h, 100dvh);
 }
 

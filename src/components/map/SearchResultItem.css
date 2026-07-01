@@ -12,6 +12,30 @@
   background: #f8fafc;
 }
 
+.search-result-item__media {
+  width: 100%;
+  height: 72px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--pf-surface);
+  margin-bottom: 10px;
+}
+
+.search-result-item__media--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
+  color: var(--pf-primary);
+}
+
+.search-result-item__media-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .search-result-item__body {
   display: flex;
   align-items: flex-start;
@@ -24,6 +48,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  -webkit-touch-callout: none;
 }
 
 .search-result-item__title-row {
@@ -53,6 +78,12 @@
   font-weight: 500;
   color: var(--pf-text-muted);
   line-height: 1.4;
+  text-decoration: none;
+  -webkit-touch-callout: none;
+}
+
+.search-result-item__subline span {
+  text-decoration: none;
 }
 
 .search-result-item__category {
@@ -69,6 +100,18 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-decoration: none;
+  -webkit-touch-callout: none;
+}
+
+/* iOS Safari 주소·전화 자동 링크(점선 밑줄) 비활성화 */
+.search-result-item__subline a,
+.search-result-item__subline a[x-apple-data-detectors],
+.search-result-item__address a,
+.search-result-item__address a[x-apple-data-detectors] {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: none;
 }
 
 .search-result-item__favorite {
@@ -87,7 +130,7 @@
 }
 
 .search-result-item__favorite--active {
-  color: #f59e0b;
+  color: var(--pf-favorite);
 }
 
 .search-result-item__dot {
@@ -107,28 +150,4 @@
 .search-result-item__tag--50m {
   background: rgba(34, 197, 94, 0.12);
   color: #22c55e;
-}
-
-.search-result-item__media {
-  flex-shrink: 0;
-  width: 72px;
-  aspect-ratio: 1 / 1;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--pf-surface);
-}
-
-.search-result-item__media--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
-  color: var(--pf-primary);
-}
-
-.search-result-item__media-img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }

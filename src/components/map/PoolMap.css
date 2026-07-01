@@ -7,7 +7,7 @@
   width: 100%;
   max-width: var(--mobile-width);
   z-index: 0;
-  background: #e8f4fc;
+  background: var(--pf-bg-map);
   transition: opacity 0.28s ease;
 }
 
@@ -33,7 +33,7 @@ html.keyboard-open .pool-map {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: #e8f4fc;
+  background: var(--pf-bg-map);
   color: var(--pf-text-muted);
   font-size: 14px;
   font-weight: 600;
@@ -52,7 +52,7 @@ html.keyboard-open .pool-map {
 }
 
 .pool-map--error {
-  color: #b91c1c;
+  color: var(--pf-error-dark);
 }
 
 .pool-marker-icon {
@@ -63,12 +63,12 @@ html.keyboard-open .pool-map {
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #ff7f54;
+  border: 2px solid var(--pf-surface);
+  border-radius: var(--pf-radius-circle);
+  background: var(--pf-map-marker);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
+  box-shadow: var(--pf-map-marker-shadow);
   transition:
     width 0.15s ease,
     height 0.15s ease,
@@ -96,24 +96,24 @@ html.keyboard-open .pool-map {
     'wght' 500,
     'GRAD' 0,
     'opsz' 20;
-  color: #fff;
+  color: var(--pf-surface);
   transition: font-size 0.15s ease;
 }
 
 .pool-marker-icon--50m {
-  background: #22c55e;
+  background: var(--pf-success);
 }
 
 .pool-marker-icon--50m.pool-marker-icon--selected {
-  background: #16a34a;
+  background: var(--pf-success-dark);
 }
 
 .pool-marker-icon--selected {
   width: 32px;
   height: 32px;
   border-width: 3px;
-  background: #f06b42;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.28);
+  background: var(--pf-map-marker-active);
+  box-shadow: var(--pf-map-marker-shadow-selected);
 }
 
 .pool-marker-icon--selected .pool-marker-icon__symbol {
@@ -138,14 +138,14 @@ html.keyboard-open .pool-map {
   text-overflow: ellipsis;
   pointer-events: none;
   transform: translateY(0);
-  -webkit-text-stroke: 3px #fff;
+  -webkit-text-stroke: 3px var(--pf-surface);
   paint-order: stroke fill;
 }
 
 .pool-marker-label--selected {
   color: var(--pf-primary-dark);
   font-size: 12px;
-  -webkit-text-stroke: 3.5px #fff;
+  -webkit-text-stroke: 3.5px var(--pf-surface);
 }
 
 .user-location-marker {
@@ -159,7 +159,7 @@ html.keyboard-open .pool-map {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(0, 122, 255, 0.22);
+  background: var(--pf-map-user-pulse);
   animation: user-location-pulse 2.4s ease-out infinite;
 }
 
@@ -171,10 +171,10 @@ html.keyboard-open .pool-map {
   box-sizing: border-box;
   width: 14px;
   height: 14px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #007aff;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.22);
+  border: 2px solid var(--pf-surface);
+  border-radius: var(--pf-radius-circle);
+  background: var(--pf-map-user);
+  box-shadow: var(--pf-map-marker-shadow);
 }
 
 @keyframes user-location-pulse {

@@ -9,9 +9,9 @@
   z-index: 28;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+  background: var(--pf-surface);
+  border-radius: var(--pf-radius) var(--pf-radius) 0 0;
+  box-shadow: var(--pf-shadow-sheet);
   pointer-events: auto;
   overflow: hidden;
   will-change: transform;
@@ -19,7 +19,7 @@
 }
 
 .search-results-panel.is-ready:not(.is-dragging):not(.is-instant) {
-  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform var(--pf-duration-sheet-slow) var(--pf-ease-sheet);
 }
 
 .search-results-panel.is-revealing {
@@ -28,7 +28,7 @@
 
 /* 상세 시트 뒤로가기와 동기화된 슬라이드 업 (PoolDetailSheet CLOSE_MS = 340ms) */
 .search-results-panel.is-revealing.is-ready:not(.is-dragging):not(.is-instant) {
-  transition-duration: 0.34s;
+  transition-duration: var(--pf-duration-sheet);
 }
 
 .search-results-panel.is-instant {

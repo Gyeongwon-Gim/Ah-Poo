@@ -1,5 +1,6 @@
 import { isFlagOn } from '../services/pools';
 import type { Pool } from '../types/pool';
+import { Tag } from './ui';
 import './PoolScheduleTags.css';
 
 const SCHEDULE_LABELS = [
@@ -22,12 +23,9 @@ export default function PoolScheduleTags({ pool }: PoolScheduleTagsProps) {
   return (
     <div className="pool-schedule-tags">
       {active.map(({ key, label }) => (
-        <span
-          key={key}
-          className={`pool-schedule-tag${key === 'is50m' ? ' pool-schedule-tag--50m' : ''}`}
-        >
+        <Tag key={key} variant={key === 'is50m' ? 'active' : 'default'}>
           {label}
-        </span>
+        </Tag>
       ))}
     </div>
   );

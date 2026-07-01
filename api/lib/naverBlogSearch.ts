@@ -91,6 +91,7 @@ export function normalizeBlogItems(
 interface SearchNaverBlogParams {
   query?: string | string[];
   display?: string | string[] | number;
+  start?: string | string[] | number;
   sort?: string | string[];
   includeThumbnails?: boolean;
 }
@@ -111,7 +112,13 @@ export interface NaverBlogSearchResult {
 }
 
 export async function searchNaverBlog(
-  { query, display = 1, sort = 'date', includeThumbnails = true }: SearchNaverBlogParams,
+  {
+    query,
+    display = 1,
+    start = 1,
+    sort = 'date',
+    includeThumbnails = true,
+  }: SearchNaverBlogParams,
   { clientId, clientSecret }: SearchNaverBlogCredentials = {},
 ): Promise<NaverBlogSearchResult> {
   const id = clientId ?? process.env.NAVER_CLIENT_ID;
@@ -131,13 +138,16 @@ export async function searchNaverBlog(
   }
 
   const displayValue = Array.isArray(display) ? display[0] : display;
+  const startValue = Array.isArray(start) ? start[0] : start;
   const sortValue = Array.isArray(sort) ? sort[0] : sort;
-  const safeDisplay = Math.min(Math.max(Number(displayValue) || 1, 1), 10);
+  const safeDisplay = Math.min(Math.max(Number(displayValue) || 1, 1), 100);
+  const safeStart = Math.min(Math.max(Number(startValue) || 1, 1), 1000);
   const safeSort = sortValue === 'sim' ? 'sim' : 'date';
 
   const url = new URL('https://openapi.naver.com/v1/search/blog.json');
   url.searchParams.set('query', trimmedQuery);
   url.searchParams.set('display', String(safeDisplay));
+  url.searchParams.set('start', String(safeStart));
   url.searchParams.set('sort', safeSort);
 
   let response: Response;

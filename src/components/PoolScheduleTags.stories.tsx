@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'pool 객체의 운영 플래그(is50m, isWeekday, isSaturday, isSunday, isHoliday)를 태그로 보여줍니다. 활성 태그가 하나도 없으면 아무것도 렌더링하지 않습니다.',
+          'pool 객체의 운영 플래그를 Tag(active/default) 조합으로 표시합니다. 활성 태그가 없으면 렌더링하지 않습니다.',
       },
     },
   },

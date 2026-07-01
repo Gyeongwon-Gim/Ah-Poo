@@ -1,0 +1,16 @@
+.pf-tag {
+  font-size: var(--pf-font-xs);
+  font-weight: var(--pf-font-weight-bold);
+  padding: var(--pf-space-1) var(--pf-space-3);
+  border-radius: var(--pf-radius-xl);
+  letter-spacing: 0.02em;
+  background: var(--pf-neutral-100);
+  color: var(--pf-neutral-500);
+  border: 1px solid var(--pf-border-neutral);
+}
+
+.pf-tag--active {
+  background: var(--pf-success-bg);
+  color: var(--pf-success);
+  border-color: var(--pf-success-border);
+}

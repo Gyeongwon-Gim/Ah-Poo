@@ -22,7 +22,7 @@
   padding: calc(17px + var(--safe-top)) 12px 8px;
   height: calc(77px + var(--safe-top));
   background: var(--pf-surface);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--pf-shadow-bar);
 }
 
 .search-bar-wrap--browser.search-bar-wrap--map.search-bar-wrap--with-logo {
@@ -44,9 +44,9 @@
 }
 
 .search-bar-logo__word {
-  font-family: 'Bagel Fat One', cursive;
-  font-size: 30px;
-  font-weight: 400;
+  font-family: var(--pf-font-display);
+  font-size: var(--pf-font-2xl);
+  font-weight: var(--pf-font-weight-normal);
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--pf-primary);
@@ -56,13 +56,13 @@
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: var(--pf-radius-xl);
 }
 
 .search-bar-logo__cursor {
   display: inline-block;
   margin-left: 1px;
-  font-weight: 400;
+  font-weight: var(--pf-font-weight-normal);
   color: var(--pf-primary);
   animation: search-bar-logo-blink 0.75s step-end infinite;
 }
@@ -81,9 +81,9 @@
 
 .search-bar-wrap--browser.search-bar-wrap--map .search-bar {
   height: var(--pf-pill-height);
-  padding: 0 4px 0 16px;
+  padding: 0 var(--pf-space-1) 0 var(--pf-space-6);
   border-radius: var(--pf-pill-radius);
-  background: rgba(80, 133, 232, 0.15);
+  background: var(--pf-primary-tint);
   border: none;
   box-shadow: none;
 }
@@ -92,20 +92,15 @@
   border: none;
 }
 
-.search-bar-wrap--browser.search-bar-wrap--map .search-icon {
+.search-bar-wrap--browser.search-bar-wrap--map .pf-input__leading {
   color: var(--pf-primary);
   opacity: 1;
-}
-
-.search-bar-wrap--browser.search-bar-wrap--map .search-input {
-  padding-top: 0;
-  padding-bottom: 0;
 }
 
 /* 검색 모드: 상단 고정 솔리드 바 (시트가 이 아래로 지나간다) */
 .search-bar-wrap--search .search-bar {
   box-shadow: none;
-  border: 1px solid lightgrey;
+  border: 1px solid var(--pf-border-subtle);
   border-radius: var(--pf-pill-radius);
   margin-bottom: 30px;
 }
@@ -114,83 +109,6 @@
   width: 100%;
 }
 
-.search-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: var(--pf-surface);
-  border-radius: var(--pf-radius);
-  border: 1px solid transparent;
-  padding: 4px 4px 4px 16px;
-}
-
-.search-icon {
-  flex-shrink: 0;
-  color: var(--pf-primary);
-  opacity: 0.7;
-}
-
-.search-back {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
+.search-bar .pf-button--ghost {
   margin-right: 2px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--pf-text);
-  cursor: pointer;
-  border-radius: 50%;
-  transition: background 0.2s;
-}
-
-.search-back:active {
-  background: var(--pf-bg-deep);
-}
-
-.search-input {
-  flex: 1;
-  min-width: 0;
-  padding: 14px 12px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  background: transparent;
-  outline: none;
-  color: var(--pf-text);
-}
-
-.search-input::placeholder {
-  color: var(--pf-text-muted);
-}
-
-.search-input::-webkit-search-cancel-button,
-.search-input::-webkit-search-decoration {
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.search-clear {
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  margin-right: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  color: var(--pf-text);
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s;
-}
-
-.search-clear:active {
-  background: var(--pf-primary);
-  color: #fff;
 }

@@ -1,0 +1,95 @@
+.pf-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: var(--pf-surface);
+  border-radius: var(--pf-radius);
+  border: 1px solid transparent;
+  padding: var(--pf-space-1) var(--pf-space-1) var(--pf-space-1) var(--pf-space-6);
+}
+
+.pf-input-wrap--pill {
+  height: var(--pf-pill-height);
+  padding: 0 var(--pf-space-1) 0 var(--pf-space-6);
+  border-radius: var(--pf-pill-radius);
+  background: var(--pf-primary-tint);
+  border: none;
+  box-shadow: none;
+}
+
+.pf-input-wrap--bordered {
+  border: 1px solid var(--pf-border-subtle);
+  box-shadow: none;
+}
+
+.pf-input__leading,
+.pf-input__trailing {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pf-input__leading {
+  color: var(--pf-primary);
+}
+
+.pf-input-wrap--pill .pf-input__leading {
+  opacity: 1;
+}
+
+.pf-input-wrap:not(.pf-input-wrap--pill) .pf-input__leading {
+  opacity: 0.7;
+}
+
+.pf-input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px var(--pf-space-5);
+  font-size: var(--pf-font-title-sm);
+  font-weight: var(--pf-font-weight-semibold);
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--pf-text);
+  font-family: inherit;
+}
+
+.pf-input-wrap--pill .pf-input {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.pf-input::placeholder {
+  color: var(--pf-text-muted);
+}
+
+.pf-input::-webkit-search-cancel-button,
+.pf-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.pf-input__trailing button {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  margin-right: var(--pf-space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--pf-radius-circle);
+  background: transparent;
+  color: var(--pf-text);
+  cursor: pointer;
+  transition:
+    background var(--pf-duration-normal),
+    color var(--pf-duration-normal);
+}
+
+.pf-input__trailing button:active {
+  background: var(--pf-primary);
+  color: var(--pf-surface);
+}

@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Home, Navigation } from 'lucide-react';
+import { ChevronLeft, Home as HomeIcon, Navigation } from 'lucide-react';
 import SeoHead, {
   buildPoolSportsActivityJsonLd,
   DEFAULT_OG_IMAGE,
 } from '../components/SeoHead';
 import PoolScheduleTags from '../components/PoolScheduleTags';
+import { Button } from '../components/ui';
 import { fetchPoolById } from '../services/pools';
 import { formatDailyAdmissionFee } from '../utils/formatFee';
-import { buildKakaoDirectionsUrl } from '../utils/kakaoDirectionsUrl';
+import { openNaverDirections } from '../utils/naverDirectionsUrl';
 import type { Pool } from '../types/pool';
 import './PoolDetail.css';
 
@@ -171,19 +172,18 @@ function PoolDetail() {
       </article>
 
       <div className="pool-detail__actions">
-        <button type="button" className="pool-detail__action" onClick={handleOpenOnMap}>
-          <Home size={18} aria-hidden />
+        <Button variant="primary" size="md" onClick={handleOpenOnMap}>
+          <HomeIcon size={18} aria-hidden />
           지도에서 보기
-        </button>
-        <a
-          className="pool-detail__action pool-detail__action--secondary"
-          href={buildKakaoDirectionsUrl(pool)}
-          target="_blank"
-          rel="noopener noreferrer"
+        </Button>
+        <Button
+          variant="secondary"
+          size="md"
+          onClick={() => openNaverDirections(pool)}
         >
           <Navigation size={18} aria-hidden />
           길찾기
-        </a>
+        </Button>
       </div>
     </div>
   );

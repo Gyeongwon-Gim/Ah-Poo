@@ -22,6 +22,12 @@ const meta = {
   },
   parameters: {
     layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          '홈 지도 상단 검색바. map 변형은 pill 스타일·로고를 포함하고, searchMode에서는 Input(bordered pill) + ghost Button 뒤로가기를 사용합니다.',
+      },
+    },
   },
 } satisfies Meta<typeof SearchBar>;
 

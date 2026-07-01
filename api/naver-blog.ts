@@ -7,10 +7,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { query, display, sort } = req.query ?? {};
+  const { query, display, start, sort } = req.query ?? {};
 
   try {
-    const result = await searchNaverBlog({ query, display, sort });
+    const result = await searchNaverBlog({ query, display, start, sort });
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=600');
     return res.status(200).json(result);
   } catch (error) {

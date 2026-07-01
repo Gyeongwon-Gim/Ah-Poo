@@ -13,6 +13,7 @@ import { useKakaoMapLoader } from '../../hooks/useKakaoMapLoader';
 import { isFlagOn } from '../../services/pools';
 import { getPoolListKey } from '../../utils/poolKey';
 import { attachMapInertia } from '../../utils/mapInertia';
+import { computeSearchMapFit } from '../../utils/mapFit';
 import type { Pool } from '../../types/pool';
 import type { GeoCoords } from '../../hooks/useUserLocation';
 import './PoolMap.css';
@@ -39,6 +40,8 @@ interface PoolMapProps {
   userLocation?: GeoCoords | null;
   userLocationMarker?: GeoCoords | null;
   fitToUser?: boolean;
+  fitMode?: 'default' | 'search';
+  searchTerm?: string;
 }
 
 function syncMapLayout(
@@ -151,6 +154,8 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     userLocation,
     userLocationMarker,
     fitToUser = false,
+    fitMode = 'default',
+    searchTerm = '',
   },
   ref,
 ) {
@@ -470,8 +475,18 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
       return;
     }
 
+    if (fitMode === 'search') {
+      const fit = computeSearchMapFit(pools, searchTerm);
+      if (fit) {
+        map.panTo(new kakao.maps.LatLng(fit.lat, fit.lng));
+        map.setLevel(fit.level);
+        syncMarkerLabelVisibility(map, markerStoreRef.current);
+        return;
+      }
+    }
+
     const bounds = new kakao.maps.LatLngBounds();
-    if (fitToUser && userLocation) {
+    if (fitToUser && userLocation && fitMode !== 'search') {
       bounds.extend(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
     }
     pools.forEach((pool) => {
@@ -486,7 +501,7 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     }
 
     syncMarkerLabelVisibility(map, markerStoreRef.current);
-  }, [ready, poolsSignature, pools, fitToUser, userLocation]);
+  }, [ready, poolsSignature, pools, fitToUser, userLocation, fitMode, searchTerm]);
 
   useEffect(() => {
     const map = mapInstanceRef.current;

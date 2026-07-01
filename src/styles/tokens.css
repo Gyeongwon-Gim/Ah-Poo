@@ -1,0 +1,117 @@
+/* Ah-Poo design tokens (--pf-* prefix) */
+
+:root {
+  /* Brand & surface */
+  --pf-bg: #f0f9ff;
+  --pf-bg-deep: #e0f2fe;
+  --pf-bg-map: #e8f4fc;
+  --pf-surface: #ffffff;
+  --pf-primary: #5085e8;
+  --pf-primary-dark: #3d6fd1;
+  --pf-primary-tint: rgba(80, 133, 232, 0.15);
+  --pf-primary-tint-strong: rgba(2, 132, 199, 0.1);
+  --pf-accent: #06b6d4;
+  --pf-favorite: #f59e0b;
+  --pf-text: #0f172a;
+  --pf-text-muted: #64748b;
+  --pf-border: rgba(80, 133, 232, 0.15);
+  --pf-border-neutral: #e2e8f0;
+  --pf-border-subtle: lightgrey;
+
+  /* Semantic */
+  --pf-success: #22c55e;
+  --pf-success-dark: #16a34a;
+  --pf-success-bg: rgba(34, 197, 94, 0.12);
+  --pf-success-border: rgba(34, 197, 94, 0.2);
+  --pf-error: #dc2626;
+  --pf-error-dark: #b91c1c;
+  --pf-error-bg: rgba(220, 38, 38, 0.08);
+
+  /* Neutral scale */
+  --pf-neutral-50: #f8fafc;
+  --pf-neutral-100: #f1f5f9;
+  --pf-neutral-200: #e2e8f0;
+  --pf-neutral-400: #9ca3af;
+  --pf-neutral-500: #475569;
+  --pf-neutral-600: #4b5563;
+  --pf-neutral-tap: rgba(15, 23, 42, 0.06);
+
+  /* Map */
+  --pf-map-marker: #ff7f54;
+  --pf-map-marker-active: #f06b42;
+  --pf-map-user: #007aff;
+  --pf-map-user-pulse: rgba(0, 122, 255, 0.22);
+  --pf-map-marker-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
+  --pf-map-marker-shadow-selected: 0 2px 6px rgba(15, 23, 42, 0.28);
+
+  /* Overlay & shadow */
+  --pf-overlay: rgba(15, 23, 42, 0.35);
+  --pf-overlay-light: rgba(255, 255, 255, 0.95);
+  --pf-shadow: 0 1px 1px rgba(161, 161, 161, 1);
+  --pf-shadow-hover: 0 12px 32px rgba(80, 133, 232, 0.14);
+  --pf-shadow-bar: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --pf-shadow-sheet: 0 -4px 24px rgba(0, 0, 0, 0.12);
+  --pf-shadow-page-sheet: 0 -8px 40px rgba(2, 132, 199, 0.15);
+  --pf-gradient-sky: linear-gradient(145deg, #e0f2fe, #bae6fd);
+
+  /* Shape */
+  --pf-radius-xs: 6px;
+  --pf-radius-sm: 14px;
+  --pf-radius-md: 10px;
+  --pf-radius: 20px;
+  --pf-radius-lg: 22px;
+  --pf-radius-xl: 8px;
+  --pf-pill-radius: 40px;
+  --pf-pill-height: 52px;
+  --pf-radius-full: 999px;
+  --pf-radius-circle: 50%;
+
+  /* Typography */
+  --pf-font-display: 'Bagel Fat One', cursive;
+  --pf-font-xs: 10px;
+  --pf-font-sm: 11px;
+  --pf-font-caption: 12px;
+  --pf-font-body-sm: 13px;
+  --pf-font-body: 14px;
+  --pf-font-body-lg: 15px;
+  --pf-font-title-sm: 16px;
+  --pf-font-title: 18px;
+  --pf-font-title-lg: 21px;
+  --pf-font-2xl: 30px;
+  --pf-font-weight-normal: 400;
+  --pf-font-weight-medium: 500;
+  --pf-font-weight-semibold: 600;
+  --pf-font-weight-bold: 700;
+  --pf-font-weight-extrabold: 800;
+
+  /* Spacing (8px grid) */
+  --pf-space-0: 2px;
+  --pf-space-1: 4px;
+  --pf-space-2: 6px;
+  --pf-space-3: 8px;
+  --pf-space-4: 10px;
+  --pf-space-5: 12px;
+  --pf-space-6: 16px;
+  --pf-space-7: 18px;
+  --pf-space-8: 20px;
+  --pf-space-9: 24px;
+  --pf-space-10: 32px;
+
+  /* Motion */
+  --pf-ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --pf-ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --pf-duration-fast: 0.15s;
+  --pf-duration-normal: 0.2s;
+  --pf-duration-sheet: 0.34s;
+  --pf-duration-sheet-slow: 0.38s;
+
+  /* iOS / glass (reserved) */
+  --glassforge-surface-fill: rgba(255, 255, 255, 0.18);
+  --floating-nav-indicator-fill: rgba(142, 142, 147, 0.42);
+  --floating-nav-height: calc(var(--pf-pill-height) * 1.3);
+  --floating-nav-offset: 16px;
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-system-orange: #ff9500;
+  --floating-nav-pad: 3px;
+  --sheet-bottom-reserve: calc(var(--safe-bottom) + 16px);
+}
