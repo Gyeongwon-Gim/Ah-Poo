@@ -14,10 +14,6 @@
 
 ### [ah-poo.kr](https://ah-poo.kr)
 
-## 디자인 시스템
-
-[어푸 디자인 시스템 (Notion)](https://app.notion.com/p/390db2b2b7f281b59cbaf207ec494a30)
-
 
 ## 서비스 개요
 
