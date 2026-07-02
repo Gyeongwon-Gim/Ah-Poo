@@ -9,6 +9,7 @@ import type { GeoCoords } from '../hooks/useUserLocation';
 
 const mocks = vi.hoisted(() => ({
   fetchPools: vi.fn(),
+  fetchPoolById: vi.fn(),
   useUserLocation: vi.fn(),
   useFavorites: vi.fn(),
   useMainTab: vi.fn(),
@@ -20,6 +21,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('../services/pools', () => ({
   fetchPools: mocks.fetchPools,
+  fetchPoolById: mocks.fetchPoolById,
 }));
 
 vi.mock('../lib/supabase', () => ({
@@ -240,6 +242,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.supabaseConfigured = true;
   mocks.fetchPools.mockResolvedValue(POOLS);
+  mocks.fetchPoolById.mockResolvedValue(null);
   mocks.useFavorites.mockReturnValue({ favorites: [] });
   mocks.useMainTab.mockReturnValue({
     favoritesOpen: false,
@@ -369,18 +372,23 @@ describe('Home - 수영장 선택', () => {
 });
 
 describe('Home - 공유 딥링크 진입', () => {
-  it('?pool=<id>로 들어오면 /pool/:id로 리다이렉트한다', async () => {
+  it('?pool=<id>로 들어오면 지도에서 상세 시트를 연다', async () => {
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome(['/?pool=2']);
 
-    expect(await screen.findByTestId('location')).toHaveTextContent('/pool/2');
-    expect(screen.getByTestId('pool-page')).toBeInTheDocument();
+    expect(await screen.findByTestId('detail-sheet')).toHaveTextContent('송파수영장');
+    expect(mocks.panToPool).toHaveBeenCalled();
+    expect(await screen.findByTestId('location')).toHaveTextContent('/');
   });
 
-  it('존재하지 않는 id여도 /pool/:id 경로로 리다이렉트한다', async () => {
+  it('존재하지 않는 id면 상세 시트를 열지 않는다', async () => {
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome(['/?pool=9999']);
 
-    expect(await screen.findByTestId('location')).toHaveTextContent('/pool/9999');
+    await waitFor(() => {
+      expect(screen.getByTestId('location')).toHaveTextContent('/');
+    });
+    expect(screen.queryByTestId('detail-sheet')).not.toBeInTheDocument();
+    expect(mocks.fetchPoolById).toHaveBeenCalledWith('9999');
   });
 });

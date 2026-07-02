@@ -1,17 +1,3 @@
 {
-  "redirects": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "query",
-          "key": "pool",
-          "value": "(?<id>[^/]+)"
-        }
-      ],
-      "destination": "/pool/:id",
-      "permanent": true
-    }
-  ],
   "rewrites": [{ "source": "/((?!api/|assets/).*)", "destination": "/index.html" }]
 }

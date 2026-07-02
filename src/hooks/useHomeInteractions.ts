@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Location, NavigateFunction } from 'react-router-dom';
+import { fetchPoolById } from '../services/pools';
 import { getPoolListKey } from '../utils/poolKey';
 import { filterBySearchTerm } from '../utils/poolSearch';
 import { enrichWithDistance } from '../utils/geo';
@@ -92,17 +93,27 @@ export function useHomeInteractions({
     navigate(location.pathname, { replace: true, state: null });
   }, [location.pathname, location.state, openPoolDetail, navigate]);
 
-  // 레거시 공유 링크(/?pool=<id>)는 SEO 친화 URL(/pool/:id)로 리다이렉트한다.
+  // 공유 링크(/?pool=<id>)로 진입하면 지도에서 상세 시트를 연다.
   const deepLinkHandledRef = useRef(false);
   useEffect(() => {
-    if (deepLinkHandledRef.current) return;
+    if (deepLinkHandledRef.current || loading) return;
 
     const poolId = new URLSearchParams(location.search).get('pool');
     if (!poolId) return;
 
     deepLinkHandledRef.current = true;
-    navigate(`/pool/${poolId}`, { replace: true });
-  }, [location.search, navigate]);
+
+    const openFromDeepLink = async () => {
+      const fromList = pools.find((p) => p.id === poolId);
+      const pool = fromList ?? (await fetchPoolById(poolId));
+      if (pool) {
+        openPoolDetail(pool, { instant: true, origin: 'map' });
+      }
+      navigate('/', { replace: true });
+    };
+
+    void openFromDeepLink();
+  }, [location.search, loading, pools, openPoolDetail, navigate]);
 
   useEffect(() => {
     if (favoritesOpen) {

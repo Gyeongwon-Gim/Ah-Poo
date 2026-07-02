@@ -37,6 +37,7 @@ import {
   formatPostDate,
   type PoolBlogReviewItem,
 } from '../../services/naverBlog';
+import type { GeoCoords } from '../../hooks/useUserLocation';
 import type { Pool } from '../../types/pool';
 import './PoolDetailSheet.css';
 
@@ -82,6 +83,7 @@ function getScreenHeight() {
 
 interface PoolDetailSheetProps {
   pool: Pool;
+  userLocation?: GeoCoords | null;
   onClose: () => void;
   onCloseStart?: () => void;
   onBack?: () => void;
@@ -93,6 +95,7 @@ interface PoolDetailSheetProps {
 
 export default function PoolDetailSheet({
   pool,
+  userLocation = null,
   onClose,
   onCloseStart,
   onBack,
@@ -873,12 +876,16 @@ export default function PoolDetailSheet({
       : null;
 
   const handleDirections = () => {
-    openNaverDirections(pool);
+    openNaverDirections(pool, {
+      origin: userLocation
+        ? { ...userLocation, name: '현재 위치' }
+        : null,
+    });
   };
 
   const handleShare = async () => {
     const shareUrl = pool.id
-      ? `${window.location.origin}/pool/${pool.id}`
+      ? `${window.location.origin}/?pool=${pool.id}`
       : window.location.href;
     const shareData = {
       title: pool.name,

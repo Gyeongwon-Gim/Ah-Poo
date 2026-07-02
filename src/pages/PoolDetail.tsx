@@ -66,6 +66,13 @@ function PoolDetail() {
     return () => controller.abort();
   }, [id]);
 
+  // 구 공유 링크(/pool/:id) — 일반 사용자는 지도+시트로 이동. Playwright prerender는 webdriver=true.
+  useEffect(() => {
+    if (!pool || loading) return;
+    if (navigator.webdriver) return;
+    navigate('/', { state: { openPool: pool }, replace: true });
+  }, [pool, loading, navigate]);
+
   const title = pool ? buildPoolTitle(pool) : '수영장 정보 | 어푸!';
   const description = pool
     ? buildPoolDescription(pool)
