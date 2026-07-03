@@ -1,0 +1,103 @@
+.bottom-sheet {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  will-change: transform;
+  box-shadow: var(--pf-shadow-sheet);
+}
+
+.bottom-sheet--list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: auto;
+  z-index: 28;
+  background: var(--pf-surface);
+  border-radius: var(--pf-radius) var(--pf-radius) 0 0;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.bottom-sheet--detail {
+  --pool-sheet-icon: var(--pf-neutral-600);
+  --pool-sheet-bottom-pad: var(--safe-bottom);
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(100%, var(--mobile-width));
+  max-width: var(--mobile-width);
+  height: auto;
+  max-height: 100dvh;
+  z-index: 30;
+  background: var(--pf-bg);
+  border-radius: var(--pf-radius-lg) var(--pf-radius-lg) 0 0;
+  transform-origin: bottom center;
+}
+
+.bottom-sheet--list.is-ready:not(.is-dragging):not(.is-instant) {
+  transition: transform var(--pf-duration-sheet-slow) var(--pf-ease-sheet);
+}
+
+.bottom-sheet--list.is-revealing {
+  z-index: 26;
+}
+
+.bottom-sheet--list.is-revealing.is-ready:not(.is-dragging):not(.is-instant) {
+  transition-duration: var(--pf-duration-sheet);
+}
+
+.bottom-sheet--list.is-instant {
+  transition: none !important;
+}
+
+.bottom-sheet--list.is-inert {
+  pointer-events: none;
+}
+
+.bottom-sheet.is-dragging {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-sheet--list {
+    transition: none;
+  }
+}
+
+.bottom-sheet__peek-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  touch-action: none;
+}
+
+.bottom-sheet--list .bottom-sheet__peek-bar {
+  padding-top: 10px;
+  cursor: pointer;
+}
+
+.bottom-sheet--detail .bottom-sheet__peek-bar {
+  cursor: grab;
+}
+
+.bottom-sheet--detail .bottom-sheet__peek-bar:active {
+  cursor: grabbing;
+}
+
+.bottom-sheet__handle {
+  display: block;
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 8px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: var(--pf-border);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-sheet--detail.pool-sheet--fullscreen .bottom-sheet__handle {
+  display: none;
+}

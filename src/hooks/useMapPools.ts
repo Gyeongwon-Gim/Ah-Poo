@@ -1,13 +1,13 @@
 import { useMemo, useEffect } from 'react';
-import { getPoolListKey } from '../utils/poolKey';
-import { filterBySearchTerm } from '../utils/poolSearch';
+import { getPoolListKey } from '@/utils/poolKey';
+import { filterBySearchTerm } from '@/utils/poolSearch';
 import {
   filterPoolsWithinKm,
   enrichWithDistance,
   sortByDistanceAsc,
   NEARBY_RADIUS_KM,
-} from '../utils/geo';
-import type { Pool } from '../types/pool';
+} from '@/utils/geo';
+import type { Pool } from '@/types/pool';
 import type { GeoCoords, LocationStatus } from './useUserLocation';
 
 interface UseMapPoolsParams {

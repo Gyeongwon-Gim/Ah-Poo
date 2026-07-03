@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { computeSearchMapFit, radiusKmToKakaoLevel } from './mapFit';
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 const basePool = {
   name: '테스트',

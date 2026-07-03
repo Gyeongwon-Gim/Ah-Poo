@@ -1,4 +1,4 @@
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 const EARTH_RADIUS_KM = 6371;
 

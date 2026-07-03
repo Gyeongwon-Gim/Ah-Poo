@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getDistanceKm, filterPoolsWithinKm, NEARBY_RADIUS_KM } from './geo';
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 describe('getDistanceKm', () => {
   it('동일한 좌표의 거리는 0이다', () => {

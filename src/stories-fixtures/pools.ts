@@ -1,4 +1,4 @@
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 /** 스토리에서 재사용하는 가짜 수영장 데이터 (실제 API 응답 형태를 흉내냅니다) */
 export const MOCK_POOLS: Pool[] = [

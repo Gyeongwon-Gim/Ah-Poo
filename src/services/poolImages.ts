@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 const BUCKET = 'pool-images';
 const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'] as const;

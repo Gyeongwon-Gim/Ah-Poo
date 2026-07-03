@@ -3,6 +3,7 @@ export interface BottomSheetSnapPoints {
   full: number;
 }
 
+/** 공유 타이밍 상수는 `src/utils/sheetConstants.ts` 참고 */
 export interface UseBottomSheetOptions {
   onDragChange?: (isDragging: boolean) => void;
   snapPoints: BottomSheetSnapPoints;

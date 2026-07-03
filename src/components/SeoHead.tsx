@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 export const SITE_URL = 'https://ah-poo.kr';
 export const SITE_NAME = '어푸!';

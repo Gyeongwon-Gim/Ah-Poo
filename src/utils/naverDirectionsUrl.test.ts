@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SITE_URL } from '../components/SeoHead';
+import { SITE_URL } from '@/components/SeoHead';
 import {
   buildNaverDirectionsAndroidIntentUrl,
   buildNaverDirectionsAppUrl,

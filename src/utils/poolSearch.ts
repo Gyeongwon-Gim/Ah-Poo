@@ -1,4 +1,4 @@
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 type PoolSearchFields = Pick<Pool, 'name' | 'roadAddress' | 'fee'>;
 

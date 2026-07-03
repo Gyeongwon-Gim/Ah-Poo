@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchPoolImageUrl } from '../services/poolImages';
+import { fetchPoolImageUrl } from '@/services/poolImages';
 
 export function usePoolImageUrl(poolId: string | null | undefined) {
   const [poolImageUrl, setPoolImageUrl] = useState<string | null>(null);

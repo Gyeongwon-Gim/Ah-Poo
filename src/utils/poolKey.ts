@@ -1,4 +1,4 @@
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 export type PoolKey = Pick<Pool, 'name' | 'roadAddress' | 'lat' | 'lng'>;
 

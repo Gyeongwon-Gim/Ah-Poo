@@ -1,5 +1,5 @@
-import { SITE_URL } from '../components/SeoHead';
-import type { Pool } from '../types/pool';
+import { SITE_URL } from '@/components/SeoHead';
+import type { Pool } from '@/types/pool';
 
 const NAVER_MAP_IOS_STORE = 'https://itunes.apple.com/app/id311867728?mt=8';
 const ANDROID_INTENT_SUFFIX =

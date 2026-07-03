@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchPools } from '../services/pools';
-import type { Pool } from '../types/pool';
+import { fetchPools } from '@/services/pools';
+import type { Pool } from '@/types/pool';
 
 /** 수영장 목록 로딩/에러 상태와 재시도 함수를 제공한다. */
 export function usePoolData() {

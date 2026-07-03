@@ -1,6 +1,6 @@
-import type { Pool, PoolFlag, PoolRow } from '../types/pool';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import type { PoolKey } from '../utils/poolKey';
+import type { Pool, PoolFlag, PoolRow } from '@/types/pool';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import type { PoolKey } from '@/utils/poolKey';
 
 /** bigint(0/1/null) → boolean */
 export function isFlagOn(value: PoolFlag | null | undefined): boolean {

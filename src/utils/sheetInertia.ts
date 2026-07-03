@@ -12,7 +12,7 @@ export interface RunSheetInertiaOptions {
   onComplete: () => void;
 }
 
-/** 손을 뗀 뒤 translateY 관성 glide (SearchResultsPanel 터치 fling) */
+/** 손을 뗀 뒤 translateY 관성 glide (PoolListSheet 터치 fling) */
 export function runSheetInertia({
   getY,
   setY,

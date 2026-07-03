@@ -1,0 +1,31 @@
+.map-status-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  padding: 16px 24px;
+  background: var(--pf-overlay-light);
+  border-radius: var(--pf-radius-sm);
+  box-shadow: var(--pf-shadow);
+  font-size: var(--pf-font-body);
+  font-weight: var(--pf-font-weight-semibold);
+  color: var(--pf-text-muted);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.map-status-message--error {
+  color: var(--pf-error-dark);
+  max-width: 280px;
+}
+
+.map-status-message__hint {
+  margin-top: var(--pf-space-3);
+  font-size: var(--pf-font-caption);
+  color: var(--pf-text-muted);
+}
+
+.map-status-message__retry {
+  margin-top: var(--pf-space-5);
+}

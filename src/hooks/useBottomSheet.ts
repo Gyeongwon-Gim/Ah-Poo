@@ -5,8 +5,8 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import type { UseBottomSheetOptions } from '../types/sheet';
-import { clamp } from '../utils/clamp';
+import type { UseBottomSheetOptions } from '@/types/sheet';
+import { clamp } from '@/utils/clamp';
 
 const DEFAULT_CLOSE_THRESHOLD = 96;
 
@@ -20,7 +20,7 @@ export interface UseBottomSheetParams extends UseBottomSheetOptions {
   maxTranslate: number;
 }
 
-/** 수직 시트 드래그 translate 계산 (SearchResultsPanel 등) */
+/** 수직 시트 드래그 translate 계산 (PoolListSheet 등) */
 export function computeDragTranslate(
   startTranslate: number,
   startY: number,

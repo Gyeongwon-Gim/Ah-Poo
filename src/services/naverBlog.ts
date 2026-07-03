@@ -1,4 +1,4 @@
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 /** API 응답을 정규화한 블로그 리뷰 항목 */
 export interface PoolBlogReviewItem {

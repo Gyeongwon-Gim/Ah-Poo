@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

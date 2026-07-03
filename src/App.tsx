@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import PoolDetail from './pages/PoolDetail';
-import { MainTabProvider } from './contexts/MainTabContext';
-import { FavoritesProvider } from './hooks/useFavorites';
+import Home from '@/pages/Home/Home';
+import PoolDetail from '@/pages/PoolDetail/PoolDetail';
+import { MainTabProvider } from '@/contexts/MainTabContext';
+import { FavoritesProvider } from '@/hooks/useFavorites';
 import './App.css';
 
 function App() {

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Location, NavigateFunction } from 'react-router-dom';
-import { fetchPoolById } from '../services/pools';
-import { getPoolListKey } from '../utils/poolKey';
-import { filterBySearchTerm } from '../utils/poolSearch';
-import { enrichWithDistance } from '../utils/geo';
-import { syncAppViewport } from '../utils/appViewport';
-import type { Pool } from '../types/pool';
-import type { PoolMapHandle } from '../components/map/PoolMap';
+import { fetchPoolById } from '@/services/pools';
+import { getPoolListKey } from '@/utils/poolKey';
+import { filterBySearchTerm } from '@/utils/poolSearch';
+import { enrichWithDistance } from '@/utils/geo';
+import { syncAppViewport } from '@/utils/appViewport';
+import type { Pool } from '@/types/pool';
+import type { PoolMapHandle } from '@/pages/Home/components/PoolMap';
 import type { GeoCoords, LocationStatus } from './useUserLocation';
 
 export type { PoolMapHandle };
@@ -75,7 +75,10 @@ export function useHomeInteractions({
   }, [isSearching, favoritesOpen, searchActive]);
 
   const openPoolDetail = useCallback(
-    (pool: Pool, { instant = false, origin, zoom }: OpenPoolDetailOptions = {}) => {
+    (
+      pool: Pool,
+      { instant = false, origin, zoom }: OpenPoolDetailOptions = {},
+    ) => {
       setDetailClosing(false);
       setDetailOrigin(origin ?? resolveDetailOrigin());
       setSheetInstantEnter(instant);
@@ -293,11 +296,7 @@ export function useHomeInteractions({
   const searchPanelRevealFromDetail =
     detailClosing && detailOrigin === 'search';
   const showFavoritesPanel =
-    favoritesOpen &&
-    !selectedPool &&
-    !loading &&
-    !error &&
-    !isSearching;
+    favoritesOpen && !selectedPool && !loading && !error && !isSearching;
   const showFavoritesSheet =
     favoritesOpen && !selectedPool && !loading && !error && !isSearching;
   const searchMode = searchActive || isSearching;

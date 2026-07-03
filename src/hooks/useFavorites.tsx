@@ -6,8 +6,8 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react';
-import { getPoolListKey } from '../utils/poolKey';
-import type { Pool } from '../types/pool';
+import { getPoolListKey } from '@/utils/poolKey';
+import type { Pool } from '@/types/pool';
 
 const STORAGE_KEY = 'ah-poo:favorites';
 const EMPTY_FAVORITES: Pool[] = [];

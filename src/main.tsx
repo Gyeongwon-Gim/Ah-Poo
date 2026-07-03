@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { Analytics } from '@vercel/analytics/react';
-import App from './App';
-import { syncAppViewport } from './utils/appViewport';
-import { applyAppDisplayModeClass } from './utils/platform';
+import App from '@/App';
+import { syncAppViewport } from '@/utils/appViewport';
+import { applyAppDisplayModeClass } from '@/utils/platform';
 import './index.css';
 
 applyAppDisplayModeClass();

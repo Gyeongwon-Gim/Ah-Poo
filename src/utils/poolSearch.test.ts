@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { filterBySearchTerm, poolMatchesQuery } from './poolSearch';
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 const pools: Pool[] = [
   { name: '강남수영장', roadAddress: '서울 강남구 테헤란로 1', fee: '5000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },

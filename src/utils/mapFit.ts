@@ -1,5 +1,5 @@
 import { scorePool } from './poolSearch';
-import type { Pool } from '../types/pool';
+import type { Pool } from '@/types/pool';
 
 export interface MapFitTarget {
   lat: number;
