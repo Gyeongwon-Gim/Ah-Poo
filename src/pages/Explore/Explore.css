@@ -1,16 +1,16 @@
-.home--map {
+.explore--map {
   position: absolute;
   inset: 0;
   overflow: hidden;
 }
 
 /* 연관검색 중 fixed 지도가 키보드 영역까지 비치지 않도록 숨김 */
-.home--suggesting .pool-map {
+.explore--suggesting .pool-map {
   visibility: hidden;
   pointer-events: none;
 }
 
-.home-map-overlay {
+.explore-map-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -21,13 +21,13 @@
 }
 
 /* 검색 모드: 상단 검색바 영역을 솔리드 바로 만들어 시트가 그 아래로 지나가게 한다 */
-.home--searching .home-map-overlay {
+.explore--searching .explore-map-overlay {
   background: var(--pf-surface, #fff);
   box-shadow: var(--pf-shadow-bar);
 }
 
 /* 연관검색어 모드: 오버레이를 전체 높이로 펼쳐 검색바 아래에 추천 리스트를 깐다 */
-.home--suggesting .home-map-overlay {
+.explore--suggesting .explore-map-overlay {
   bottom: 0;
   height: var(--screen-h, 100dvh);
   z-index: 35;
@@ -38,16 +38,16 @@
 }
 
 /* 상세 시트가 열린 상태에서 검색을 시작하면 시트는 뒤로, 검색 UI가 앞으로 */
-.home--suggesting .bottom-sheet--detail {
+.explore--suggesting .bottom-sheet--detail {
   z-index: 20;
   pointer-events: none;
 }
 
-.home-map-overlay > * {
+.explore-map-overlay > * {
   pointer-events: auto;
 }
 
-.home-map-actions {
+.explore-map-actions {
   position: absolute;
   right: 12px;
   bottom: var(--map-fab-default-bottom, calc(16px + var(--safe-bottom)));
@@ -60,15 +60,15 @@
   will-change: transform;
 }
 
-.home-map-actions--dragging {
+.explore-map-actions--dragging {
   transition: none;
 }
 
-.home-map-actions--inert {
+.explore-map-actions--inert {
   pointer-events: none;
 }
 
-.home-search-open-pill {
+.explore-search-open-pill {
   position: absolute;
   left: 50%;
   z-index: 29;
@@ -76,22 +76,22 @@
   pointer-events: auto;
 }
 
-.home-search-open-pill:active:not(:disabled) {
+.explore-search-open-pill:active:not(:disabled) {
   transform: translateX(-50%) scale(0.97);
 }
 
-.home-nearby-entry {
+.explore-nearby-entry {
   display: flex;
   justify-content: flex-start;
   padding: 8px 16px 0;
   pointer-events: none;
 }
 
-.home-nearby-entry > * {
+.explore-nearby-entry > * {
   pointer-events: auto;
 }
 
-.home-nearby-entry-pill__icon {
+.explore-nearby-entry-pill__icon {
   font-size: 16px;
   line-height: 1;
   font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;

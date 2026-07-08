@@ -1,35 +1,35 @@
-.bottom-sheet--list.is-collapsed .favorites__header,
-.bottom-sheet--list.is-collapsed .favorites__list {
+.bottom-sheet--list.is-collapsed .search-result__header,
+.bottom-sheet--list.is-collapsed .search-result__list {
   pointer-events: none;
 }
 
-.favorites__header {
+.search-result__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;
 }
 
-.favorites__title {
+.search-result__title {
   font-size: 15px;
   font-weight: 800;
   color: var(--pf-text);
   letter-spacing: -0.02em;
 }
 
-.favorites__count {
+.search-result__count {
   color: var(--pf-primary-dark);
 }
 
-.favorites__list {
+.search-result__list {
   flex: none;
   overflow: visible;
   padding-bottom: var(--sheet-bottom-reserve, 0px);
 }
 
-.home--favorites .favorites__list {
+.explore--searching .search-result__list {
   padding-bottom: 0;
 }
 
-.favorites__empty {
+.search-result__empty {
   padding: 32px 16px;
   text-align: center;
   font-size: 14px;
@@ -37,18 +37,22 @@
   color: var(--pf-text-muted);
 }
 
-.favorites__empty-slot {
+.bottom-sheet--list.is-soft-sheet .list-item {
+  touch-action: manipulation;
+}
+
+.search-result__empty-slot {
   flex-shrink: 0;
   min-height: 120px;
   border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
-.favorites__empty-slot .favorites__empty {
+.search-result__empty-slot .search-result__empty {
   padding: 14px 16px;
   text-align: left;
 }
 
-.favorites__media {
+.search-result__media {
   width: 100%;
   height: 72px;
   border-radius: 8px;
@@ -56,7 +60,7 @@
   background: var(--pf-surface);
 }
 
-.favorites__media--placeholder {
+.search-result__media--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,14 +68,14 @@
   color: var(--pf-primary);
 }
 
-.favorites__media-img {
+.search-result__media-img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.favorites__favorite {
+.search-result__favorite {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,15 +89,15 @@
   cursor: pointer;
 }
 
-.favorites__favorite--active {
+.search-result__favorite--active {
   color: var(--pf-favorite);
 }
 
-.favorites__dot {
+.search-result__dot {
   color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
 }
 
-.favorites__tag {
+.search-result__tag {
   flex-shrink: 0;
   font-size: 11px;
   font-weight: 700;

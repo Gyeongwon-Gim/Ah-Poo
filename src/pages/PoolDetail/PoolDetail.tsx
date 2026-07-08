@@ -5,7 +5,7 @@ import SeoHead, {
   buildPoolSportsActivityJsonLd,
   DEFAULT_OG_IMAGE,
 } from '@/components/SeoHead';
-import PoolScheduleTags from '@/pages/Home/components/PoolScheduleTags';
+import PoolScheduleTags from '@/pages/Explore/components/PoolScheduleTags';
 import { Button } from '@/components';
 import { fetchPoolById } from '@/services/pools';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';

@@ -18,7 +18,7 @@ import {
   type ExpandPhase,
   type HeaderGesture,
   type PeekBodyGesture,
-} from '@/pages/Home/components/PoolDetailSheet';
+} from '@/pages/Explore/components/PoolDetailSheet';
 
 export interface PoolDetailExpandState {
   isFullscreen: boolean;

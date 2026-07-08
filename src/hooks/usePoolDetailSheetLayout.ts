@@ -18,13 +18,13 @@ import {
   restoreDefaultThemeColor,
 } from '@/utils/themeColor';
 import type { Pool } from '@/types/pool';
-import type { ExpandPhase } from '@/pages/Home/components/PoolDetailSheet';
+import type { ExpandPhase } from '@/pages/Explore/components/PoolDetailSheet';
 import {
   SHEET_CLOSE_MS,
   SHEET_CLOSE_THRESHOLD,
   SHEET_ENTER_MS,
   getScreenHeight,
-} from '@/pages/Home/components/PoolDetailSheet';
+} from '@/pages/Explore/components/PoolDetailSheet';
 
 export interface UsePoolDetailSheetLayoutParams {
   pool: Pool;

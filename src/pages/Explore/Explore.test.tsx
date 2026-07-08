@@ -53,7 +53,7 @@ interface PoolMapStubProps {
 }
 
 // --- child component stubs (지도 SDK / 애니메이션 시트는 단순화) ---
-vi.mock('@/pages/Home/components/PoolMap', () => ({
+vi.mock('@/pages/Explore/components/PoolMap', () => ({
   default: React.forwardRef<unknown, PoolMapStubProps>(function PoolMapStub(
     { pools, onSelectPool },
     ref,
@@ -80,7 +80,7 @@ vi.mock('@/pages/Home/components/PoolMap', () => ({
   }),
 }));
 
-vi.mock('@/pages/Home/components/PoolDetailSheet', () => ({
+vi.mock('@/pages/Explore/components/PoolDetailSheet', () => ({
   default: function PoolDetailSheetStub({ pool }: { pool: Pool }) {
     return <div data-testid="detail-sheet">{pool.name}</div>;
   },
@@ -91,7 +91,7 @@ interface SearchResultStubProps {
   onSelectPool: (pool: Pool) => void;
 }
 
-vi.mock('@/pages/Home/components/SearchResult', () => ({
+vi.mock('@/pages/Explore/components/SearchResult', () => ({
   default: function SearchResultStub({
     pools,
     onSelectPool,
@@ -116,7 +116,7 @@ vi.mock('@/pages/Home/components/SearchResult', () => ({
   },
 }));
 
-vi.mock('@/pages/Home/components/Favorites', () => ({
+vi.mock('@/pages/Explore/components/Favorites', () => ({
   default: function FavoritesStub({
     onCollapsedChange,
     reopenListRef,
@@ -146,7 +146,7 @@ vi.mock('@/pages/Home/components/Favorites', () => ({
   },
 }));
 
-vi.mock('@/pages/Home/components/NearbyPools', () => ({
+vi.mock('@/pages/Explore/components/NearbyPools', () => ({
   default: function NearbyPoolsStub({
     pools,
     onSelectPool,
@@ -194,7 +194,7 @@ vi.mock('@/pages/Home/components/NearbyPools', () => ({
   },
 }));
 
-vi.mock('@/pages/Home/components/SearchSuggestions', () => ({
+vi.mock('@/pages/Explore/components/SearchSuggestions', () => ({
   default: function SearchSuggestionsStub({ pools }: { pools: Pool[] }) {
     return <div data-testid="suggestions">{pools.length}</div>;
   },
@@ -206,7 +206,7 @@ interface SearchBarStubProps {
   onSearch: (value: string) => void;
 }
 
-vi.mock('@/pages/Home/components/SearchBar', () => ({
+vi.mock('@/pages/Explore/components/SearchBar', () => ({
   default: function SearchBarStub({
     value,
     onValueChange,
@@ -230,7 +230,7 @@ vi.mock('@/pages/Home/components/SearchBar', () => ({
   },
 }));
 
-import Home from './Home';
+import Explore from './Explore';
 
 const POOLS: Pool[] = [
   {
@@ -308,7 +308,7 @@ function renderHome(initialEntries: string[] = ['/']) {
       <MemoryRouter initialEntries={initialEntries}>
         <LocationProbe />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Explore />} />
           <Route path="/pool/:id" element={<div data-testid="pool-page" />} />
         </Routes>
       </MemoryRouter>
@@ -333,7 +333,7 @@ beforeEach(() => {
   setLocation({ status: 'pending' });
 });
 
-describe('Home - 로딩/에러/빈 상태', () => {
+describe('Explore - 로딩/에러/빈 상태', () => {
   it('데이터 로딩 중에는 로딩 메시지를 보여준다', () => {
     mocks.fetchPools.mockReturnValue(new Promise(() => {}));
     renderHome();
@@ -376,7 +376,7 @@ describe('Home - 로딩/에러/빈 상태', () => {
   });
 });
 
-describe('Home - 위치 상태', () => {
+describe('Explore - 위치 상태', () => {
   it('위치 확인 중에는 위치 안내 메시지를 보여준다', async () => {
     setLocation({ status: 'pending' });
     renderHome();
@@ -414,7 +414,7 @@ describe('Home - 위치 상태', () => {
   });
 });
 
-describe('Home - 주변 수영장', () => {
+describe('Explore - 주변 수영장', () => {
   it('주변 수영장 pill을 누르면 반경 내 목록·마커를 표시한다', async () => {
     const toggleNearby = vi.fn();
     mocks.useMainTab.mockReturnValue({
@@ -491,7 +491,7 @@ describe('Home - 주변 수영장', () => {
   });
 });
 
-describe('Home - 검색', () => {
+describe('Explore - 검색', () => {
   it('검색어 제출 시 결과 패널에 필터된 수영장이 표시된다', async () => {
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
@@ -523,7 +523,7 @@ describe('Home - 검색', () => {
   });
 });
 
-describe('Home - 수영장 선택', () => {
+describe('Explore - 수영장 선택', () => {
   it('마커를 선택하면 상세 시트가 열리고 지도가 해당 위치로 이동한다', async () => {
     mocks.useMainTab.mockReturnValue({
       favoritesOpen: false,
@@ -545,7 +545,7 @@ describe('Home - 수영장 선택', () => {
   });
 });
 
-describe('Home - 즐겨찾기 collapsed', () => {
+describe('Explore - 즐겨찾기 collapsed', () => {
   it('즐겨찾기 collapsed 시 목록 열기 pill을 표시한다', async () => {
     mocks.useMainTab.mockReturnValue({
       favoritesOpen: true,
@@ -592,7 +592,7 @@ describe('Home - 즐겨찾기 collapsed', () => {
   });
 });
 
-describe('Home - 공유 딥링크 진입', () => {
+describe('Explore - 공유 딥링크 진입', () => {
   it('?pool=<id>로 들어오면 지도에서 상세 시트를 연다', async () => {
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome(['/?pool=2']);

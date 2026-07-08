@@ -8,7 +8,7 @@ import type { Pool } from '@/types/pool';
 import {
   BLOG_INITIAL_VISIBLE,
   BLOG_LOAD_MORE_STEP,
-} from '@/pages/Home/components/PoolDetailSheet';
+} from '@/pages/Explore/components/PoolDetailSheet';
 
 export function usePoolBlogReviews(pool: Pool) {
   const [blogReviews, setBlogReviews] = useState<PoolBlogReviewItem[]>([]);

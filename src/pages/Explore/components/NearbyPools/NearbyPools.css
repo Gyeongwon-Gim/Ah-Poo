@@ -1,35 +1,35 @@
-.bottom-sheet--list.is-collapsed .search-result__header,
-.bottom-sheet--list.is-collapsed .search-result__list {
+.bottom-sheet--list.is-collapsed .nearby-pools__header,
+.bottom-sheet--list.is-collapsed .nearby-pools__list {
   pointer-events: none;
 }
 
-.search-result__header {
+.nearby-pools__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;
 }
 
-.search-result__title {
+.nearby-pools__title {
   font-size: 15px;
   font-weight: 800;
   color: var(--pf-text);
   letter-spacing: -0.02em;
 }
 
-.search-result__count {
+.nearby-pools__count {
   color: var(--pf-primary-dark);
 }
 
-.search-result__list {
+.nearby-pools__list {
   flex: none;
   overflow: visible;
   padding-bottom: var(--sheet-bottom-reserve, 0px);
 }
 
-.home--searching .search-result__list {
+.explore--nearby .nearby-pools__list {
   padding-bottom: 0;
 }
 
-.search-result__empty {
+.nearby-pools__empty {
   padding: 32px 16px;
   text-align: center;
   font-size: 14px;
@@ -37,22 +37,18 @@
   color: var(--pf-text-muted);
 }
 
-.bottom-sheet--list.is-soft-sheet .list-item {
-  touch-action: manipulation;
-}
-
-.search-result__empty-slot {
+.nearby-pools__empty-slot {
   flex-shrink: 0;
   min-height: 120px;
   border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
-.search-result__empty-slot .search-result__empty {
+.nearby-pools__empty-slot .nearby-pools__empty {
   padding: 14px 16px;
   text-align: left;
 }
 
-.search-result__media {
+.nearby-pools__media {
   width: 100%;
   height: 72px;
   border-radius: 8px;
@@ -60,7 +56,7 @@
   background: var(--pf-surface);
 }
 
-.search-result__media--placeholder {
+.nearby-pools__media--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,14 +64,14 @@
   color: var(--pf-primary);
 }
 
-.search-result__media-img {
+.nearby-pools__media-img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.search-result__favorite {
+.nearby-pools__favorite {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,15 +85,15 @@
   cursor: pointer;
 }
 
-.search-result__favorite--active {
+.nearby-pools__favorite--active {
   color: var(--pf-favorite);
 }
 
-.search-result__dot {
+.nearby-pools__dot {
   color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
 }
 
-.search-result__tag {
+.nearby-pools__tag {
   flex-shrink: 0;
   font-size: 11px;
   font-weight: 700;

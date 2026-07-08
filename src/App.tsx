@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from '@/pages/Home/Home';
+import Explore from '@/pages/Explore/Explore';
 import PoolDetail from '@/pages/PoolDetail/PoolDetail';
 import { MainTabProvider } from '@/contexts/MainTabContext';
 import { FavoritesProvider } from '@/hooks/useFavorites';
@@ -13,7 +13,7 @@ function App() {
           <div className="app">
             <div className="app__main">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Explore />} />
                 <Route path="/pool/:id" element={<PoolDetail />} />
               </Routes>
             </div>

@@ -4,7 +4,7 @@ import BottomSheet from '@/components/BottomSheet';
 import ListItem from '@/components/ListItem';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
-import { useListSheet } from '@/pages/Home/hooks/useListSheet';
+import { useListSheet } from '@/pages/Explore/hooks/useListSheet';
 import { isFlagOn } from '@/services/pools';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { formatDistance } from '@/utils/formatDistance';

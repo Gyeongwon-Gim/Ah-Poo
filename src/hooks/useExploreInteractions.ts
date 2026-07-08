@@ -6,7 +6,7 @@ import { filterBySearchTerm } from '@/utils/poolSearch';
 import { enrichWithDistance } from '@/utils/geo';
 import { syncAppViewport } from '@/utils/appViewport';
 import type { Pool } from '@/types/pool';
-import type { PoolMapHandle } from '@/pages/Home/components/PoolMap';
+import type { PoolMapHandle } from '@/pages/Explore/components/PoolMap';
 import type { GeoCoords, LocationStatus } from './useUserLocation';
 
 export type { PoolMapHandle };
@@ -24,7 +24,7 @@ interface OpenPoolDetailOptions {
   zoom?: number;
 }
 
-interface UseHomeInteractionsParams {
+interface UseExploreInteractionsParams {
   pools: Pool[];
   userLocation: GeoCoords | null;
   locationStatus: LocationStatus;
@@ -43,7 +43,7 @@ interface UseHomeInteractionsParams {
  * 홈 화면의 상호작용 상태 머신: 검색, 상세 시트, 즐겨찾기·주변 시트를
  * 한곳에서 관리한다. 이 영역들은 서로를 닫고 여는 관계라 응집도를 위해 하나의 훅으로 묶었다.
  */
-export function useHomeInteractions({
+export function useExploreInteractions({
   pools,
   userLocation,
   locationStatus,
@@ -56,7 +56,7 @@ export function useHomeInteractions({
   refreshLocation,
   location,
   navigate,
-}: UseHomeInteractionsParams) {
+}: UseExploreInteractionsParams) {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [searchActive, setSearchActive] = useState(false);
@@ -146,7 +146,7 @@ export function useHomeInteractions({
     }
   }, [isSearching, closeFavorites, closeNearby]);
 
-  // 연관검색 모드에서는 .home--suggesting .pool-map 이 visibility:hidden 이 된다.
+  // 연관검색 모드에서는 .explore--suggesting .pool-map 이 visibility:hidden 이 된다.
   // visibility 변화는 ResizeObserver·IntersectionObserver 가 감지하지 못해
   // 검색을 빠져나와 지도가 다시 보일 때 빈 타일이 남는다. 이때 직접 relayout 한다.
   const prevSearchActiveRef = useRef(searchActive);

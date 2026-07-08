@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Search, X, ChevronLeft } from 'lucide-react';
-import SearchBarLogo from '@/pages/Home/components/SearchBarLogo';
+import SearchBarLogo from '@/pages/Explore/components/SearchBarLogo';
 import { Button, Input } from '@/components';
 import { disableInputAccessoryView } from '@/utils/disableInputAccessoryView';
 import { setIosKeyboardInputFocused } from '@/utils/iosKeyboardScrollLock';

@@ -40,7 +40,7 @@ export function buildPoolSportsActivityJsonLd(pool: Pool | null | undefined) {
   };
 }
 
-export function buildHomeJsonLd() {
+export function buildExploreJsonLd() {
   return [
     {
       '@context': 'https://schema.org',

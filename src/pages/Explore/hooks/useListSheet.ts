@@ -42,7 +42,7 @@ const getContainerH = (el: HTMLElement | null) => {
   if (typeof document === 'undefined') return 800;
   const vv = window.visualViewport?.height;
   if (vv) return Math.round(vv);
-  const home = el?.closest?.('.home') ?? document.querySelector('.home');
+  const home = el?.closest?.('.explore') ?? document.querySelector('.explore');
   return (home as HTMLElement | null)?.clientHeight ?? window.innerHeight;
 };
 

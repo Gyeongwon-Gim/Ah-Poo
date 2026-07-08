@@ -4,21 +4,21 @@ import BottomSheet from '@/components/BottomSheet';
 import ListItem from '@/components/ListItem';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
-import { useListSheet } from '@/pages/Home/hooks/useListSheet';
+import { useListSheet } from '@/pages/Explore/hooks/useListSheet';
 import { isFlagOn } from '@/services/pools';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { formatDistance } from '@/utils/formatDistance';
 import { getPoolListKey } from '@/utils/poolKey';
 import type { Pool } from '@/types/pool';
-import './NearbyPools.css';
+import './Favorites.css';
 
-interface NearbyPoolItemProps {
+interface FavoritesPoolItemProps {
   pool: Pool;
   selected: boolean;
   onSelect: (pool: Pool) => void;
 }
 
-function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
+function FavoritesPoolItem({ pool, selected, onSelect }: FavoritesPoolItemProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(pool);
   const distanceLabel = formatDistance(pool.distanceKm);
@@ -30,9 +30,9 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
   return (
     <ListItem selected={selected} onSelect={() => onSelect(pool)}>
       {poolImageUrl && !poolImageFailed ? (
-        <ListItem.Media className="nearby-pools__media">
+        <ListItem.Media className="favorites__media">
           <img
-            className="nearby-pools__media-img"
+            className="favorites__media-img"
             src={poolImageUrl}
             alt=""
             loading="lazy"
@@ -41,7 +41,7 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
         </ListItem.Media>
       ) : (
         <ListItem.Media
-          className="nearby-pools__media nearby-pools__media--placeholder"
+          className="favorites__media favorites__media--placeholder"
           aria-hidden
         >
           <Waves size={20} />
@@ -52,7 +52,7 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
         <ListItem.Content>
           <ListItem.TitleRow>
             <ListItem.Title>{pool.name}</ListItem.Title>
-            {show50mTag && <span className="nearby-pools__tag">50m</span>}
+            {show50mTag && <span className="favorites__tag">50m</span>}
           </ListItem.TitleRow>
 
           {(feeLabel || distanceLabel) && (
@@ -61,7 +61,7 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
                 <span x-apple-data-detectors="none">{feeLabel}</span>
               )}
               {feeLabel && distanceLabel && (
-                <span className="nearby-pools__dot" aria-hidden>
+                <span className="favorites__dot" aria-hidden>
                   ·
                 </span>
               )}
@@ -79,8 +79,8 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
         <ListItem.Trailing>
           <button
             type="button"
-            className={`nearby-pools__favorite ${
-              favorite ? 'nearby-pools__favorite--active' : ''
+            className={`favorites__favorite ${
+              favorite ? 'favorites__favorite--active' : ''
             }`}
             aria-label="즐겨찾기"
             aria-pressed={favorite}
@@ -101,9 +101,9 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
   );
 }
 
-const MemoNearbyPoolItem = memo(NearbyPoolItem);
+const MemoFavoritesPoolItem = memo(FavoritesPoolItem);
 
-export interface NearbyPoolsProps {
+export interface FavoritesProps {
   pools: Pool[];
   selectedPool: Pool | null;
   onSelectPool?: (pool: Pool) => void;
@@ -114,7 +114,7 @@ export interface NearbyPoolsProps {
   onDragChange?: (dragging: boolean) => void;
 }
 
-export default function NearbyPools({
+export default function Favorites({
   pools,
   selectedPool,
   onSelectPool,
@@ -123,7 +123,7 @@ export default function NearbyPools({
   reopenListRef,
   onTopChange,
   onDragChange,
-}: NearbyPoolsProps) {
+}: FavoritesProps) {
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null;
 
   const sheet = useListSheet({
@@ -156,7 +156,7 @@ export default function NearbyPools({
       instant={sheet.instant}
       softSheet={sheet.softSheet}
       style={{ transform: `translateY(${sheet.translateY}px)` }}
-      aria-label="주변 수영장"
+      aria-label="즐겨찾기"
       onTouchStartCapture={sheet.handleTouchStart}
       onTouchEndCapture={sheet.handleTouchEnd}
       onTouchCancelCapture={sheet.handleTouchEnd}
@@ -177,23 +177,23 @@ export default function NearbyPools({
             sheet.toggleHandle();
           }}
         />
-        <header className="nearby-pools__header">
-          <h2 className="nearby-pools__title">
-            주변 수영장{' '}
-            <span className="nearby-pools__count">{pools.length}</span>곳
+        <header className="favorites__header">
+          <h2 className="favorites__title">
+            즐겨찾기{' '}
+            <span className="favorites__count">{pools.length}</span>곳
           </h2>
         </header>
       </BottomSheet.Header>
 
-      <div ref={sheet.listRef} className="nearby-pools__list" role="list">
+      <div ref={sheet.listRef} className="favorites__list" role="list">
         {pools.length === 0 ? (
-          <div className="nearby-pools__empty-slot" role="listitem">
-            <p className="nearby-pools__empty">주변에 등록된 수영장이 없어요</p>
+          <div className="favorites__empty-slot" role="listitem">
+            <p className="favorites__empty">즐겨찾기한 수영장이 없어요</p>
           </div>
         ) : (
           pools.map((pool) => (
             <div key={getPoolListKey(pool)} role="listitem">
-              <MemoNearbyPoolItem
+              <MemoFavoritesPoolItem
                 pool={pool}
                 selected={selectedKey === getPoolListKey(pool)}
                 onSelect={(p) => onSelectPool?.(p)}

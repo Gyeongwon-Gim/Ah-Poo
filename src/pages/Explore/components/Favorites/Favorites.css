@@ -1,35 +1,35 @@
-.bottom-sheet--list.is-collapsed .nearby-pools__header,
-.bottom-sheet--list.is-collapsed .nearby-pools__list {
+.bottom-sheet--list.is-collapsed .favorites__header,
+.bottom-sheet--list.is-collapsed .favorites__list {
   pointer-events: none;
 }
 
-.nearby-pools__header {
+.favorites__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;
 }
 
-.nearby-pools__title {
+.favorites__title {
   font-size: 15px;
   font-weight: 800;
   color: var(--pf-text);
   letter-spacing: -0.02em;
 }
 
-.nearby-pools__count {
+.favorites__count {
   color: var(--pf-primary-dark);
 }
 
-.nearby-pools__list {
+.favorites__list {
   flex: none;
   overflow: visible;
   padding-bottom: var(--sheet-bottom-reserve, 0px);
 }
 
-.home--nearby .nearby-pools__list {
+.explore--favorites .favorites__list {
   padding-bottom: 0;
 }
 
-.nearby-pools__empty {
+.favorites__empty {
   padding: 32px 16px;
   text-align: center;
   font-size: 14px;
@@ -37,18 +37,18 @@
   color: var(--pf-text-muted);
 }
 
-.nearby-pools__empty-slot {
+.favorites__empty-slot {
   flex-shrink: 0;
   min-height: 120px;
   border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
-.nearby-pools__empty-slot .nearby-pools__empty {
+.favorites__empty-slot .favorites__empty {
   padding: 14px 16px;
   text-align: left;
 }
 
-.nearby-pools__media {
+.favorites__media {
   width: 100%;
   height: 72px;
   border-radius: 8px;
@@ -56,7 +56,7 @@
   background: var(--pf-surface);
 }
 
-.nearby-pools__media--placeholder {
+.favorites__media--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,14 +64,14 @@
   color: var(--pf-primary);
 }
 
-.nearby-pools__media-img {
+.favorites__media-img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.nearby-pools__favorite {
+.favorites__favorite {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,15 +85,15 @@
   cursor: pointer;
 }
 
-.nearby-pools__favorite--active {
+.favorites__favorite--active {
   color: var(--pf-favorite);
 }
 
-.nearby-pools__dot {
+.favorites__dot {
   color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
 }
 
-.nearby-pools__tag {
+.favorites__tag {
   flex-shrink: 0;
   font-size: 11px;
   font-weight: 700;
