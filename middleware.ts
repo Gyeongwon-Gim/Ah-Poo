@@ -1,4 +1,4 @@
-import { rewrite } from '@vercel/edge';
+import { rewrite } from '@vercel/functions';
 
 const CRAWLER_UA =
   /bot|crawl|slurp|spider|mediapartners|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|TelegramBot|Kakaotalk|kakaostory|Daum|naver|yeti|preview|SkypeUriPreview|Slackbot|Discordbot/i;
