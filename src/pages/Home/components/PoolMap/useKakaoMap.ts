@@ -53,19 +53,13 @@ function scheduleMapRelayout(
   };
   run();
 
-  let raf2 = 0;
-  const raf1 = requestAnimationFrame(() => {
-    run();
-    raf2 = requestAnimationFrame(run);
-  });
+  // 생성/마운트 직후 레이아웃이 한 프레임 뒤 확정되는 경우를 위해 한 번 더.
+  // 이후의 실제 크기 변화는 ResizeObserver가 정확히 잡으므로, 예전의
+  // [0,50,200,500]ms 타이머 난사는 제거한다(지연 refreshMapTiles의 setCenter가
+  // 검색 panTo 애니메이션을 중단시키던 문제의 원인).
+  const raf = requestAnimationFrame(run);
 
-  const timers = [0, 50, 200, 500].map((ms) => window.setTimeout(run, ms));
-
-  return () => {
-    cancelAnimationFrame(raf1);
-    cancelAnimationFrame(raf2);
-    timers.forEach((id) => window.clearTimeout(id));
-  };
+  return () => cancelAnimationFrame(raf);
 }
 
 export interface KakaoMapController {
