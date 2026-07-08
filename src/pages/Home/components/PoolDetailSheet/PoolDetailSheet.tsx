@@ -6,7 +6,6 @@ import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolBlogReviews } from '@/hooks/usePoolBlogReviews';
 import { usePoolDetailSheetLayout } from '@/hooks/usePoolDetailSheetLayout';
-import type { GeoCoords } from '@/hooks/useUserLocation';
 import type { Pool } from '@/types/pool';
 import PoolDetailToolbar from './PoolDetailToolbar';
 import PoolDetailContent from './PoolDetailContent';
@@ -15,7 +14,6 @@ import './PoolDetailSheet.css';
 
 interface PoolDetailSheetProps {
   pool: Pool;
-  userLocation?: GeoCoords | null;
   onClose: () => void;
   onCloseStart?: () => void;
   onBack?: () => void;
@@ -27,7 +25,6 @@ interface PoolDetailSheetProps {
 
 export default function PoolDetailSheet({
   pool,
-  userLocation = null,
   onClose,
   onCloseStart,
   onBack,

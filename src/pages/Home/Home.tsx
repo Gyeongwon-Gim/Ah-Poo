@@ -428,7 +428,6 @@ function Home() {
         <PoolDetailSheet
           key={getPoolListKey(selectedPool)}
           pool={selectedPool}
-          userLocation={userLocation}
           instantEnter={sheetInstantEnter}
           onCloseStart={handleDetailCloseStart}
           onClose={handleDetailClose}

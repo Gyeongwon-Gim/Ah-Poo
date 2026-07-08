@@ -37,19 +37,18 @@ function watchPositionOnce(options: PositionOptions) {
 
     const timeoutMs = options.timeout ?? 10000;
     let watchId = 0;
-    let timer: ReturnType<typeof setTimeout>;
+
+    const timer = setTimeout(() => {
+      navigator.geolocation.clearWatch(watchId);
+      const err = new Error('timeout') as Error & { code?: number };
+      err.code = 3;
+      reject(err);
+    }, timeoutMs);
 
     const cleanup = () => {
       clearTimeout(timer);
       navigator.geolocation.clearWatch(watchId);
     };
-
-    timer = setTimeout(() => {
-      cleanup();
-      const err = new Error('timeout') as Error & { code?: number };
-      err.code = 3;
-      reject(err);
-    }, timeoutMs);
 
     watchId = navigator.geolocation.watchPosition(
       (pos) => {
