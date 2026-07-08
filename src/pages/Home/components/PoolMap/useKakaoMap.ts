@@ -200,6 +200,8 @@ export function useKakaoMap({
     );
     intersectionObserver.observe(el);
 
+    // 지도가 소비자에 노출된 직후, 컨테이너 최종 크기 기준으로 한 번 더 정렬한다.
+    // (생성 이펙트의 호출만으로는 검색 panTo 중심·레벨이 틀어지는 경우가 있어 유지)
     const cancelRelayout = scheduleMapRelayout(map, el);
 
     return () => {
