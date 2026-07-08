@@ -252,7 +252,7 @@ async function fetchPoolBlogReviewsPageOnce(
 }
 
 async function fetchPoolBlogReviewsPage(
-  options: FetchPoolBlogReviewsOptions,
+  options: FetchPoolBlogReviewsOptions & { query: string },
 ): Promise<PoolBlogReviewsResult> {
   let lastError: unknown;
 
