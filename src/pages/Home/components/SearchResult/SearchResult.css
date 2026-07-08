@@ -6,7 +6,6 @@
 .search-result__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;
-  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
 .search-result__title {

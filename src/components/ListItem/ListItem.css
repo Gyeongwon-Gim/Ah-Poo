@@ -1,8 +1,19 @@
 .list-item {
+  position: relative;
   padding: 14px 16px 12px;
-  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
+  border-bottom: none;
   cursor: pointer;
   transition: background 0.15s ease;
+}
+
+.list-item::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
 }
 
 .list-item:active,

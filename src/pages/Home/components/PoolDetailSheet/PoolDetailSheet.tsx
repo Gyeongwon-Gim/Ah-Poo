@@ -62,9 +62,7 @@ export default function PoolDetailSheet({
       : null;
 
   const handleDirections = () => {
-    openNaverDirections(pool, {
-      origin: userLocation ? { ...userLocation, name: '현재 위치' } : null,
-    });
+    openNaverDirections(pool);
   };
 
   const handleShare = async () => {
@@ -124,7 +122,7 @@ export default function PoolDetailSheet({
       variant="detail"
       as="div"
       dragging={
-        sheet.dragging || sheet.expandDragging || sheet.peekBarDragging
+        sheet.dragging || sheet.expandDragging || sheet.headerDragging
       }
       className={`${
         sheet.phase === 'entering' ? 'pool-sheet--entering' : ''
@@ -132,7 +130,7 @@ export default function PoolDetailSheet({
         (sheet.phase === 'exiting' || sheet.snapTransition) &&
         !sheet.dragging &&
         !sheet.expandDragging &&
-        !sheet.peekBarDragging
+        !sheet.headerDragging
           ? 'pool-sheet--transition'
           : ''
       } ${
@@ -185,14 +183,15 @@ export default function PoolDetailSheet({
           </>
         ) : (
           <>
-            <BottomSheet.PeekBar
-              onPointerDown={sheet.onPeekBarPointerDown}
-              onPointerMove={sheet.onPeekBarPointerMove}
-              onPointerUp={sheet.onPeekBarPointerUp}
-              onPointerCancel={sheet.onPeekBarPointerCancel}
-            >
-              <BottomSheet.Handle ariaLabel="전체 보기" />
-            </BottomSheet.PeekBar>
+            <BottomSheet.Header>
+              <BottomSheet.Handle
+                ariaLabel="전체 보기"
+                onPointerDown={sheet.onHeaderPointerDown}
+                onPointerMove={sheet.onHeaderPointerMove}
+                onPointerUp={sheet.onHeaderPointerUp}
+                onPointerCancel={sheet.onHeaderPointerCancel}
+              />
+            </BottomSheet.Header>
             <div
               ref={sheet.peekPreviewRef}
               className="pool-sheet__peek-body"

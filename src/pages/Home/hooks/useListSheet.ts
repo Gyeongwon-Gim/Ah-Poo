@@ -87,7 +87,7 @@ export function useListSheet({
 }: UseListSheetOptions) {
   const sectionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLButtonElement>(null);
   const behindDetailRef = useRef(behindDetail);
   const revealFromDetailRef = useRef(revealFromDetail);
@@ -261,6 +261,23 @@ export function useListSheet({
     setExpanded(!expandedRef.current);
   };
 
+  const toggleHandle = () => {
+    if (dragging) return;
+    if (collapsedRef.current) {
+      expandFromCollapsed();
+      return;
+    }
+    if (expandedRef.current) {
+      setExpanded(false);
+      return;
+    }
+    if (collapseToHandleRef.current) {
+      snapToCollapsed();
+      return;
+    }
+    setExpanded(true);
+  };
+
   useEffect(() => {
     onTopChangeRef.current?.(translateRef.current);
   }, [translateY, ready, behindDetail, revealFromDetail]);
@@ -281,7 +298,7 @@ export function useListSheet({
 
   const measurePeek = () => {
     measureContentH();
-    const barH = barRef.current?.offsetHeight ?? 60;
+    const barH = headerRef.current?.offsetHeight ?? 60;
     const firstItemEl = listRef.current?.firstElementChild;
     const useFirstSlot =
       itemCount > 0 || (reservePeekWhenEmpty && itemCount === 0);
@@ -334,14 +351,14 @@ export function useListSheet({
 
   useEffect(() => {
     const section = sectionRef.current;
-    const bar = barRef.current;
+    const header = headerRef.current;
     const handle = handleRef.current;
     const firstItem = listRef.current?.firstElementChild;
-    if (!section && !bar && !handle && !firstItem) return undefined;
+    if (!section && !header && !handle && !firstItem) return undefined;
 
     const ro = new ResizeObserver(() => measurePeek());
     if (section) ro.observe(section);
-    if (bar) ro.observe(bar);
+    if (header) ro.observe(header);
     if (handle) ro.observe(handle);
     if (firstItem) ro.observe(firstItem);
     return () => ro.disconnect();
@@ -728,7 +745,7 @@ export function useListSheet({
   return {
     sectionRef,
     listRef,
-    barRef,
+    headerRef,
     handleRef,
     ready,
     expanded,
@@ -740,6 +757,7 @@ export function useListSheet({
     revealing: revealFromDetail,
     inert: interactionDisabled,
     toggleExpanded,
+    toggleHandle,
     expandFromCollapsed,
     handleTouchStart,
     handleTouchEnd,

@@ -14,7 +14,7 @@ export const EXPAND_COMMIT_THRESHOLD = 0.25;
 
 export type ExpandPhase = 'idle' | 'dragging' | 'animating';
 
-export interface PeekBarGesture {
+export interface HeaderGesture {
   startX: number;
   startY: number;
   mode: 'undecided' | 'expand' | 'dismiss';

@@ -102,14 +102,14 @@ const BottomSheetRoot = forwardRef<HTMLElement, BottomSheetProps>(
   },
 );
 
-type BottomSheetPeekBarProps = ComponentPropsWithoutRef<'div'>;
+type BottomSheetHeaderProps = ComponentPropsWithoutRef<'div'>;
 
-const BottomSheetPeekBar = forwardRef<HTMLDivElement, BottomSheetPeekBarProps>(
-  function BottomSheetPeekBar({ className = '', ...rest }, ref) {
+const BottomSheetHeader = forwardRef<HTMLDivElement, BottomSheetHeaderProps>(
+  function BottomSheetHeader({ className = '', ...rest }, ref) {
     return (
       <div
         ref={ref}
-        className={['bottom-sheet__peek-bar', className].filter(Boolean).join(' ')}
+        className={['bottom-sheet__header', className].filter(Boolean).join(' ')}
         {...rest}
       />
     );
@@ -138,7 +138,7 @@ const BottomSheetHandle = forwardRef<HTMLButtonElement, BottomSheetHandleProps>(
 );
 
 const BottomSheet = Object.assign(BottomSheetRoot, {
-  PeekBar: BottomSheetPeekBar,
+  Header: BottomSheetHeader,
   Handle: BottomSheetHandle,
 });
 

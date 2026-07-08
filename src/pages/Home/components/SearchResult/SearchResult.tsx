@@ -184,11 +184,7 @@ export default function SearchResult({
       onTouchCancelCapture={sheet.handleTouchEnd}
       onMouseDown={sheet.handleMouseDown}
     >
-      <BottomSheet.PeekBar
-        ref={sheet.barRef}
-        onClick={sheet.toggleExpanded}
-        role="presentation"
-      >
+      <BottomSheet.Header ref={sheet.headerRef}>
         <BottomSheet.Handle
           ref={sheet.handleRef}
           ariaLabel={
@@ -196,11 +192,11 @@ export default function SearchResult({
               ? '목록 펼치기'
               : sheet.expanded
                 ? '목록 접기'
-                : '목록 펼치기'
+                : '목록 숨기기'
           }
           onClick={(e) => {
             e.stopPropagation();
-            sheet.toggleExpanded();
+            sheet.toggleHandle();
           }}
         />
         <header className="search-result__header">
@@ -209,7 +205,7 @@ export default function SearchResult({
             <span className="search-result__count">{pools.length}</span>건
           </h2>
         </header>
-      </BottomSheet.PeekBar>
+      </BottomSheet.Header>
 
       <div ref={sheet.listRef} className="search-result__list" role="list">
         {pools.length === 0 ? (

@@ -13,33 +13,16 @@ const pool = {
   lng: 127.0276,
 };
 
-const origin = {
-  lat: 37.5,
-  lng: 127.0,
-  name: '현재 위치',
-};
-
 const NAVER_MAP_IOS_STORE = 'https://itunes.apple.com/app/id311867728?mt=8';
 
 describe('buildNaverDirectionsAppUrl', () => {
-  it('대중교통 앱 딥링크와 필수 파라미터를 포함한다', () => {
+  it('통합 검색 앱 딥링크와 필수 파라미터를 포함한다', () => {
     const url = buildNaverDirectionsAppUrl(pool);
     const query = new URLSearchParams(url.split('?')[1]!);
 
-    expect(url.startsWith('nmap://route/public?')).toBe(true);
-    expect(query.get('dlat')).toBe('37.4979');
-    expect(query.get('dlng')).toBe('127.0276');
-    expect(query.get('dname')).toBe('강남구민체육센터 수영장');
+    expect(url.startsWith('nmap://search?')).toBe(true);
+    expect(query.get('query')).toBe('강남구민체육센터 수영장');
     expect(query.get('appname')).toBe(SITE_URL);
-  });
-
-  it('출발지가 있으면 slat/slng/sname을 포함한다', () => {
-    const url = buildNaverDirectionsAppUrl(pool, origin);
-    const query = new URLSearchParams(url.split('?')[1]!);
-
-    expect(query.get('slat')).toBe('37.5');
-    expect(query.get('slng')).toBe('127');
-    expect(query.get('sname')).toBe('현재 위치');
   });
 });
 
@@ -47,7 +30,8 @@ describe('buildNaverDirectionsAndroidIntentUrl', () => {
   it('Intent URL과 Android suffix를 포함한다', () => {
     const url = buildNaverDirectionsAndroidIntentUrl(pool);
 
-    expect(url.startsWith('intent://route/public?')).toBe(true);
+    expect(url.startsWith('intent://search?')).toBe(true);
+    expect(url).toContain('query=');
     expect(url).toContain('appname=');
     expect(url.endsWith(
       '#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;end',
@@ -56,19 +40,11 @@ describe('buildNaverDirectionsAndroidIntentUrl', () => {
 });
 
 describe('buildNaverDirectionsWebUrl', () => {
-  it('경도·위도 순서로 대중교통 길찾기 웹 URL을 만든다', () => {
+  it('수영장 이름으로 웹 통합 검색 URL을 만든다', () => {
     const url = buildNaverDirectionsWebUrl(pool);
 
     expect(url).toBe(
-      `https://map.naver.com/p/directions/-/-/transit/127.0276,37.4979,${encodeURIComponent('강남구민체육센터 수영장')},PLACE_POI/-/transit`,
-    );
-  });
-
-  it('출발지가 있으면 출발 슬롯을 채운다', () => {
-    const url = buildNaverDirectionsWebUrl(pool, origin);
-
-    expect(url).toBe(
-      `https://map.naver.com/p/directions/127,37.5,${encodeURIComponent('현재 위치')},PLACE_POI/-/transit/127.0276,37.4979,${encodeURIComponent('강남구민체육센터 수영장')},PLACE_POI/-/transit`,
+      `https://map.naver.com/p/search/${encodeURIComponent('강남구민체육센터 수영장')}`,
     );
   });
 });

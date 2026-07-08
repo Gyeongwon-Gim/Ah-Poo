@@ -162,11 +162,7 @@ export default function Favorites({
       onTouchCancelCapture={sheet.handleTouchEnd}
       onMouseDown={sheet.handleMouseDown}
     >
-      <BottomSheet.PeekBar
-        ref={sheet.barRef}
-        onClick={sheet.toggleExpanded}
-        role="presentation"
-      >
+      <BottomSheet.Header ref={sheet.headerRef}>
         <BottomSheet.Handle
           ref={sheet.handleRef}
           ariaLabel={
@@ -174,11 +170,11 @@ export default function Favorites({
               ? '목록 펼치기'
               : sheet.expanded
                 ? '목록 접기'
-                : '목록 펼치기'
+                : '목록 숨기기'
           }
           onClick={(e) => {
             e.stopPropagation();
-            sheet.toggleExpanded();
+            sheet.toggleHandle();
           }}
         />
         <header className="favorites__header">
@@ -187,7 +183,7 @@ export default function Favorites({
             <span className="favorites__count">{pools.length}</span>곳
           </h2>
         </header>
-      </BottomSheet.PeekBar>
+      </BottomSheet.Header>
 
       <div ref={sheet.listRef} className="favorites__list" role="list">
         {pools.length === 0 ? (

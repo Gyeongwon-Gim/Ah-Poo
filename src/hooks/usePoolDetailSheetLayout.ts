@@ -71,7 +71,7 @@ export function usePoolDetailSheetLayout({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [expandPhase, setExpandPhase] = useState<ExpandPhase>('idle');
   const [expandDragging, setExpandDragging] = useState(false);
-  const [peekBarDragging, setPeekBarDragging] = useState(false);
+  const [headerDragging, setHeaderDragging] = useState(false);
 
   const expandState: PoolDetailExpandState = {
     isFullscreen,
@@ -82,8 +82,8 @@ export function usePoolDetailSheetLayout({
     expandPhaseRef,
     expandDragging,
     setExpandDragging,
-    peekBarDragging,
-    setPeekBarDragging,
+    headerDragging,
+    setHeaderDragging,
   };
 
   useEffect(() => {
@@ -184,10 +184,10 @@ export function usePoolDetailSheetLayout({
     resetExpandInstant,
     resetFullscreen,
     handleExpandTransitionEnd,
-    onPeekBarPointerDown,
-    onPeekBarPointerMove,
-    onPeekBarPointerUp,
-    onPeekBarPointerCancel,
+    onHeaderPointerDown,
+    onHeaderPointerMove,
+    onHeaderPointerUp,
+    onHeaderPointerCancel,
     onPeekBodyPointerDown,
     onPeekBodyPointerMove,
     onPeekBodyPointerUp,
@@ -294,7 +294,7 @@ export function usePoolDetailSheetLayout({
     expandPhaseRef.current = 'idle';
     setExpandPhase('idle');
     setExpandDragging(false);
-    setPeekBarDragging(false);
+    setHeaderDragging(false);
     translateLockedRef.current = false;
     clearExpandStyles(el);
 
@@ -427,15 +427,15 @@ export function usePoolDetailSheetLayout({
     isFullscreen,
     expandPhase,
     expandDragging,
-    peekBarDragging,
+    headerDragging,
     handleBack,
     handleClose,
     handleEnterEnd,
     handleExpandTransitionEnd,
-    onPeekBarPointerDown,
-    onPeekBarPointerMove,
-    onPeekBarPointerUp,
-    onPeekBarPointerCancel,
+    onHeaderPointerDown,
+    onHeaderPointerMove,
+    onHeaderPointerUp,
+    onHeaderPointerCancel,
     onPeekBodyPointerDown,
     onPeekBodyPointerMove,
     onPeekBodyPointerUp,

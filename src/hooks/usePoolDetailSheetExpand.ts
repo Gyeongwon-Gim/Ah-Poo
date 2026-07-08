@@ -16,7 +16,7 @@ import {
   SWIPE_MAX_HORIZONTAL,
   getScreenHeight,
   type ExpandPhase,
-  type PeekBarGesture,
+  type HeaderGesture,
   type PeekBodyGesture,
 } from '@/pages/Home/components/PoolDetailSheet';
 
@@ -29,8 +29,8 @@ export interface PoolDetailExpandState {
   expandPhaseRef: MutableRefObject<ExpandPhase>;
   expandDragging: boolean;
   setExpandDragging: (value: boolean) => void;
-  peekBarDragging: boolean;
-  setPeekBarDragging: (value: boolean) => void;
+  headerDragging: boolean;
+  setHeaderDragging: (value: boolean) => void;
 }
 
 export interface UsePoolDetailSheetExpandParams {
@@ -70,12 +70,12 @@ export function usePoolDetailSheetExpand({
     expandPhaseRef,
     setExpandPhase,
     setExpandDragging,
-    setPeekBarDragging,
+    setHeaderDragging,
   } = expandState;
 
   const expandProgressRef = useRef(0);
   const expandStartHRef = useRef(0);
-  const peekBarGestureRef = useRef<PeekBarGesture | null>(null);
+  const headerGestureRef = useRef<HeaderGesture | null>(null);
   const peekBodyGestureRef = useRef<PeekBodyGesture | null>(null);
 
   const commitFullscreen = useCallback(() => {
@@ -249,14 +249,14 @@ export function usePoolDetailSheetExpand({
     expandPhaseRef.current = 'idle';
     setExpandPhase('idle');
     setExpandDragging(false);
-    setPeekBarDragging(false);
+    setHeaderDragging(false);
     clearExpandStyles(sheetRef.current);
   }, [
     clearExpandStyles,
     expandPhaseRef,
     setExpandDragging,
     setExpandPhase,
-    setPeekBarDragging,
+    setHeaderDragging,
     sheetRef,
   ]);
 
@@ -302,8 +302,8 @@ export function usePoolDetailSheetExpand({
     [peekRef],
   );
 
-  const finishPeekBarDismissDrag = useCallback(() => {
-    setPeekBarDragging(false);
+  const finishHeaderDismissDrag = useCallback(() => {
+    setHeaderDragging(false);
     onDragChange?.(false);
     const visible = sheetH - translateRef.current;
     if (visible < SHEET_CLOSE_THRESHOLD) {
@@ -314,15 +314,15 @@ export function usePoolDetailSheetExpand({
   }, [
     handleCloseRef,
     onDragChange,
-    setPeekBarDragging,
+    setHeaderDragging,
     sheetH,
     snapToPeekWithTransitionRef,
     translateRef,
   ]);
 
-  const onPeekBarPointerDown = (e: ReactPointerEvent) => {
+  const onHeaderPointerDown = (e: ReactPointerEvent) => {
     if (expandPhaseRef.current === 'animating') return;
-    peekBarGestureRef.current = {
+    headerGestureRef.current = {
       startX: e.clientX,
       startY: e.clientY,
       mode: 'undecided',
@@ -330,8 +330,8 @@ export function usePoolDetailSheetExpand({
     };
   };
 
-  const onPeekBarPointerMove = (e: ReactPointerEvent) => {
-    const gesture = peekBarGestureRef.current;
+  const onHeaderPointerMove = (e: ReactPointerEvent) => {
+    const gesture = headerGestureRef.current;
     if (!gesture || gesture.pointerId !== e.pointerId) return;
 
     const deltaY = e.clientY - gesture.startY;
@@ -358,7 +358,7 @@ export function usePoolDetailSheetExpand({
 
       gesture.mode = 'dismiss';
       gesture.dismissStartTranslate = translateRef.current;
-      setPeekBarDragging(true);
+      setHeaderDragging(true);
       onDragChange?.(true);
     }
 
@@ -378,10 +378,10 @@ export function usePoolDetailSheetExpand({
     );
   };
 
-  const onPeekBarPointerUp = (e: ReactPointerEvent) => {
-    const gesture = peekBarGestureRef.current;
+  const onHeaderPointerUp = (e: ReactPointerEvent) => {
+    const gesture = headerGestureRef.current;
     if (!gesture || gesture.pointerId !== e.pointerId) {
-      peekBarGestureRef.current = null;
+      headerGestureRef.current = null;
       return;
     }
 
@@ -389,33 +389,30 @@ export function usePoolDetailSheetExpand({
       e.currentTarget.releasePointerCapture?.(e.pointerId);
       finishExpandDrag(expandProgressRef.current);
     } else if (gesture.mode === 'dismiss') {
-      finishPeekBarDismissDrag();
+      finishHeaderDismissDrag();
     } else {
       const moved = Math.hypot(
         e.clientX - gesture.startX,
         e.clientY - gesture.startY,
       );
-      if (
-        moved < GESTURE_LOCK_PX &&
-        (e.target as HTMLElement).closest('.pool-sheet__handle')
-      ) {
+      if (moved < GESTURE_LOCK_PX) {
         beginExpandAnimation();
       }
     }
 
-    peekBarGestureRef.current = null;
+    headerGestureRef.current = null;
   };
 
-  const onPeekBarPointerCancel = (e: ReactPointerEvent) => {
-    const gesture = peekBarGestureRef.current;
+  const onHeaderPointerCancel = (e: ReactPointerEvent) => {
+    const gesture = headerGestureRef.current;
     if (!gesture || gesture.pointerId !== e.pointerId) return;
 
     if (gesture.mode === 'expand') {
       finishExpandDrag(expandProgressRef.current);
     } else if (gesture.mode === 'dismiss') {
-      finishPeekBarDismissDrag();
+      finishHeaderDismissDrag();
     }
-    peekBarGestureRef.current = null;
+    headerGestureRef.current = null;
   };
 
   const onPeekBodyPointerDown = (e: ReactPointerEvent) => {
@@ -478,10 +475,10 @@ export function usePoolDetailSheetExpand({
     resetExpandInstant,
     resetFullscreen,
     handleExpandTransitionEnd,
-    onPeekBarPointerDown,
-    onPeekBarPointerMove,
-    onPeekBarPointerUp,
-    onPeekBarPointerCancel,
+    onHeaderPointerDown,
+    onHeaderPointerMove,
+    onHeaderPointerUp,
+    onHeaderPointerCancel,
     onPeekBodyPointerDown,
     onPeekBodyPointerMove,
     onPeekBodyPointerUp,
