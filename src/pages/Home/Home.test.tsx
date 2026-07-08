@@ -117,8 +117,32 @@ vi.mock('@/pages/Home/components/SearchResult', () => ({
 }));
 
 vi.mock('@/pages/Home/components/Favorites', () => ({
-  default: function FavoritesStub() {
-    return null;
+  default: function FavoritesStub({
+    onCollapsedChange,
+    reopenListRef,
+  }: {
+    onCollapsedChange?: (collapsed: boolean) => void;
+    reopenListRef?: React.MutableRefObject<(() => void) | null>;
+  }) {
+    React.useEffect(() => {
+      if (!reopenListRef) return undefined;
+      reopenListRef.current = () => onCollapsedChange?.(false);
+      return () => {
+        reopenListRef.current = null;
+      };
+    }, [onCollapsedChange, reopenListRef]);
+
+    return (
+      <div data-testid="favorites-panel">
+        <button
+          type="button"
+          data-testid="favorites-collapse"
+          onClick={() => onCollapsedChange?.(true)}
+        >
+          collapse
+        </button>
+      </div>
+    );
   },
 }));
 
@@ -390,6 +414,47 @@ describe('Home - 수영장 선택', () => {
       '강남수영장',
     );
     expect(mocks.panToPool).toHaveBeenCalled();
+  });
+});
+
+describe('Home - 즐겨찾기 collapsed', () => {
+  it('즐겨찾기 collapsed 시 목록 열기 pill을 표시한다', async () => {
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: true,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+    });
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+
+    await userEvent.click(screen.getByTestId('favorites-collapse'));
+
+    expect(
+      screen.getByRole('button', { name: '목록 열기' }),
+    ).toBeInTheDocument();
+  });
+
+  it('목록 열기 pill을 누르면 collapsed가 해제된다', async () => {
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: true,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+    });
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+
+    await userEvent.click(screen.getByTestId('favorites-collapse'));
+    expect(
+      screen.getByRole('button', { name: '목록 열기' }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: '목록 열기' }));
+
+    expect(
+      screen.queryByRole('button', { name: '목록 열기' }),
+    ).not.toBeInTheDocument();
   });
 });
 

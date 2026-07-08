@@ -1,0 +1,42 @@
+.floating-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pf-space-2);
+  height: 36px;
+  padding: 0 var(--pf-space-5);
+  border: none;
+  border-radius: var(--pf-radius);
+  background: var(--pf-surface);
+  color: var(--pf-primary);
+  box-shadow: var(--pf-shadow);
+  font-family: inherit;
+  font-size: var(--pf-font-body-sm);
+  font-weight: var(--pf-font-weight-semibold);
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--pf-duration-fast) ease,
+    box-shadow var(--pf-duration-normal);
+}
+
+.floating-pill:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.floating-pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-pill {
+    transition: none;
+  }
+
+  .floating-pill:active:not(:disabled) {
+    transform: none;
+  }
+}

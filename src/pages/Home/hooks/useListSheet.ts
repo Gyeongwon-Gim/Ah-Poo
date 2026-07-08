@@ -3,6 +3,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useCallback,
   type MouseEvent as ReactMouseEvent,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
@@ -12,6 +13,9 @@ import { runSheetInertia } from '@/utils/sheetInertia';
 
 const TOP = 50;
 const FALLBACK_PEEK = 200;
+const PEEK_BAR_PADDING_TOP = 10;
+const HANDLE_MARGIN_BOTTOM = 8;
+const COLLAPSED_SHELL_PAD = 4;
 const MOVE_THRESHOLD = 3;
 const VELOCITY_SNAP = 0.5;
 const WHEEL_END_MS = 120;
@@ -53,7 +57,9 @@ export interface UseListSheetOptions {
   liftPeekForNav?: boolean;
   enterFromBottom?: boolean;
   softSheet?: boolean;
+  collapseToHandle?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  onCollapsedChange?: (collapsed: boolean) => void;
   onDismissStart?: () => void;
   onDismiss?: () => void;
   onTopChange?: (top: number) => void;
@@ -71,7 +77,9 @@ export function useListSheet({
   liftPeekForNav = false,
   enterFromBottom = false,
   softSheet = false,
+  collapseToHandle = false,
   onExpandedChange,
+  onCollapsedChange,
   onDismissStart,
   onDismiss,
   onTopChange,
@@ -80,6 +88,7 @@ export function useListSheet({
   const sectionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLButtonElement>(null);
   const behindDetailRef = useRef(behindDetail);
   const revealFromDetailRef = useRef(revealFromDetail);
   const interactionDisabledRef = useRef(interactionDisabled);
@@ -91,17 +100,25 @@ export function useListSheet({
   const [peekTop, setPeekTop] = useState(
     () => getContainerH(null) - FALLBACK_PEEK,
   );
+  const [collapsedTop, setCollapsedTop] = useState(
+    () => getContainerH(null) - 32,
+  );
   const [translateY, setTranslateYState] = useState(() =>
     enterFromBottom ? getContainerH(null) : getContainerH(null) - FALLBACK_PEEK,
   );
   const [expanded, setExpandedState] = useState(false);
+  const [collapsed, setCollapsedState] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [ready, setReady] = useState(false);
   const [instant, setInstantState] = useState(false);
 
   const translateRef = useRef(translateY);
   const peekTopRef = useRef(peekTop);
+  const collapsedTopRef = useRef(collapsedTop);
   const expandedRef = useRef(expanded);
+  const collapsedRef = useRef(collapsed);
+  const collapseToHandleRef = useRef(collapseToHandle);
+  const onCollapsedChangeRef = useRef(onCollapsedChange);
   const contentHRef = useRef(0);
   const startYRef = useRef(0);
   const startTranslateRef = useRef(0);
@@ -123,7 +140,11 @@ export function useListSheet({
   onDismissStartRef.current = onDismissStart;
   onTopChangeRef.current = onTopChange;
   onDragChangeRef.current = onDragChange;
+  onCollapsedChangeRef.current = onCollapsedChange;
   peekTopRef.current = peekTop;
+  collapsedTopRef.current = collapsedTop;
+  collapseToHandleRef.current = collapseToHandle;
+  collapsedRef.current = collapsed;
 
   const setTranslateY = (v: number) => {
     translateRef.current = v;
@@ -154,9 +175,37 @@ export function useListSheet({
   };
 
   const getDragMaxY = () => {
+    if (collapseToHandleRef.current) return collapsedTopRef.current;
     if (onDismissRef.current) return hiddenTranslateY();
     return peekTopRef.current;
   };
+
+  const measureHandleStripH = () => {
+    const handleH = handleRef.current?.offsetHeight ?? 4;
+    return (
+      PEEK_BAR_PADDING_TOP + handleH + HANDLE_MARGIN_BOTTOM + COLLAPSED_SHELL_PAD
+    );
+  };
+
+  const setCollapsed = (v: boolean) => {
+    if (collapsedRef.current === v) return;
+    collapsedRef.current = v;
+    setCollapsedState(v);
+    onCollapsedChangeRef.current?.(v);
+  };
+
+  const snapToCollapsed = () => {
+    setExpanded(false);
+    setCollapsed(true);
+    setTranslateY(clampTranslateY(collapsedTopRef.current));
+  };
+
+  const expandFromCollapsed = useCallback(() => {
+    if (!collapsedRef.current) return;
+    setCollapsed(false);
+    setExpanded(false);
+    setTranslateY(clampTranslateY(peekTopRef.current));
+  }, []);
 
   const canBrowseContent = () => {
     const containerH = getContainerH(sectionRef.current);
@@ -172,7 +221,12 @@ export function useListSheet({
     if (!canBrowseContent()) return false;
     const peek = peekTopRef.current;
     const expandedY = getExpandedY();
-    if (isNearSnapPoint(current, expandedY) || isNearSnapPoint(current, peek)) {
+    const collapsed = collapsedTopRef.current;
+    if (
+      isNearSnapPoint(current, expandedY) ||
+      isNearSnapPoint(current, peek) ||
+      (collapseToHandleRef.current && isNearSnapPoint(current, collapsed))
+    ) {
       return false;
     }
     const minY = getDragMinY();
@@ -200,6 +254,10 @@ export function useListSheet({
 
   const toggleExpanded = () => {
     if (dragging) return;
+    if (collapsedRef.current) {
+      expandFromCollapsed();
+      return;
+    }
     setExpanded(!expandedRef.current);
   };
 
@@ -236,6 +294,16 @@ export function useListSheet({
     const next = Math.round(getContainerH(sectionRef.current) - peekVisibleH);
     peekTopRef.current = next;
     setPeekTop(next);
+
+    if (collapseToHandleRef.current) {
+      const handleStripH = measureHandleStripH();
+      const nextCollapsed = Math.round(
+        getContainerH(sectionRef.current) - handleStripH - navLift,
+      );
+      collapsedTopRef.current = nextCollapsed;
+      setCollapsedTop(nextCollapsed);
+    }
+
     if (
       !movingRef.current &&
       !expandedRef.current &&
@@ -246,7 +314,16 @@ export function useListSheet({
       const current = translateRef.current;
       const peek = next;
       const atPeek = Math.abs(current - peek) < 2;
-      if (atPeek) setTranslateY(peek);
+      const atCollapsed =
+        collapseToHandleRef.current &&
+        Math.abs(current - collapsedTopRef.current) < 2;
+      if (atPeek) {
+        setCollapsed(false);
+        setTranslateY(peek);
+      } else if (atCollapsed) {
+        setCollapsed(true);
+        setTranslateY(collapsedTopRef.current);
+      }
     }
   };
 
@@ -258,16 +335,18 @@ export function useListSheet({
   useEffect(() => {
     const section = sectionRef.current;
     const bar = barRef.current;
+    const handle = handleRef.current;
     const firstItem = listRef.current?.firstElementChild;
-    if (!section && !bar && !firstItem) return undefined;
+    if (!section && !bar && !handle && !firstItem) return undefined;
 
     const ro = new ResizeObserver(() => measurePeek());
     if (section) ro.observe(section);
     if (bar) ro.observe(bar);
+    if (handle) ro.observe(handle);
     if (firstItem) ro.observe(firstItem);
     return () => ro.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemCount]);
+  }, [itemCount, collapseToHandle]);
 
   useEffect(() => {
     const onResize = () => measurePeek();
@@ -286,6 +365,7 @@ export function useListSheet({
 
   useEffect(() => {
     setExpanded(false);
+    setCollapsed(false);
     measurePeek();
     setTranslateY(peekTopRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -297,7 +377,8 @@ export function useListSheet({
       behindDetail ||
       revealFromDetail ||
       dismissingRef.current ||
-      enteringRef.current
+      enteringRef.current ||
+      collapsedRef.current
     ) {
       return;
     }
@@ -306,6 +387,7 @@ export function useListSheet({
     prevExpandedRef.current = expanded;
 
     if (expanded) {
+      setCollapsed(false);
       setTranslateY(clampTranslateY(getExpandedY()));
       return;
     }
@@ -360,6 +442,7 @@ export function useListSheet({
     if (!revealFromDetail) return;
 
     setExpanded(false);
+    setCollapsed(false);
     const hidden = hiddenTranslateY();
     setInstant(true);
     setTranslateY(hidden);
@@ -384,6 +467,9 @@ export function useListSheet({
     );
     setTranslateY(next);
     setExpanded(next <= getExpandedY() + SNAP_EPSILON);
+    if (collapseToHandleRef.current && next < collapsedTopRef.current - SNAP_EPSILON) {
+      setCollapsed(false);
+    }
 
     const now = performance.now();
     const dt = Math.max(1, now - lastTimeRef.current);
@@ -410,13 +496,53 @@ export function useListSheet({
 
     const peek = peekTopRef.current;
     const hidden = hiddenTranslateY();
+    const collapsedY = collapsedTopRef.current;
     const current = clampTranslateY(translateRef.current);
     if (current !== translateRef.current) {
       setTranslateY(current);
     }
     const expandedY = getExpandedY();
-    const mid = (expandedY + peek) / 2;
     const v = velocityRef.current;
+
+    if (collapseToHandleRef.current && !dismissingRef.current) {
+      const collapseThreshold = peek + (collapsedY - peek) * 0.45;
+      if (
+        (v > VELOCITY_SNAP && current >= peek - 20) ||
+        current > collapseThreshold
+      ) {
+        snapToCollapsed();
+        return;
+      }
+
+      if (isInBrowseRange(current)) {
+        setExpanded(false);
+        return;
+      }
+
+      let target: number;
+      if (v < -VELOCITY_SNAP) {
+        target =
+          current < (expandedY + peek) / 2
+            ? expandedY
+            : collapsedRef.current
+              ? collapsedY
+              : peek;
+      } else if (v > VELOCITY_SNAP) {
+        target = current > (peek + collapsedY) / 2 ? collapsedY : peek;
+      } else {
+        const points = [expandedY, peek, collapsedY];
+        target = points.reduce((nearest, point) =>
+          Math.abs(current - point) < Math.abs(current - nearest) ? point : nearest,
+        );
+      }
+
+      setTranslateY(clampTranslateY(target));
+      setExpanded(isNearSnapPoint(target, expandedY));
+      setCollapsed(isNearSnapPoint(target, collapsedY));
+      return;
+    }
+
+    const mid = (expandedY + peek) / 2;
 
     if (onDismissRef.current && !dismissingRef.current) {
       const dismissThreshold = peek + Math.min(48, (hidden - peek) * 0.15);
@@ -603,8 +729,10 @@ export function useListSheet({
     sectionRef,
     listRef,
     barRef,
+    handleRef,
     ready,
     expanded,
+    collapsed,
     dragging,
     instant,
     translateY,
@@ -612,6 +740,7 @@ export function useListSheet({
     revealing: revealFromDetail,
     inert: interactionDisabled,
     toggleExpanded,
+    expandFromCollapsed,
     handleTouchStart,
     handleTouchEnd,
     handleMouseDown,

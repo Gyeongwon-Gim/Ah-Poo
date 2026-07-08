@@ -1,8 +1,9 @@
 import type { CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, Star } from 'lucide-react';
 import SearchBar from '@/pages/Home/components/SearchBar';
-import { Button } from '@/components';
+import { Button, FloatingPill } from '@/components';
 import PoolMap from '@/pages/Home/components/PoolMap';
 import PoolDetailSheet from '@/pages/Home/components/PoolDetailSheet';
 import SearchResult from '@/pages/Home/components/SearchResult';
@@ -22,11 +23,19 @@ import './Home.css';
 
 const HOME_TITLE = '어푸! | 전국 일일입장·자유수영 수영장 찾기';
 
+const SEARCH_OPEN_PILL_GAP = 10;
+
 function Home() {
   const location = useLocation();
   const navigate = useNavigate();
   const { favoritesOpen, closeFavorites, toggleFavorites } = useMainTab();
   const { favorites } = useFavorites();
+  const [searchPanelCollapsed, setSearchPanelCollapsed] = useState(false);
+  const [searchSheetTop, setSearchSheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [favoritesPanelCollapsed, setFavoritesPanelCollapsed] = useState(false);
+  const [favoritesSheetTop, setFavoritesSheetTop] = useState(Number.POSITIVE_INFINITY);
+  const reopenSearchListRef = useRef<(() => void) | null>(null);
+  const reopenFavoritesListRef = useRef<(() => void) | null>(null);
   const {
     location: userLocation,
     status: locationStatus,
@@ -102,7 +111,76 @@ function Home() {
     favoritesPanelOpen: showFavoritesSheet,
   });
 
-  const { mapPools, favoritePools, mapMarkerPools } = useMapPools({
+  const handleSearchSheetTopChange = useCallback((top: number) => {
+    setSearchSheetTop(top);
+    onSearchSheetTopChange(top);
+  }, [onSearchSheetTopChange]);
+
+  const handleFavoritesSheetTopChange = useCallback((top: number) => {
+    setFavoritesSheetTop(top);
+    onFavoritesSheetTopChange(top);
+  }, [onFavoritesSheetTopChange]);
+
+  const showSearchOpenPill =
+    isSearching &&
+    searchPanelCollapsed &&
+    !loading &&
+    !error &&
+    !selectedPool &&
+    !favoritesOpen;
+
+  const searchOpenPillStyle = useMemo((): CSSProperties | undefined => {
+    if (!showSearchOpenPill || !Number.isFinite(searchSheetTop)) return undefined;
+    const viewportH =
+      typeof window !== 'undefined'
+        ? (window.visualViewport?.height ?? window.innerHeight)
+        : 800;
+    return {
+      bottom: Math.max(16, viewportH - searchSheetTop + SEARCH_OPEN_PILL_GAP),
+    };
+  }, [showSearchOpenPill, searchSheetTop]);
+
+  const handleReopenSearchList = useCallback(() => {
+    reopenSearchListRef.current?.();
+  }, []);
+
+  const showFavoritesOpenPill =
+    favoritesOpen &&
+    favoritesPanelCollapsed &&
+    showFavoritesSheet &&
+    !isSearching &&
+    !selectedPool;
+
+  const favoritesOpenPillStyle = useMemo((): CSSProperties | undefined => {
+    if (!showFavoritesOpenPill || !Number.isFinite(favoritesSheetTop)) {
+      return undefined;
+    }
+    const viewportH =
+      typeof window !== 'undefined'
+        ? (window.visualViewport?.height ?? window.innerHeight)
+        : 800;
+    return {
+      bottom: Math.max(16, viewportH - favoritesSheetTop + SEARCH_OPEN_PILL_GAP),
+    };
+  }, [showFavoritesOpenPill, favoritesSheetTop]);
+
+  const handleReopenFavoritesList = useCallback(() => {
+    reopenFavoritesListRef.current?.();
+  }, []);
+
+  useEffect(() => {
+    if (!showSearchPanel) setSearchPanelCollapsed(false);
+  }, [showSearchPanel]);
+
+  useEffect(() => {
+    if (!showFavoritesSheet) setFavoritesPanelCollapsed(false);
+  }, [showFavoritesSheet]);
+
+  const {
+    mapPools,
+    favoritePools,
+    mapMarkerPools,
+  } = useMapPools({
     pools,
     appliedSearchTerm,
     isSearching,
@@ -180,9 +258,19 @@ function Home() {
           behindDetailInstant={sheetInstantEnter && searchPanelBehindDetail}
           revealFromDetail={searchPanelRevealFromDetail}
           interactionDisabled={searchPanelBehindDetail}
-          onDismiss={handleCloseSearch}
-          onTopChange={onSearchSheetTopChange}
+          onCollapsedChange={setSearchPanelCollapsed}
+          reopenListRef={reopenSearchListRef}
+          onTopChange={handleSearchSheetTopChange}
           onDragChange={onSearchSheetDragChange}
+        />
+      )}
+
+      {showSearchOpenPill && (
+        <FloatingPill
+          className="home-search-open-pill"
+          style={searchOpenPillStyle}
+          onClick={handleReopenSearchList}
+          aria-label="목록 열기"
         />
       )}
 
@@ -192,9 +280,19 @@ function Home() {
           resetKey={`favorites-${favoritesOpen}-${favorites.length}`}
           selectedPool={selectedPool}
           onSelectPool={handleSelectPool}
-          onDismiss={closeFavorites}
-          onTopChange={onFavoritesSheetTopChange}
+          onCollapsedChange={setFavoritesPanelCollapsed}
+          reopenListRef={reopenFavoritesListRef}
+          onTopChange={handleFavoritesSheetTopChange}
           onDragChange={onFavoritesSheetDragChange}
+        />
+      )}
+
+      {showFavoritesOpenPill && (
+        <FloatingPill
+          className="home-search-open-pill"
+          style={favoritesOpenPillStyle}
+          onClick={handleReopenFavoritesList}
+          aria-label="목록 열기"
         />
       )}
 

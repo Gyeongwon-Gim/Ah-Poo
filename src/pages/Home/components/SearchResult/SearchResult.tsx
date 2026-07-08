@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, type MutableRefObject } from 'react';
 import { Star, Waves } from 'lucide-react';
 import BottomSheet from '@/components/BottomSheet';
 import ListItem from '@/components/ListItem';
@@ -119,7 +119,8 @@ export interface SearchResultProps {
   behindDetailInstant?: boolean;
   revealFromDetail?: boolean;
   interactionDisabled?: boolean;
-  onDismiss?: () => void;
+  onCollapsedChange?: (collapsed: boolean) => void;
+  reopenListRef?: MutableRefObject<(() => void) | null>;
   onTopChange?: (top: number) => void;
   onDragChange?: (dragging: boolean) => void;
 }
@@ -134,7 +135,8 @@ export default function SearchResult({
   behindDetailInstant = false,
   revealFromDetail = false,
   interactionDisabled = false,
-  onDismiss,
+  onCollapsedChange,
+  reopenListRef,
   onTopChange,
   onDragChange,
 }: SearchResultProps) {
@@ -148,10 +150,19 @@ export default function SearchResult({
     behindDetailInstant,
     revealFromDetail,
     interactionDisabled,
-    onDismiss,
+    collapseToHandle: true,
+    onCollapsedChange,
     onTopChange,
     onDragChange,
   });
+
+  useEffect(() => {
+    if (!reopenListRef) return undefined;
+    reopenListRef.current = sheet.expandFromCollapsed;
+    return () => {
+      reopenListRef.current = null;
+    };
+  }, [reopenListRef, sheet.expandFromCollapsed]);
 
   return (
     <BottomSheet
@@ -160,6 +171,7 @@ export default function SearchResult({
       as="section"
       ready={sheet.ready}
       expanded={sheet.expanded}
+      collapsed={sheet.collapsed}
       dragging={sheet.dragging}
       instant={sheet.instant}
       inert={sheet.inert}
@@ -178,7 +190,14 @@ export default function SearchResult({
         role="presentation"
       >
         <BottomSheet.Handle
-          ariaLabel={sheet.expanded ? '목록 접기' : '목록 펼치기'}
+          ref={sheet.handleRef}
+          ariaLabel={
+            sheet.collapsed
+              ? '목록 펼치기'
+              : sheet.expanded
+                ? '목록 접기'
+                : '목록 펼치기'
+          }
           onClick={(e) => {
             e.stopPropagation();
             sheet.toggleExpanded();

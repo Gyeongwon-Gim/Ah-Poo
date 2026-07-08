@@ -1,3 +1,8 @@
+.bottom-sheet--list.is-collapsed .search-result__header,
+.bottom-sheet--list.is-collapsed .search-result__list {
+  pointer-events: none;
+}
+
 .search-result__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;

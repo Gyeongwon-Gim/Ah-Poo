@@ -16,6 +16,7 @@ type BottomSheetStateProps = {
   revealing?: boolean;
   softSheet?: boolean;
   expanded?: boolean;
+  collapsed?: boolean;
 };
 
 function buildRootClassName({
@@ -27,6 +28,7 @@ function buildRootClassName({
   revealing,
   softSheet,
   expanded,
+  collapsed,
   className = '',
 }: BottomSheetStateProps & {
   variant: BottomSheetVariant;
@@ -42,6 +44,7 @@ function buildRootClassName({
     inert ? 'is-inert' : '',
     revealing ? 'is-revealing' : '',
     softSheet ? 'is-soft-sheet' : '',
+    collapsed ? 'is-collapsed' : '',
     className,
   ]
     .filter(Boolean)
@@ -67,6 +70,7 @@ const BottomSheetRoot = forwardRef<HTMLElement, BottomSheetProps>(
       revealing,
       softSheet,
       expanded,
+      collapsed,
       className,
       children,
       ...rest
@@ -87,6 +91,7 @@ const BottomSheetRoot = forwardRef<HTMLElement, BottomSheetProps>(
           revealing,
           softSheet,
           expanded,
+          collapsed,
           className,
         })}
         {...rest}
@@ -115,21 +120,22 @@ type BottomSheetHandleProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   ariaLabel: string;
 };
 
-function BottomSheetHandle({
-  ariaLabel,
-  className = '',
-  type = 'button',
-  ...rest
-}: BottomSheetHandleProps) {
-  return (
-    <button
-      type={type}
-      className={['bottom-sheet__handle', className].filter(Boolean).join(' ')}
-      aria-label={ariaLabel}
-      {...rest}
-    />
-  );
-}
+const BottomSheetHandle = forwardRef<HTMLButtonElement, BottomSheetHandleProps>(
+  function BottomSheetHandle(
+    { ariaLabel, className = '', type = 'button', ...rest },
+    ref,
+  ) {
+    return (
+      <button
+        ref={ref}
+        type={type}
+        className={['bottom-sheet__handle', className].filter(Boolean).join(' ')}
+        aria-label={ariaLabel}
+        {...rest}
+      />
+    );
+  },
+);
 
 const BottomSheet = Object.assign(BottomSheetRoot, {
   PeekBar: BottomSheetPeekBar,

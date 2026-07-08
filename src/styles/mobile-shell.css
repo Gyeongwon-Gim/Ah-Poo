@@ -37,7 +37,7 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
-  background: red;
+  /* background: #e8f4fc; */
   height: var(--screen-h, 100dvh);
 }
 

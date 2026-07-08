@@ -67,3 +67,15 @@
 .home-map-actions--inert {
   pointer-events: none;
 }
+
+.home-search-open-pill {
+  position: absolute;
+  left: 50%;
+  z-index: 29;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.home-search-open-pill:active:not(:disabled) {
+  transform: translateX(-50%) scale(0.97);
+}

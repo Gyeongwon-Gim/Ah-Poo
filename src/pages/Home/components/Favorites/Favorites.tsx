@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, type MutableRefObject } from 'react';
 import { Star, Waves } from 'lucide-react';
 import BottomSheet from '@/components/BottomSheet';
 import ListItem from '@/components/ListItem';
@@ -108,7 +108,8 @@ export interface FavoritesProps {
   selectedPool: Pool | null;
   onSelectPool?: (pool: Pool) => void;
   resetKey?: string | number;
-  onDismiss?: () => void;
+  onCollapsedChange?: (collapsed: boolean) => void;
+  reopenListRef?: MutableRefObject<(() => void) | null>;
   onTopChange?: (top: number) => void;
   onDragChange?: (dragging: boolean) => void;
 }
@@ -118,7 +119,8 @@ export default function Favorites({
   selectedPool,
   onSelectPool,
   resetKey,
-  onDismiss,
+  onCollapsedChange,
+  reopenListRef,
   onTopChange,
   onDragChange,
 }: FavoritesProps) {
@@ -128,10 +130,19 @@ export default function Favorites({
     resetKey,
     itemCount: pools.length,
     reservePeekWhenEmpty: true,
-    onDismiss,
+    collapseToHandle: true,
+    onCollapsedChange,
     onTopChange,
     onDragChange,
   });
+
+  useEffect(() => {
+    if (!reopenListRef) return undefined;
+    reopenListRef.current = sheet.expandFromCollapsed;
+    return () => {
+      reopenListRef.current = null;
+    };
+  }, [reopenListRef, sheet.expandFromCollapsed]);
 
   return (
     <BottomSheet
@@ -140,6 +151,7 @@ export default function Favorites({
       as="section"
       ready={sheet.ready}
       expanded={sheet.expanded}
+      collapsed={sheet.collapsed}
       dragging={sheet.dragging}
       instant={sheet.instant}
       softSheet={sheet.softSheet}
@@ -156,7 +168,14 @@ export default function Favorites({
         role="presentation"
       >
         <BottomSheet.Handle
-          ariaLabel={sheet.expanded ? '목록 접기' : '목록 펼치기'}
+          ref={sheet.handleRef}
+          ariaLabel={
+            sheet.collapsed
+              ? '목록 펼치기'
+              : sheet.expanded
+                ? '목록 접기'
+                : '목록 펼치기'
+          }
           onClick={(e) => {
             e.stopPropagation();
             sheet.toggleExpanded();
