@@ -7,7 +7,7 @@ import {
   Waves,
   type LucideIcon,
 } from 'lucide-react';
-import type { MouseEvent, PointerEvent } from 'react';
+import type { MouseEvent, PointerEvent, Ref } from 'react';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { isFlagOn } from '@/services/pools';
 import type { Pool } from '@/types/pool';
@@ -22,7 +22,7 @@ interface PoolDetailContentProps {
   onShare: () => void;
   onDirections: () => void;
   onOpenHomepage?: () => void;
-  variant: 'peek' | 'full';
+  essentialRef?: Ref<HTMLDivElement>;
   onPointerDownStop: (e: PointerEvent | MouseEvent) => void;
 }
 
@@ -36,11 +36,9 @@ export default function PoolDetailContent({
   onShare,
   onDirections,
   onOpenHomepage,
-  variant,
+  essentialRef,
   onPointerDownStop,
 }: PoolDetailContentProps) {
-  const showExtended = variant === 'full';
-
   const actions: {
     id: string;
     icon: LucideIcon;
@@ -70,83 +68,88 @@ export default function PoolDetailContent({
 
   return (
     <>
-      <div className="pool-sheet__head">
-        {poolImageUrl && !poolImageFailed ? (
-          <div className="pool-sheet__hero-wrap">
-            <img
-              className="pool-sheet__hero"
-              src={poolImageUrl}
-              alt=""
-              loading="lazy"
-              onError={onPoolImageError}
-            />
-          </div>
-        ) : (
-          <div
-            className="pool-sheet__hero-wrap pool-sheet__hero-wrap--placeholder"
-            aria-hidden
-          >
-            <Waves size={32} />
-          </div>
-        )}
+      <div ref={essentialRef} className="pool-sheet__essential">
+        <div className="pool-sheet__head">
+          {poolImageUrl && !poolImageFailed ? (
+            <div className="pool-sheet__hero-wrap">
+              <img
+                className="pool-sheet__hero"
+                src={poolImageUrl}
+                alt=""
+                loading="lazy"
+                onError={onPoolImageError}
+              />
+            </div>
+          ) : (
+            <div
+              className="pool-sheet__hero-wrap pool-sheet__hero-wrap--placeholder"
+              aria-hidden
+            >
+              <Waves size={32} />
+            </div>
+          )}
 
-        <div className="pool-sheet__titles">
-          <div className="pool-sheet__name-row">
-            <h2 className="pool-sheet__name">{pool.name}</h2>
-            {isFlagOn(pool.is50m) && (
-              <span className="pool-sheet__tag pool-sheet__tag--50m">50m</span>
+          <div className="pool-sheet__titles">
+            <div className="pool-sheet__name-row">
+              <h2 className="pool-sheet__name">{pool.name}</h2>
+              {isFlagOn(pool.is50m) && (
+                <span className="pool-sheet__tag pool-sheet__tag--50m">50m</span>
+              )}
+            </div>
+            {pool.fee && (
+              <p className="pool-sheet__meta">
+                <span className="pool-sheet__meta-fee">
+                  {formatDailyAdmissionFee(pool.fee)}
+                </span>
+              </p>
             )}
           </div>
-          {pool.fee && (
-            <p className="pool-sheet__meta">
-              <span className="pool-sheet__meta-fee">
-                {formatDailyAdmissionFee(pool.fee)}
-              </span>
-            </p>
+        </div>
+
+        <div className="pool-sheet__location">
+          {distanceLabel && (
+            <span
+              className="pool-sheet__distance"
+              x-apple-data-detectors="none"
+            >
+              {distanceLabel}
+            </span>
           )}
+          <span className="pool-sheet__address-wrap">
+            <span className="pool-sheet__address" x-apple-data-detectors="none">
+              {pool.roadAddress}
+            </span>
+            <button
+              type="button"
+              className="pool-sheet__copy-address"
+              onClick={onCopyAddress}
+              onPointerDown={onPointerDownStop}
+              aria-label="주소 복사"
+            >
+              <Copy size={14} strokeWidth={1.75} aria-hidden />
+            </button>
+          </span>
         </div>
       </div>
 
-      <div className="pool-sheet__location">
-        {distanceLabel && (
-          <span className="pool-sheet__distance" x-apple-data-detectors="none">
-            {distanceLabel}
-          </span>
+      <div className="pool-sheet__extended">
+        {pool.phone && (
+          <div>
+            <a
+              className="pool-sheet__contact"
+              href={`tel:${String(pool.phone).replace(/\s/g, '')}`}
+            >
+              <Phone
+                size={16}
+                strokeWidth={1.75}
+                className="pool-sheet__contact-icon"
+                aria-hidden
+              />
+              <span>{pool.phone}</span>
+            </a>
+          </div>
         )}
-        <span className="pool-sheet__address-wrap">
-          <span className="pool-sheet__address" x-apple-data-detectors="none">
-            {pool.roadAddress}
-          </span>
-          <button
-            type="button"
-            className="pool-sheet__copy-address"
-            onClick={onCopyAddress}
-            onPointerDown={onPointerDownStop}
-            aria-label="주소 복사"
-          >
-            <Copy size={14} strokeWidth={1.75} aria-hidden />
-          </button>
-        </span>
-      </div>
 
-      {showExtended && pool.phone && (
-        <div>
-          <a
-            className="pool-sheet__contact"
-            href={`tel:${String(pool.phone).replace(/\s/g, '')}`}
-          >
-            <Phone
-              size={16}
-              strokeWidth={1.75}
-              className="pool-sheet__contact-icon"
-              aria-hidden
-            />
-            <span>{pool.phone}</span>
-          </a>
-        </div>
-      )}
-
-      {showExtended && (
         <div className="pool-sheet__actions">
           {actions.map(({ id, icon: Icon, label, onClick, primary }) => (
             <button
@@ -162,7 +165,7 @@ export default function PoolDetailContent({
             </button>
           ))}
         </div>
-      )}
+      </div>
     </>
   );
 }

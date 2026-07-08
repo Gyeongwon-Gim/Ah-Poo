@@ -1,7 +1,6 @@
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components';
 import { isSupabaseConfigured } from '@/lib/supabase';
-import { NEARBY_RADIUS_KM } from '@/utils/geo';
 import './MapStatusMessage.css';
 
 interface MapStatusMessageProps {
@@ -12,8 +11,6 @@ interface MapStatusMessageProps {
   showLocationPending?: boolean;
   isSearching?: boolean;
   locationStatus?: string;
-  isNearbyMode?: boolean;
-  mapPoolCount?: number;
   poolCount?: number;
 }
 
@@ -26,8 +23,6 @@ export default function MapStatusMessage({
   showLocationPending,
   isSearching,
   locationStatus,
-  isNearbyMode,
-  mapPoolCount,
   poolCount,
 }: MapStatusMessageProps) {
   return (
@@ -96,21 +91,6 @@ export default function MapStatusMessage({
                 위치 다시 확인
               </Button>
             )}
-          </div>
-        )}
-
-      {!loading &&
-        !error &&
-        !showLocationPending &&
-        isNearbyMode &&
-        mapPoolCount === 0 &&
-        poolCount !== undefined &&
-        poolCount > 0 && (
-          <div className="map-status-message">
-            <p>{NEARBY_RADIUS_KM}km 이내에 등록된 수영장이 없습니다</p>
-            <p className="map-status-message__hint">
-              검색하면 다른 지역 수영장도 찾을 수 있어요
-            </p>
           </div>
         )}
 

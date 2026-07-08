@@ -71,15 +71,6 @@ export const LocationDenied: Story = {
   },
 };
 
-export const NoNearbyPools: Story = {
-  args: {
-    loading: false,
-    isNearbyMode: true,
-    mapPoolCount: 0,
-    poolCount: 42,
-  },
-};
-
 export const NoPoolsAtAll: Story = {
   args: {
     loading: false,

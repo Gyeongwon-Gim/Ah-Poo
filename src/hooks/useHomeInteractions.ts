@@ -11,7 +11,12 @@ import type { GeoCoords, LocationStatus } from './useUserLocation';
 
 export type { PoolMapHandle };
 
-export type DetailOrigin = 'search' | 'favorites' | 'suggestion' | 'map';
+export type DetailOrigin =
+  | 'search'
+  | 'favorites'
+  | 'nearby'
+  | 'suggestion'
+  | 'map';
 
 interface OpenPoolDetailOptions {
   instant?: boolean;
@@ -27,13 +32,15 @@ interface UseHomeInteractionsParams {
   error: string | null;
   favoritesOpen: boolean;
   closeFavorites: () => void;
+  nearbyOpen: boolean;
+  closeNearby: () => void;
   refreshLocation: () => Promise<GeoCoords>;
   location: Location;
   navigate: NavigateFunction;
 }
 
 /**
- * 홈 화면의 상호작용 상태 머신: 검색, 상세 시트, 즐겨찾기 시트를
+ * 홈 화면의 상호작용 상태 머신: 검색, 상세 시트, 즐겨찾기·주변 시트를
  * 한곳에서 관리한다. 이 영역들은 서로를 닫고 여는 관계라 응집도를 위해 하나의 훅으로 묶었다.
  */
 export function useHomeInteractions({
@@ -44,6 +51,8 @@ export function useHomeInteractions({
   error,
   favoritesOpen,
   closeFavorites,
+  nearbyOpen,
+  closeNearby,
   refreshLocation,
   location,
   navigate,
@@ -60,7 +69,10 @@ export function useHomeInteractions({
 
   const isSearching = Boolean(appliedSearchTerm.trim());
   const isNearbyMode =
-    !isSearching && locationStatus === 'ready' && Boolean(userLocation);
+    nearbyOpen &&
+    !isSearching &&
+    locationStatus === 'ready' &&
+    Boolean(userLocation);
 
   const enrichPool = useCallback(
     (pool: Pool) => enrichWithDistance(pool, userLocation),
@@ -70,9 +82,10 @@ export function useHomeInteractions({
   const resolveDetailOrigin = useCallback((): DetailOrigin => {
     if (isSearching) return 'search';
     if (favoritesOpen) return 'favorites';
+    if (nearbyOpen) return 'nearby';
     if (searchActive) return 'suggestion';
     return 'map';
-  }, [isSearching, favoritesOpen, searchActive]);
+  }, [isSearching, favoritesOpen, nearbyOpen, searchActive]);
 
   const openPoolDetail = useCallback(
     (
@@ -119,16 +132,19 @@ export function useHomeInteractions({
   }, [location.search, loading, pools, openPoolDetail, navigate]);
 
   useEffect(() => {
-    if (favoritesOpen) {
+    if (favoritesOpen || nearbyOpen) {
       setInputValue('');
       setAppliedSearchTerm('');
       setSearchActive(false);
     }
-  }, [favoritesOpen]);
+  }, [favoritesOpen, nearbyOpen]);
 
   useEffect(() => {
-    if (isSearching) closeFavorites();
-  }, [isSearching, closeFavorites]);
+    if (isSearching) {
+      closeFavorites();
+      closeNearby();
+    }
+  }, [isSearching, closeFavorites, closeNearby]);
 
   // 연관검색 모드에서는 .home--suggesting .pool-map 이 visibility:hidden 이 된다.
   // visibility 변화는 ResizeObserver·IntersectionObserver 가 감지하지 못해
@@ -150,10 +166,11 @@ export function useHomeInteractions({
 
   const prepareMapBaselineUI = useCallback(() => {
     closeFavorites();
+    closeNearby();
     setInputValue('');
     setAppliedSearchTerm('');
     setSearchActive(false);
-  }, [closeFavorites]);
+  }, [closeFavorites, closeNearby]);
 
   const resetToMapBaseline = useCallback(() => {
     prepareMapBaselineUI();
@@ -222,8 +239,9 @@ export function useHomeInteractions({
 
   const handleActivateSearch = useCallback(() => {
     closeFavorites();
+    closeNearby();
     setSearchActive(true);
-  }, [closeFavorites]);
+  }, [closeFavorites, closeNearby]);
 
   const handleSearchFocus = useCallback(() => {
     if (!appliedSearchTerm.trim()) {
@@ -299,6 +317,10 @@ export function useHomeInteractions({
     favoritesOpen && !selectedPool && !loading && !error && !isSearching;
   const showFavoritesSheet =
     favoritesOpen && !selectedPool && !loading && !error && !isSearching;
+  const showNearbyPanel =
+    nearbyOpen && !selectedPool && !loading && !error && !isSearching;
+  const showNearbySheet =
+    nearbyOpen && !selectedPool && !loading && !error && !isSearching;
   const searchMode = searchActive || isSearching;
 
   return {
@@ -334,6 +356,8 @@ export function useHomeInteractions({
     searchPanelRevealFromDetail,
     showFavoritesPanel,
     showFavoritesSheet,
+    showNearbyPanel,
+    showNearbySheet,
     handleRecenter,
     showUserLocationMarker,
   };

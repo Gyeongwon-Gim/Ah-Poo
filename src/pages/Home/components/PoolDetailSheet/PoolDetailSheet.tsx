@@ -113,8 +113,31 @@ export default function PoolDetailSheet({
     onShare: handleShare,
     onDirections: handleDirections,
     onOpenHomepage: pool.official_url ? handleOpenHomepage : undefined,
+    essentialRef: sheet.contentEssentialRef,
     onPointerDownStop: stopPointer,
   };
+
+  const sheetClassName = [
+    sheet.phase === 'entering' ? 'pool-sheet--entering' : '',
+    (sheet.phase === 'exiting' || sheet.snapTransition) &&
+    !sheet.dragging &&
+    !sheet.expandDragging &&
+    !sheet.headerDragging
+      ? 'pool-sheet--transition'
+      : '',
+    sheet.isFullscreen ? 'pool-sheet--fullscreen' : '',
+    sheet.expandPhase !== 'idle' ? 'pool-sheet--expanding' : '',
+    sheet.expandDragging ? 'pool-sheet--expand-dragging' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const sheetStyle =
+    sheet.phase === 'entering' && !sheet.isFullscreen
+      ? undefined
+      : sheet.isFullscreen
+        ? { transform: 'translateX(-50%)' }
+        : { transform: `translate(-50%, ${sheet.translateRef.current}px)` };
 
   return (
     <BottomSheet
@@ -124,94 +147,59 @@ export default function PoolDetailSheet({
       dragging={
         sheet.dragging || sheet.expandDragging || sheet.headerDragging
       }
-      className={`${
-        sheet.phase === 'entering' ? 'pool-sheet--entering' : ''
-      } ${
-        (sheet.phase === 'exiting' || sheet.snapTransition) &&
-        !sheet.dragging &&
-        !sheet.expandDragging &&
-        !sheet.headerDragging
-          ? 'pool-sheet--transition'
-          : ''
-      } ${
-        sheet.isFullscreen ? 'pool-sheet--fullscreen' : ''
-      } ${sheet.expandPhase !== 'idle' ? 'pool-sheet--expanding' : ''} ${
-        sheet.expandDragging ? 'pool-sheet--expand-dragging' : ''
-      }`}
-      style={
-        sheet.phase === 'entering' && !sheet.isFullscreen
-          ? undefined
-          : sheet.isFullscreen
-            ? { transform: 'translateX(-50%)' }
-            : { transform: `translate(-50%, ${sheet.translateRef.current}px)` }
-      }
+      className={sheetClassName}
+      style={sheetStyle}
       onAnimationEnd={sheet.handleEnterEnd}
       onTransitionEnd={sheet.handleExpandTransitionEnd}
       role="dialog"
       aria-label={`${pool.name} 상세`}
     >
       <div ref={sheet.grabberRef} className="pool-sheet__grabber">
-        {sheet.isFullscreen ? (
-          <>
-            <div className="pool-sheet__modal-header">
-              <PoolDetailToolbar
-                favorite={favorite}
-                onToggleFavorite={toggleFavorite}
-                pool={pool}
-                onBack={sheet.handleBack}
-                onClose={sheet.handleClose}
-                onPointerDownStop={stopPointer}
-              />
-            </div>
-            <div className="pool-sheet__scroll-outer">
-              <div className="pool-sheet__scroll-inner">
-                <PoolDetailContent {...contentProps} variant="full" />
-                <PoolDetailBlogSection
-                  loading={blog.blogLoading}
-                  error={blog.blogError}
-                  visibleReviews={blog.visibleReviews}
-                  totalReviews={blog.totalReviews}
-                  canLoadMore={blog.canLoadMore}
-                  loadMoreLoading={blog.blogLoadMoreLoading}
-                  thumbFailed={blog.blogThumbFailed}
-                  onRetry={blog.retry}
-                  onLoadMore={blog.loadMore}
-                  onThumbError={blog.markThumbFailed}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <BottomSheet.Header>
-              <BottomSheet.Handle
-                ariaLabel="전체 보기"
-                onPointerDown={sheet.onHeaderPointerDown}
-                onPointerMove={sheet.onHeaderPointerMove}
-                onPointerUp={sheet.onHeaderPointerUp}
-                onPointerCancel={sheet.onHeaderPointerCancel}
-              />
-            </BottomSheet.Header>
-            <div
-              ref={sheet.peekPreviewRef}
-              className="pool-sheet__peek-body"
-              onPointerDown={sheet.onPeekBodyPointerDown}
-              onPointerMove={sheet.onPeekBodyPointerMove}
-              onPointerUp={sheet.onPeekBodyPointerUp}
-              onPointerCancel={sheet.onPeekBodyPointerCancel}
-            >
-              <PoolDetailToolbar
-                favorite={favorite}
-                onToggleFavorite={toggleFavorite}
-                pool={pool}
-                onBack={sheet.handleBack}
-                onClose={sheet.handleClose}
-                onPointerDownStop={stopPointer}
-              />
-              <PoolDetailContent {...contentProps} variant="peek" />
-            </div>
-          </>
-        )}
+        <BottomSheet.Header ref={sheet.headerRef}>
+          <BottomSheet.Handle
+            ariaLabel="전체 보기"
+            onPointerDown={sheet.onHeaderPointerDown}
+            onPointerMove={sheet.onHeaderPointerMove}
+            onPointerUp={sheet.onHeaderPointerUp}
+            onPointerCancel={sheet.onHeaderPointerCancel}
+          />
+        </BottomSheet.Header>
+
+        <div ref={sheet.toolbarRef} className="pool-sheet__toolbar-wrap">
+          <PoolDetailToolbar
+            favorite={favorite}
+            onToggleFavorite={toggleFavorite}
+            pool={pool}
+            onBack={sheet.handleBack}
+            onClose={sheet.handleClose}
+            onPointerDownStop={stopPointer}
+          />
+        </div>
+
+        <div
+          ref={sheet.peekBodyRef}
+          className="pool-sheet__peek-body"
+          onPointerDown={sheet.onPeekBodyPointerDown}
+          onPointerMove={sheet.onPeekBodyPointerMove}
+          onPointerUp={sheet.onPeekBodyPointerUp}
+          onPointerCancel={sheet.onPeekBodyPointerCancel}
+        >
+          <div className="pool-sheet__body">
+            <PoolDetailContent {...contentProps} />
+            <PoolDetailBlogSection
+              loading={blog.blogLoading}
+              error={blog.blogError}
+              visibleReviews={blog.visibleReviews}
+              totalReviews={blog.totalReviews}
+              canLoadMore={blog.canLoadMore}
+              loadMoreLoading={blog.blogLoadMoreLoading}
+              thumbFailed={blog.blogThumbFailed}
+              onRetry={blog.retry}
+              onLoadMore={blog.loadMore}
+              onThumbError={blog.markThumbFailed}
+            />
+          </div>
+        </div>
       </div>
     </BottomSheet>
   );

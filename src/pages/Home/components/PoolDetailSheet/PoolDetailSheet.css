@@ -50,6 +50,13 @@
   transition: none;
 }
 
+.bottom-sheet--detail:not(.pool-sheet--fullscreen):not(.pool-sheet--expanding):not(
+    .pool-sheet--entering
+  ) {
+  max-height: var(--peek-h);
+  overflow: hidden;
+}
+
 /* ---- peek / fullscreen 공통 ---- */
 .pool-sheet__grabber {
   flex-shrink: 0;
@@ -65,8 +72,46 @@
   padding: 0 0 var(--pool-sheet-bottom-pad, 0px);
 }
 
+.pool-sheet__toolbar-wrap {
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+.bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__toolbar-wrap {
+  padding: var(--safe-top) 24px 4px;
+}
+
 .pool-sheet__peek-body {
+  flex-shrink: 0;
   overflow: hidden;
+  touch-action: none;
+}
+
+.pool-sheet__body {
+  overflow: hidden;
+}
+
+.bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__peek-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  touch-action: auto;
+}
+
+.bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+  padding: 0 20px calc(var(--pool-sheet-bottom-pad, 0px) + 20px);
+}
+
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__peek-body {
   touch-action: none;
 }
 
@@ -124,8 +169,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-left: -10px;
-  margin-right: -4px;
 }
 
 .pool-sheet__back {
@@ -216,6 +259,7 @@
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+  padding-right: 2px;
 }
 
 .pool-sheet__round {

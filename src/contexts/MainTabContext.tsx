@@ -13,6 +13,10 @@ interface MainTabContextValue {
   openFavorites: () => void;
   closeFavorites: () => void;
   toggleFavorites: () => void;
+  nearbyOpen: boolean;
+  openNearby: () => void;
+  closeNearby: () => void;
+  toggleNearby: () => void;
 }
 
 const MainTabContext = createContext<MainTabContextValue | null>(null);
@@ -20,19 +24,44 @@ const MainTabContext = createContext<MainTabContextValue | null>(null);
 export function MainTabProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [nearbyOpen, setNearbyOpen] = useState(false);
 
   const closeFavorites = useCallback(() => {
     setFavoritesOpen(false);
   }, []);
 
+  const closeNearby = useCallback(() => {
+    setNearbyOpen(false);
+  }, []);
+
   const openFavorites = useCallback(() => {
     navigate('/');
+    setNearbyOpen(false);
     setFavoritesOpen(true);
+  }, [navigate]);
+
+  const openNearby = useCallback(() => {
+    navigate('/');
+    setFavoritesOpen(false);
+    setNearbyOpen(true);
   }, [navigate]);
 
   const toggleFavorites = useCallback(() => {
     navigate('/');
-    setFavoritesOpen((open) => !open);
+    setFavoritesOpen((open) => {
+      const next = !open;
+      if (next) setNearbyOpen(false);
+      return next;
+    });
+  }, [navigate]);
+
+  const toggleNearby = useCallback(() => {
+    navigate('/');
+    setNearbyOpen((open) => {
+      const next = !open;
+      if (next) setFavoritesOpen(false);
+      return next;
+    });
   }, [navigate]);
 
   const value = useMemo(
@@ -41,8 +70,21 @@ export function MainTabProvider({ children }: { children: ReactNode }) {
       openFavorites,
       closeFavorites,
       toggleFavorites,
+      nearbyOpen,
+      openNearby,
+      closeNearby,
+      toggleNearby,
     }),
-    [favoritesOpen, openFavorites, closeFavorites, toggleFavorites],
+    [
+      favoritesOpen,
+      openFavorites,
+      closeFavorites,
+      toggleFavorites,
+      nearbyOpen,
+      openNearby,
+      closeNearby,
+      toggleNearby,
+    ],
   );
 
   return (

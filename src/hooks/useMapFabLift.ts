@@ -5,11 +5,12 @@ export const FAB_STACK_H = 94; // 42 + 10 + 42
 export const HALF_SCREEN_RATIO = 0.5;
 const NO_SHEET_TOP = Number.POSITIVE_INFINITY;
 
-type SheetSource = 'search' | 'favorites' | 'detail';
+type SheetSource = 'search' | 'favorites' | 'nearby' | 'detail';
 
 interface SheetTops {
   search: number;
   favorites: number;
+  nearby: number;
   detail: number;
 }
 
@@ -30,6 +31,7 @@ interface UseMapFabLiftParams {
   searchPanelOpen: boolean;
   searchPanelHidden: boolean;
   favoritesPanelOpen: boolean;
+  nearbyPanelOpen: boolean;
 }
 
 function readSafeBottomPx() {
@@ -85,16 +87,19 @@ export function useMapFabLift({
   searchPanelOpen,
   searchPanelHidden,
   favoritesPanelOpen,
+  nearbyPanelOpen,
 }: UseMapFabLiftParams) {
   const [sheetTops, setSheetTops] = useState<SheetTops>({
     search: NO_SHEET_TOP,
     favorites: NO_SHEET_TOP,
+    nearby: NO_SHEET_TOP,
     detail: NO_SHEET_TOP,
   });
   const [sheetDragging, setSheetDragging] = useState(false);
   const dragBySourceRef = useRef<Record<SheetSource, boolean>>({
     search: false,
     favorites: false,
+    nearby: false,
     detail: false,
   });
 
@@ -118,6 +123,10 @@ export function useMapFabLift({
   );
   const onFavoritesSheetDragChange = useMemo(
     () => makeDragHandler('favorites'),
+    [makeDragHandler],
+  );
+  const onNearbySheetDragChange = useMemo(
+    () => makeDragHandler('nearby'),
     [makeDragHandler],
   );
   const onDetailSheetDragChange = useMemo(
@@ -161,6 +170,12 @@ export function useMapFabLift({
     );
   }, []);
 
+  const onNearbySheetTopChange = useCallback((top: number) => {
+    setSheetTops((prev) =>
+      prev.nearby === top ? prev : { ...prev, nearby: top },
+    );
+  }, []);
+
   const onDetailSheetTopChange = useCallback((top: number) => {
     setSheetTops((prev) =>
       prev.detail === top ? prev : { ...prev, detail: top },
@@ -172,6 +187,7 @@ export function useMapFabLift({
     if (detailOpen) return sheetTops.detail;
     if (searchPanelOpen && !searchPanelHidden) return sheetTops.search;
     if (favoritesPanelOpen) return sheetTops.favorites;
+    if (nearbyPanelOpen) return sheetTops.nearby;
     return NO_SHEET_TOP;
   }, [
     enabled,
@@ -179,6 +195,7 @@ export function useMapFabLift({
     searchPanelOpen,
     searchPanelHidden,
     favoritesPanelOpen,
+    nearbyPanelOpen,
     sheetTops,
   ]);
 
@@ -212,9 +229,11 @@ export function useMapFabLift({
     sheetDragging,
     onSearchSheetTopChange,
     onFavoritesSheetTopChange,
+    onNearbySheetTopChange,
     onDetailSheetTopChange,
     onSearchSheetDragChange,
     onFavoritesSheetDragChange,
+    onNearbySheetDragChange,
     onDetailSheetDragChange,
   };
 }

@@ -51,7 +51,10 @@ export function usePoolDetailSheetLayout({
 }: UsePoolDetailSheetLayoutParams) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const grabberRef = useRef<HTMLDivElement>(null);
-  const peekPreviewRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const contentEssentialRef = useRef<HTMLDivElement>(null);
+  const peekBodyRef = useRef<HTMLDivElement>(null);
   const peekRef = useRef(0);
   const translateLockedRef = useRef(false);
   const anchorHeightRef = useRef(0);
@@ -298,6 +301,23 @@ export function usePoolDetailSheetLayout({
     translateLockedRef.current = false;
     clearExpandStyles(el);
 
+    const measureGrabberPadding = () => {
+      const grabberStyles = getComputedStyle(grab);
+      return (
+        (parseFloat(grabberStyles.paddingTop) || 0) +
+        (parseFloat(grabberStyles.paddingBottom) || 0)
+      );
+    };
+
+    const measurePeekHeight = () => {
+      const headerH = headerRef.current?.offsetHeight ?? 0;
+      const toolbarH = toolbarRef.current?.offsetHeight ?? 0;
+      const essentialH = contentEssentialRef.current?.offsetHeight ?? 0;
+      return Math.round(
+        headerH + toolbarH + essentialH + measureGrabberPadding(),
+      );
+    };
+
     const measure = () => {
       if (expandPhaseRef.current !== 'idle') return;
 
@@ -317,7 +337,7 @@ export function usePoolDetailSheetLayout({
         return;
       }
 
-      const peekH = grab.offsetHeight;
+      const peekH = measurePeekHeight();
       setSheetH(peekH);
       peekRef.current = peekH;
       el.style.setProperty('--peek-h', `${peekH}px`);
@@ -351,12 +371,15 @@ export function usePoolDetailSheetLayout({
             captureAnchor(el);
           }, SHEET_ENTER_MS + 80);
 
-    const observeTarget = peekPreviewRef.current ?? grab;
     const resizeObserver =
       typeof ResizeObserver !== 'undefined'
         ? new ResizeObserver(measure)
         : null;
-    resizeObserver?.observe(observeTarget);
+    if (headerRef.current) resizeObserver?.observe(headerRef.current);
+    if (toolbarRef.current) resizeObserver?.observe(toolbarRef.current);
+    if (contentEssentialRef.current) {
+      resizeObserver?.observe(contentEssentialRef.current);
+    }
 
     const onScreenResize = () => {
       translateLockedRef.current = false;
@@ -419,7 +442,10 @@ export function usePoolDetailSheetLayout({
   return {
     sheetRef,
     grabberRef,
-    peekPreviewRef,
+    headerRef,
+    toolbarRef,
+    contentEssentialRef,
+    peekBodyRef,
     translateRef,
     dragging,
     phase,

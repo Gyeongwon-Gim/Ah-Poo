@@ -79,3 +79,21 @@
 .home-search-open-pill:active:not(:disabled) {
   transform: translateX(-50%) scale(0.97);
 }
+
+.home-nearby-entry {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px 16px 0;
+  pointer-events: none;
+}
+
+.home-nearby-entry > * {
+  pointer-events: auto;
+}
+
+.home-nearby-entry-pill__icon {
+  font-size: 16px;
+  line-height: 1;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+}
+

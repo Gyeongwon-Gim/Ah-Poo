@@ -19,12 +19,13 @@ interface UseMapPoolsParams {
   locationStatus: LocationStatus;
   favorites: Pool[];
   favoritesOpen: boolean;
+  nearbyOpen: boolean;
   selectedPool: Pool | null;
   onResetSelected: () => void;
 }
 
 /**
- * 현재 모드(검색/주변/즐겨찾기)에 따라 지도에 표시할 수영장 목록을 계산한다.
+ * 현재 모드(검색/주변/즐겨찾기)에 따라 지도·시트에 표시할 수영장 목록을 계산한다.
  * 검색 중 선택된 수영장이 결과에서 사라지면 선택을 해제한다.
  */
 export function useMapPools({
@@ -36,6 +37,7 @@ export function useMapPools({
   locationStatus,
   favorites,
   favoritesOpen,
+  nearbyOpen,
   selectedPool,
   onResetSelected,
 }: UseMapPoolsParams) {
@@ -83,11 +85,17 @@ export function useMapPools({
   }, [favorites, userLocation, locationStatus]);
 
   const mapMarkerPools = useMemo(() => {
-    let result = isSearching
-      ? mapPools
-      : favoritesOpen
-        ? favoritePools
-        : mapPools;
+    let result: Pool[];
+
+    if (isSearching) {
+      result = mapPools;
+    } else if (favoritesOpen) {
+      result = favoritePools;
+    } else if (nearbyOpen) {
+      result = mapPools;
+    } else {
+      result = [];
+    }
 
     if (
       selectedPool &&
@@ -97,7 +105,14 @@ export function useMapPools({
     }
 
     return result;
-  }, [isSearching, favoritesOpen, mapPools, favoritePools, selectedPool]);
+  }, [
+    isSearching,
+    favoritesOpen,
+    nearbyOpen,
+    mapPools,
+    favoritePools,
+    selectedPool,
+  ]);
 
   useEffect(() => {
     if (!selectedPool || !isSearching) return;

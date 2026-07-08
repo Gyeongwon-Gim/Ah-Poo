@@ -8,6 +8,7 @@ import PoolMap from '@/pages/Home/components/PoolMap';
 import PoolDetailSheet from '@/pages/Home/components/PoolDetailSheet';
 import SearchResult from '@/pages/Home/components/SearchResult';
 import Favorites from '@/pages/Home/components/Favorites';
+import NearbyPools from '@/pages/Home/components/NearbyPools';
 import SearchSuggestions from '@/pages/Home/components/SearchSuggestions';
 import MapStatusMessage from '@/pages/Home/components/MapStatusMessage';
 import { getPoolListKey } from '@/utils/poolKey';
@@ -28,14 +29,24 @@ const SEARCH_OPEN_PILL_GAP = 10;
 function Home() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { favoritesOpen, closeFavorites, toggleFavorites } = useMainTab();
+  const {
+    favoritesOpen,
+    closeFavorites,
+    toggleFavorites,
+    nearbyOpen,
+    closeNearby,
+    toggleNearby,
+  } = useMainTab();
   const { favorites } = useFavorites();
   const [searchPanelCollapsed, setSearchPanelCollapsed] = useState(false);
   const [searchSheetTop, setSearchSheetTop] = useState(Number.POSITIVE_INFINITY);
   const [favoritesPanelCollapsed, setFavoritesPanelCollapsed] = useState(false);
   const [favoritesSheetTop, setFavoritesSheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [nearbyPanelCollapsed, setNearbyPanelCollapsed] = useState(false);
+  const [nearbySheetTop, setNearbySheetTop] = useState(Number.POSITIVE_INFINITY);
   const reopenSearchListRef = useRef<(() => void) | null>(null);
   const reopenFavoritesListRef = useRef<(() => void) | null>(null);
+  const reopenNearbyListRef = useRef<(() => void) | null>(null);
   const {
     location: userLocation,
     status: locationStatus,
@@ -52,6 +63,8 @@ function Home() {
     error,
     favoritesOpen,
     closeFavorites,
+    nearbyOpen,
+    closeNearby,
     refreshLocation,
     location,
     navigate,
@@ -85,8 +98,9 @@ function Home() {
     searchPanelRevealFromDetail,
     showFavoritesPanel,
     showFavoritesSheet,
+    showNearbyPanel,
+    showNearbySheet,
     handleRecenter,
-    showUserLocationMarker,
     detailClosing,
   } = interactions;
 
@@ -99,9 +113,11 @@ function Home() {
     sheetDragging,
     onSearchSheetTopChange,
     onFavoritesSheetTopChange,
+    onNearbySheetTopChange,
     onDetailSheetTopChange,
     onSearchSheetDragChange,
     onFavoritesSheetDragChange,
+    onNearbySheetDragChange,
     onDetailSheetDragChange,
   } = useMapFabLift({
     enabled: showMapFabs,
@@ -109,6 +125,7 @@ function Home() {
     searchPanelOpen: showSearchPanel,
     searchPanelHidden: searchPanelBehindDetail,
     favoritesPanelOpen: showFavoritesSheet,
+    nearbyPanelOpen: showNearbySheet,
   });
 
   const handleSearchSheetTopChange = useCallback((top: number) => {
@@ -121,13 +138,19 @@ function Home() {
     onFavoritesSheetTopChange(top);
   }, [onFavoritesSheetTopChange]);
 
+  const handleNearbySheetTopChange = useCallback((top: number) => {
+    setNearbySheetTop(top);
+    onNearbySheetTopChange(top);
+  }, [onNearbySheetTopChange]);
+
   const showSearchOpenPill =
     isSearching &&
     searchPanelCollapsed &&
     !loading &&
     !error &&
     !selectedPool &&
-    !favoritesOpen;
+    !favoritesOpen &&
+    !nearbyOpen;
 
   const searchOpenPillStyle = useMemo((): CSSProperties | undefined => {
     if (!showSearchOpenPill || !Number.isFinite(searchSheetTop)) return undefined;
@@ -168,6 +191,39 @@ function Home() {
     reopenFavoritesListRef.current?.();
   }, []);
 
+  const showNearbyOpenPill =
+    nearbyOpen &&
+    nearbyPanelCollapsed &&
+    showNearbySheet &&
+    !isSearching &&
+    !selectedPool;
+
+  const nearbyOpenPillStyle = useMemo((): CSSProperties | undefined => {
+    if (!showNearbyOpenPill || !Number.isFinite(nearbySheetTop)) {
+      return undefined;
+    }
+    const viewportH =
+      typeof window !== 'undefined'
+        ? (window.visualViewport?.height ?? window.innerHeight)
+        : 800;
+    return {
+      bottom: Math.max(16, viewportH - nearbySheetTop + SEARCH_OPEN_PILL_GAP),
+    };
+  }, [showNearbyOpenPill, nearbySheetTop]);
+
+  const handleReopenNearbyList = useCallback(() => {
+    reopenNearbyListRef.current?.();
+  }, []);
+
+  const showNearbyEntryPill =
+    !searchActive &&
+    !isSearching &&
+    !loading &&
+    !error &&
+    !favoritesOpen &&
+    !nearbyOpen &&
+    !selectedPool;
+
   useEffect(() => {
     if (!showSearchPanel) setSearchPanelCollapsed(false);
   }, [showSearchPanel]);
@@ -175,6 +231,10 @@ function Home() {
   useEffect(() => {
     if (!showFavoritesSheet) setFavoritesPanelCollapsed(false);
   }, [showFavoritesSheet]);
+
+  useEffect(() => {
+    if (!showNearbySheet) setNearbyPanelCollapsed(false);
+  }, [showNearbySheet]);
 
   const {
     mapPools,
@@ -189,13 +249,14 @@ function Home() {
     locationStatus,
     favorites,
     favoritesOpen,
+    nearbyOpen,
     selectedPool,
     onResetSelected: () => setSelectedPool(null),
   });
 
   return (
     <div
-      className={`home home--map app-route ${showSearchPanel ? 'home--searching' : ''} ${searchActive ? 'home--suggesting' : ''} ${showFavoritesPanel ? 'home--favorites' : ''}`}
+      className={`home home--map app-route ${showSearchPanel ? 'home--searching' : ''} ${searchActive ? 'home--suggesting' : ''} ${showFavoritesPanel ? 'home--favorites' : ''} ${showNearbyPanel ? 'home--nearby' : ''}`}
     >
       <SeoHead title={HOME_TITLE} path="/" jsonLd={buildHomeJsonLd()} />
       <PoolMap
@@ -204,12 +265,8 @@ function Home() {
         selectedPool={selectedPool}
         onSelectPool={handleSelectPool}
         userLocation={canRecenter ? userLocation : null}
-        userLocationMarker={
-          canRecenter && (isNearbyMode || showUserLocationMarker)
-            ? userLocation
-            : null
-        }
-        fitToUser={isNearbyMode}
+        userLocationMarker={canRecenter ? userLocation : null}
+        fitToUser={canRecenter && !isSearching}
         fitMode={isSearching ? 'search' : 'default'}
         searchTerm={appliedSearchTerm}
       />
@@ -296,6 +353,28 @@ function Home() {
         />
       )}
 
+      {showNearbySheet && (
+        <NearbyPools
+          pools={mapPools}
+          resetKey={`nearby-${nearbyOpen}-${mapPools.length}`}
+          selectedPool={selectedPool}
+          onSelectPool={handleSelectPool}
+          onCollapsedChange={setNearbyPanelCollapsed}
+          reopenListRef={reopenNearbyListRef}
+          onTopChange={handleNearbySheetTopChange}
+          onDragChange={onNearbySheetDragChange}
+        />
+      )}
+
+      {showNearbyOpenPill && (
+        <FloatingPill
+          className="home-search-open-pill"
+          style={nearbyOpenPillStyle}
+          onClick={handleReopenNearbyList}
+          aria-label="목록 열기"
+        />
+      )}
+
       <div className="home-map-overlay">
         <SearchBar
           value={inputValue}
@@ -313,6 +392,25 @@ function Home() {
             onPick={handlePickSuggestion}
           />
         )}
+        {showNearbyEntryPill && (
+          <div className="home-nearby-entry">
+            <FloatingPill
+              className="home-nearby-entry-pill"
+              onClick={toggleNearby}
+              aria-label="주변 수영장"
+              icon={
+                <span
+                  className="home-nearby-entry-pill__icon material-symbols-outlined"
+                  aria-hidden
+                >
+                  pool
+                </span>
+              }
+            >
+              주변 수영장
+            </FloatingPill>
+          </div>
+        )}
       </div>
 
       <MapStatusMessage
@@ -323,8 +421,6 @@ function Home() {
         showLocationPending={showLocationPending}
         isSearching={isSearching}
         locationStatus={locationStatus}
-        isNearbyMode={isNearbyMode}
-        mapPoolCount={mapPools.length}
         poolCount={pools.length}
       />
 

@@ -146,6 +146,54 @@ vi.mock('@/pages/Home/components/Favorites', () => ({
   },
 }));
 
+vi.mock('@/pages/Home/components/NearbyPools', () => ({
+  default: function NearbyPoolsStub({
+    pools,
+    onSelectPool,
+    onCollapsedChange,
+    reopenListRef,
+  }: {
+    pools: Pool[];
+    onSelectPool?: (pool: Pool) => void;
+    onCollapsedChange?: (collapsed: boolean) => void;
+    reopenListRef?: React.MutableRefObject<(() => void) | null>;
+  }) {
+    React.useEffect(() => {
+      if (!reopenListRef) return undefined;
+      reopenListRef.current = () => onCollapsedChange?.(false);
+      return () => {
+        reopenListRef.current = null;
+      };
+    }, [onCollapsedChange, reopenListRef]);
+
+    return (
+      <div data-testid="nearby-panel">
+        <span data-testid="nearby-count">{pools.length}</span>
+        <button
+          type="button"
+          data-testid="nearby-collapse"
+          onClick={() => onCollapsedChange?.(true)}
+        >
+          collapse
+        </button>
+        {pools.length === 0 && (
+          <span>주변에 등록된 수영장이 없어요</span>
+        )}
+        {pools.map((p) => (
+          <button
+            key={p.name}
+            type="button"
+            data-testid={`nearby-${p.name}`}
+            onClick={() => onSelectPool?.(p)}
+          >
+            {p.name}
+          </button>
+        ))}
+      </div>
+    );
+  },
+}));
+
 vi.mock('@/pages/Home/components/SearchSuggestions', () => ({
   default: function SearchSuggestionsStub({ pools }: { pools: Pool[] }) {
     return <div data-testid="suggestions">{pools.length}</div>;
@@ -278,6 +326,9 @@ beforeEach(() => {
     favoritesOpen: false,
     closeFavorites: vi.fn(),
     toggleFavorites: vi.fn(),
+    nearbyOpen: false,
+    closeNearby: vi.fn(),
+    toggleNearby: vi.fn(),
   });
   setLocation({ status: 'pending' });
 });
@@ -342,15 +393,6 @@ describe('Home - 위치 상태', () => {
     ).toBeInTheDocument();
   });
 
-  it('주변 모드에서 반경 내 수영장이 없으면 안내를 보여준다', async () => {
-    // 모든 수영장이 멀리 있는 위치
-    setLocation({ status: 'ready', location: { lat: 33.0, lng: 126.5 } });
-    renderHome();
-    expect(
-      await screen.findByText(/이내에 등록된 수영장이 없습니다/),
-    ).toBeInTheDocument();
-  });
-
   it('위치를 확인할 수 없으면 마커를 표시하지 않는다', async () => {
     setLocation({ status: 'unavailable' });
     renderHome();
@@ -361,13 +403,91 @@ describe('Home - 위치 상태', () => {
     ).toBeInTheDocument();
   });
 
-  it('주변 모드에서는 반경 내 수영장만 마커로 표시한다', async () => {
-    // 서울 위치 → 강남/송파만 반경 내, 부산은 제외
+  it('접속 직후 주변 모드가 아니면 마커를 표시하지 않는다', async () => {
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+    expect(screen.getByTestId('marker-count')).toHaveTextContent('0');
+    expect(
+      screen.getByRole('button', { name: '주변 수영장' }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Home - 주변 수영장', () => {
+  it('주변 수영장 pill을 누르면 반경 내 목록·마커를 표시한다', async () => {
+    const toggleNearby = vi.fn();
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: false,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+      nearbyOpen: false,
+      closeNearby: vi.fn(),
+      toggleNearby,
+    });
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+
+    await userEvent.click(screen.getByRole('button', { name: '주변 수영장' }));
+    expect(toggleNearby).toHaveBeenCalled();
+  });
+
+  it('nearbyOpen이면 반경 내 수영장만 마커·시트로 표시한다', async () => {
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: false,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+      nearbyOpen: true,
+      closeNearby: vi.fn(),
+      toggleNearby: vi.fn(),
+    });
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+
     await waitFor(() =>
       expect(screen.getByTestId('marker-count')).toHaveTextContent('2'),
     );
+    expect(screen.getByTestId('nearby-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('nearby-count')).toHaveTextContent('2');
+  });
+
+  it('nearbyOpen인데 반경 내 수영장이 없으면 시트 빈 상태를 보여준다', async () => {
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: false,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+      nearbyOpen: true,
+      closeNearby: vi.fn(),
+      toggleNearby: vi.fn(),
+    });
+    setLocation({ status: 'ready', location: { lat: 33.0, lng: 126.5 } });
+    renderHome();
+
+    expect(
+      await screen.findByText('주변에 등록된 수영장이 없어요'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('marker-count')).toHaveTextContent('0');
+  });
+
+  it('주변 목록 collapsed 시 목록 열기 pill을 표시한다', async () => {
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: false,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+      nearbyOpen: true,
+      closeNearby: vi.fn(),
+      toggleNearby: vi.fn(),
+    });
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+
+    await userEvent.click(screen.getByTestId('nearby-collapse'));
+
+    expect(
+      screen.getByRole('button', { name: '목록 열기' }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -405,6 +525,14 @@ describe('Home - 검색', () => {
 
 describe('Home - 수영장 선택', () => {
   it('마커를 선택하면 상세 시트가 열리고 지도가 해당 위치로 이동한다', async () => {
+    mocks.useMainTab.mockReturnValue({
+      favoritesOpen: false,
+      closeFavorites: vi.fn(),
+      toggleFavorites: vi.fn(),
+      nearbyOpen: true,
+      closeNearby: vi.fn(),
+      toggleNearby: vi.fn(),
+    });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     const marker = await screen.findByTestId('map-marker-강남수영장');
@@ -423,6 +551,9 @@ describe('Home - 즐겨찾기 collapsed', () => {
       favoritesOpen: true,
       closeFavorites: vi.fn(),
       toggleFavorites: vi.fn(),
+      nearbyOpen: false,
+      closeNearby: vi.fn(),
+      toggleNearby: vi.fn(),
     });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
@@ -440,6 +571,9 @@ describe('Home - 즐겨찾기 collapsed', () => {
       favoritesOpen: true,
       closeFavorites: vi.fn(),
       toggleFavorites: vi.fn(),
+      nearbyOpen: false,
+      closeNearby: vi.fn(),
+      toggleNearby: vi.fn(),
     });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
