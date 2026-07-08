@@ -3,17 +3,13 @@ import {
   memo,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
-  useState,
   useMemo,
-  useCallback,
 } from 'react';
-import { useKakaoMapLoader } from '@/hooks/useKakaoMapLoader';
 import { isFlagOn } from '@/services/pools';
 import { getPoolListKey } from '@/utils/poolKey';
-import { attachMapInertia } from '@/utils/mapInertia';
 import { computeSearchMapFit } from '@/utils/mapFit';
+import { useKakaoMap } from './useKakaoMap';
 import type { Pool } from '@/types/pool';
 import type { GeoCoords } from '@/hooks/useUserLocation';
 import './PoolMap.css';
@@ -42,56 +38,6 @@ interface PoolMapProps {
   fitToUser?: boolean;
   fitMode?: 'default' | 'search';
   searchTerm?: string;
-}
-
-function syncMapLayout(
-  mapEl: HTMLDivElement | null,
-  map: kakao.maps.Map | null,
-) {
-  if (!mapEl) return;
-
-  const shell = mapEl.closest('.pool-map') as HTMLElement | null;
-  if (shell) {
-    shell.style.height = '';
-    shell.style.top = '';
-    shell.style.bottom = '';
-  }
-
-  mapEl.style.width = '100%';
-  mapEl.style.height = '100%';
-  map?.relayout();
-}
-
-function refreshMapTiles(map: kakao.maps.Map | null) {
-  if (!map) return;
-  const center = map.getCenter?.();
-  if (center) map.setCenter(center);
-}
-
-function scheduleMapRelayout(
-  map: kakao.maps.Map,
-  mapEl: HTMLDivElement | null,
-) {
-  const run = () => {
-    syncMapLayout(mapEl, map);
-    map.relayout();
-    refreshMapTiles(map);
-  };
-  run();
-
-  let raf2 = 0;
-  const raf1 = requestAnimationFrame(() => {
-    run();
-    raf2 = requestAnimationFrame(run);
-  });
-
-  const timers = [0, 50, 200, 500].map((ms) => window.setTimeout(run, ms));
-
-  return () => {
-    cancelAnimationFrame(raf1);
-    cancelAnimationFrame(raf2);
-    timers.forEach((id) => window.clearTimeout(id));
-  };
 }
 
 const DEFAULT_CENTER: GeoCoords = { lat: 37.5665, lng: 126.978 };
@@ -159,16 +105,17 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
   },
   ref,
 ) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<kakao.maps.Map | null>(null);
+  const { mapRef, map, ready, error: sdkError, relayout } = useKakaoMap({
+    initialCenter: fitToUser && userLocation ? userLocation : DEFAULT_CENTER,
+    initialLevel: fitToUser && userLocation ? USER_ZOOM_LEVEL : DEFAULT_LEVEL,
+  });
+
   const markerStoreRef = useRef(new Map<string, MarkerEntry>());
   const userLocationOverlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
   const onSelectPoolRef = useRef(onSelectPool);
   const syncedPoolsSignatureRef = useRef('');
   const fittedPoolsSignatureRef = useRef('');
   const userLocatedRef = useRef(false);
-  const [containerReady, setContainerReady] = useState(false);
-  const { ready, error: sdkError } = useKakaoMapLoader();
 
   onSelectPoolRef.current = onSelectPool;
 
@@ -183,17 +130,10 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
 
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null;
 
-  const relayoutMap = useCallback(() => {
-    syncMapLayout(mapRef.current, mapInstanceRef.current);
-    mapInstanceRef.current?.relayout();
-    refreshMapTiles(mapInstanceRef.current);
-  }, []);
-
   const panToUserLocation = (
     coords?: GeoCoords | null,
     level: number | null = USER_ZOOM_LEVEL,
   ) => {
-    const map = mapInstanceRef.current;
     const target = coords ?? userLocation;
     if (!map || !target || !window.kakao) return false;
 
@@ -204,7 +144,6 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
   };
 
   const panToPool = (pool: Pool, level?: number) => {
-    const map = mapInstanceRef.current;
     if (!map || !pool || !window.kakao) return false;
 
     const pos = new window.kakao.maps.LatLng(pool.lat, pool.lng);
@@ -219,133 +158,23 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
       panToPool: (pool, level) => panToPool(pool, level),
       panToUserLocation: (coords) =>
         panToUserLocation(coords, USER_ZOOM_LEVEL),
-      relayout: relayoutMap,
+      relayout,
     }),
-    [userLocation, ready, relayoutMap],
+    [map, userLocation, relayout],
   );
 
-  useLayoutEffect(() => {
-    if (!ready || mapInstanceRef.current || containerReady) return;
-    const el = mapRef.current;
-    if (!el) return;
-
-    if (el.clientWidth > 0 && el.clientHeight > 0) {
-      setContainerReady(true);
-      return;
-    }
-
-    const ro = new ResizeObserver(() => {
-      if (el.clientWidth > 0 && el.clientHeight > 0) {
-        setContainerReady(true);
-      }
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [ready, containerReady]);
-
-  useLayoutEffect(() => {
-    if (!ready || !containerReady || !mapRef.current || mapInstanceRef.current)
-      return;
-
-    const { kakao } = window;
-    const centerPoint =
-      fitToUser && userLocation ? userLocation : DEFAULT_CENTER;
-    const map = new kakao.maps.Map(mapRef.current, {
-      center: new kakao.maps.LatLng(centerPoint.lat, centerPoint.lng),
-      level: fitToUser && userLocation ? USER_ZOOM_LEVEL : DEFAULT_LEVEL,
-    });
-    mapInstanceRef.current = map;
-    syncMapLayout(mapRef.current, map);
-
-    const onFirstTilesLoaded = () => {
-      kakao.maps.event.removeListener(map, 'tilesloaded', onFirstTilesLoaded);
-      syncMapLayout(mapRef.current, map);
-      refreshMapTiles(map);
-    };
-    kakao.maps.event.addListener(map, 'tilesloaded', onFirstTilesLoaded);
-
-    const cancelRelayout = scheduleMapRelayout(map, mapRef.current);
-
-    return () => {
-      kakao.maps.event.removeListener(map, 'tilesloaded', onFirstTilesLoaded);
-      cancelRelayout();
-    };
-  }, [ready, containerReady, fitToUser, userLocation]);
-
+  // 최초 사용자 위치로 1회 이동
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    const el = mapRef.current;
-    if (!ready || !map || !el || !window.kakao) return;
-
-    return attachMapInertia(map, el);
-  }, [ready, containerReady]);
-
-  useEffect(() => {
-    const map = mapInstanceRef.current;
-    const el = mapRef.current;
-    if (!ready || !map || !el) return;
-
-    const onResize = () => relayoutMap();
-    window.addEventListener('resize', onResize);
-    window.addEventListener('screen-resize', onResize);
-    window.visualViewport?.addEventListener('resize', onResize);
-    window.visualViewport?.addEventListener('scroll', onResize);
-
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') relayoutMap();
-    };
-    document.addEventListener('visibilitychange', onVisible);
-
-    const shell = el.closest('.pool-map');
-    const resizeObserver = new ResizeObserver(() => relayoutMap());
-    resizeObserver.observe(el);
-    if (shell) resizeObserver.observe(shell);
-
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) relayoutMap();
-      },
-      { threshold: 0 },
-    );
-    intersectionObserver.observe(el);
-
-    const cancelRelayout = scheduleMapRelayout(map, el);
-
-    return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('screen-resize', onResize);
-      window.visualViewport?.removeEventListener('resize', onResize);
-      window.visualViewport?.removeEventListener('scroll', onResize);
-      document.removeEventListener('visibilitychange', onVisible);
-      resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      cancelRelayout();
-    };
-  }, [ready, containerReady, relayoutMap]);
-
-  useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (
-      !ready ||
-      !map ||
-      !fitToUser ||
-      !userLocation ||
-      userLocatedRef.current
-    ) {
-      return;
-    }
+    if (!map || !fitToUser || !userLocation || userLocatedRef.current) return;
     if (!window.kakao) return;
 
     userLocatedRef.current = true;
-    panToUserLocation(
-      null,
-      pools.length === 0 ? USER_ZOOM_LEVEL : null,
-    );
-  }, [ready, fitToUser, userLocation, pools.length]);
+    panToUserLocation(null, pools.length === 0 ? USER_ZOOM_LEVEL : null);
+  }, [map, fitToUser, userLocation, pools.length]);
 
+  // 사용자 위치 마커(파란 점)
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!ready || !map || !window.kakao) return;
+    if (!map || !window.kakao) return;
 
     const { kakao } = window;
 
@@ -375,11 +204,11 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     });
     overlay.setMap(map);
     userLocationOverlayRef.current = overlay;
-  }, [ready, userLocationMarker]);
+  }, [map, userLocationMarker]);
 
+  // 수영장 마커 동기화 (추가/삭제)
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!ready || !map || !window.kakao) return;
+    if (!map || !window.kakao) return;
     if (poolsSignature === syncedPoolsSignatureRef.current) return;
 
     syncedPoolsSignatureRef.current = poolsSignature;
@@ -431,11 +260,11 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     }
 
     syncMarkerLabelVisibility(map, store);
-  }, [ready, poolsSignature, pools]);
+  }, [map, poolsSignature, pools]);
 
+  // 줌 레벨에 따른 라벨 노출
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!ready || !map || !window.kakao) return;
+    if (!map || !window.kakao) return;
 
     const { kakao } = window;
     const onZoomChanged = () => {
@@ -448,8 +277,9 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     return () => {
       kakao.maps.event.removeListener(map, 'zoom_changed', onZoomChanged);
     };
-  }, [ready, containerReady]);
+  }, [map]);
 
+  // 선택된 마커 하이라이트
   useEffect(() => {
     for (const [key, { iconOverlay, iconEl, label, labelEl }] of markerStoreRef.current) {
       const isSelected = key === selectedKey;
@@ -460,13 +290,18 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     }
   }, [selectedKey]);
 
+  // 목록 변경 시 지도 시점을 결과에 맞춤
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!ready || !map || !window.kakao) return;
+    if (!map || !window.kakao) return;
     if (poolsSignature === fittedPoolsSignatureRef.current) return;
 
     fittedPoolsSignatureRef.current = poolsSignature;
     const { kakao } = window;
+
+    // setBounds/setLevel은 지도 컨테이너의 현재 크기를 기준으로 줌·중심을 계산한다.
+    // fit 직전에 내부 뷰포트를 실제 컨테이너 크기에 동기화해, 크기가 확정되기 전
+    // 계산되어 엉뚱한 곳으로 가는 것을 막는다.
+    relayout();
 
     if (pools.length === 0) {
       if (fitToUser && userLocation) {
@@ -501,11 +336,11 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
     }
 
     syncMarkerLabelVisibility(map, markerStoreRef.current);
-  }, [ready, poolsSignature, pools, fitToUser, userLocation, fitMode, searchTerm]);
+  }, [map, poolsSignature, pools, fitToUser, userLocation, fitMode, searchTerm, relayout]);
 
+  // 선택된 수영장으로 부드럽게 이동
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!ready || !map || !selectedPool || !window.kakao) return;
+    if (!map || !selectedPool || !window.kakao) return;
 
     const { kakao } = window;
     const pos = new kakao.maps.LatLng(selectedPool.lat, selectedPool.lng);
@@ -529,26 +364,23 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(function PoolMap(
       window.clearTimeout(fallback);
       kakao.maps.event.removeListener(map, 'idle', onIdle);
     };
-  }, [ready, selectedPool]);
+  }, [map, selectedPool]);
 
+  // 언마운트 시 마커 정리 (지도 인스턴스 정리는 useKakaoMap이 담당)
   useEffect(() => {
+    const store = markerStoreRef.current;
     return () => {
       const { kakao } = window;
       userLocationOverlayRef.current?.setMap(null);
       userLocationOverlayRef.current = null;
       if (kakao?.maps) {
-        for (const [, entry] of markerStoreRef.current) {
+        for (const [, entry] of store) {
           entry.iconEl.removeEventListener('click', entry.onClick);
           entry.iconOverlay.setMap(null);
           entry.label?.setMap(null);
         }
       }
-      markerStoreRef.current.clear();
-      mapInstanceRef.current = null;
-      syncedPoolsSignatureRef.current = '';
-      fittedPoolsSignatureRef.current = '';
-      userLocatedRef.current = false;
-      if (mapRef.current) mapRef.current.replaceChildren();
+      store.clear();
     };
   }, []);
 
