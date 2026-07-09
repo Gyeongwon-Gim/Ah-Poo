@@ -1,0 +1,14 @@
+html,
+body {
+  position: static;
+  overflow: auto;
+  height: auto;
+  min-height: 100%;
+  max-width: none !important;
+}
+
+#root,
+#docs-root {
+  overflow: visible;
+  height: auto;
+}
