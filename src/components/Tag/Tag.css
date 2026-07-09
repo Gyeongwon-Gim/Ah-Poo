@@ -1,16 +1,16 @@
-.pf-tag {
-  font-size: var(--pf-font-xs);
-  font-weight: var(--pf-font-weight-bold);
-  padding: var(--pf-space-1) var(--pf-space-3);
-  border-radius: var(--pf-radius-xl);
+.ap-tag {
+  font-size: var(--ap-font-xs);
+  font-weight: var(--ap-font-weight-bold);
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border-radius: var(--ap-radius-xl);
   letter-spacing: 0.02em;
-  background: var(--pf-neutral-100);
-  color: var(--pf-neutral-500);
-  border: 1px solid var(--pf-border-neutral);
+  background: var(--ap-neutral-100);
+  color: var(--ap-neutral-500);
+  border: 1px solid var(--ap-border-neutral);
 }
 
-.pf-tag--active {
-  background: var(--pf-success-bg);
-  color: var(--pf-success);
-  border-color: var(--pf-success-border);
+.ap-tag--active {
+  background: var(--ap-success-bg);
+  color: var(--ap-success);
+  border-color: var(--ap-success-border);
 }

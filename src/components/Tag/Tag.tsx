@@ -12,8 +12,8 @@ export default function Tag({
   ...rest
 }: TagProps) {
   const cls = [
-    'pf-tag',
-    variant === 'active' ? 'pf-tag--active' : '',
+    'ap-tag',
+    variant === 'active' ? 'ap-tag--active' : '',
     className,
   ]
     .filter(Boolean)

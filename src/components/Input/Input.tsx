@@ -23,9 +23,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   ref,
 ) {
   const wrapCls = [
-    'pf-input-wrap',
-    variant === 'pill' ? 'pf-input-wrap--pill' : '',
-    bordered ? 'pf-input-wrap--bordered' : '',
+    'ap-input-wrap',
+    variant === 'pill' ? 'ap-input-wrap--pill' : '',
+    bordered ? 'ap-input-wrap--bordered' : '',
     wrapClassName,
   ]
     .filter(Boolean)
@@ -33,9 +33,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   return (
     <div className={wrapCls}>
-      {leading && <span className="pf-input__leading">{leading}</span>}
-      <input ref={ref} className={`pf-input ${className}`.trim()} {...rest} />
-      {trailing && <span className="pf-input__trailing">{trailing}</span>}
+      {leading && <span className="ap-input__leading">{leading}</span>}
+      <input ref={ref} className={`ap-input ${className}`.trim()} {...rest} />
+      {trailing && <span className="ap-input__trailing">{trailing}</span>}
     </div>
   );
 });

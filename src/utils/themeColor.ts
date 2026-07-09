@@ -6,11 +6,11 @@ function readCssColor(varName: string, fallback: string): string {
 }
 
 export function getMapThemeColor(): string {
-  return readCssColor('--pf-bg-map', '#e8f4fc');
+  return readCssColor('--ap-bg-map', '#e8f4fc');
 }
 
 export function getSheetThemeColor(): string {
-  return readCssColor('--pf-bg', '#f0f9ff');
+  return readCssColor('--ap-bg', '#f0f9ff');
 }
 
 export function applyThemeColor(color: string): void {

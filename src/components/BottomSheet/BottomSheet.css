@@ -3,7 +3,7 @@
   flex-direction: column;
   overflow: hidden;
   will-change: transform;
-  box-shadow: var(--pf-shadow-sheet);
+  box-shadow: var(--ap-shadow-sheet);
 }
 
 .bottom-sheet--list {
@@ -13,14 +13,14 @@
   top: 0;
   height: auto;
   z-index: 28;
-  background: var(--pf-surface);
-  border-radius: var(--pf-radius) var(--pf-radius) 0 0;
+  background: var(--ap-surface);
+  border-radius: var(--ap-radius) var(--ap-radius) 0 0;
   pointer-events: auto;
   touch-action: none;
 }
 
 .bottom-sheet--detail {
-  --pool-sheet-icon: var(--pf-neutral-600);
+  --pool-sheet-icon: var(--ap-neutral-600);
   --pool-sheet-bottom-pad: var(--safe-bottom);
   position: fixed;
   left: 50%;
@@ -30,13 +30,13 @@
   height: auto;
   max-height: 100dvh;
   z-index: 30;
-  background: var(--pf-bg);
-  border-radius: var(--pf-radius-lg) var(--pf-radius-lg) 0 0;
+  background: var(--ap-bg);
+  border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
   transform-origin: bottom center;
 }
 
 .bottom-sheet--list.is-ready:not(.is-dragging):not(.is-instant) {
-  transition: transform var(--pf-duration-sheet-slow) var(--pf-ease-sheet);
+  transition: transform var(--ap-duration-sheet-slow) var(--ap-ease-sheet);
 }
 
 .bottom-sheet--list.is-revealing {
@@ -44,7 +44,7 @@
 }
 
 .bottom-sheet--list.is-revealing.is-ready:not(.is-dragging):not(.is-instant) {
-  transition-duration: var(--pf-duration-sheet);
+  transition-duration: var(--ap-duration-sheet);
 }
 
 .bottom-sheet--list.is-instant {
@@ -84,7 +84,7 @@
   padding: 0;
   border: none;
   border-radius: 999px;
-  background: var(--pf-border);
+  background: var(--ap-border);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }

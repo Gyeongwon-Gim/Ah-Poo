@@ -7,7 +7,7 @@
   width: 100%;
   max-width: var(--mobile-width);
   z-index: 0;
-  background: var(--pf-bg-map);
+  background: var(--ap-bg-map);
   transition: opacity 0.28s ease;
 }
 
@@ -33,8 +33,8 @@ html.keyboard-open .pool-map {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--pf-bg-map);
-  color: var(--pf-text-muted);
+  background: var(--ap-bg-map);
+  color: var(--ap-text-muted);
   font-size: 14px;
   font-weight: 600;
   text-align: center;
@@ -48,15 +48,15 @@ html.keyboard-open .pool-map {
 }
 
 .pool-map--loading {
-  color: var(--pf-text-muted);
+  color: var(--ap-text-muted);
 }
 
 .pool-map--error {
-  color: var(--pf-error-dark);
+  color: var(--ap-error-dark);
 }
 
 .pool-marker-icon {
-  --pf-marker-glow: var(--pf-map-marker-glow);
+  --ap-marker-glow: var(--ap-map-marker-glow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,12 +64,12 @@ html.keyboard-open .pool-map {
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 2px solid var(--pf-surface);
-  border-radius: var(--pf-radius-circle);
-  background: var(--pf-map-marker);
+  border: 2px solid var(--ap-surface);
+  border-radius: var(--ap-radius-circle);
+  background: var(--ap-map-marker);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: var(--pf-map-marker-shadow);
+  box-shadow: var(--ap-map-marker-shadow);
   transition:
     width 0.15s ease,
     height 0.15s ease,
@@ -97,25 +97,25 @@ html.keyboard-open .pool-map {
     'wght' 500,
     'GRAD' 0,
     'opsz' 20;
-  color: var(--pf-surface);
+  color: var(--ap-surface);
   transition: font-size 0.15s ease;
 }
 
 .pool-marker-icon--50m {
-  --pf-marker-glow: var(--pf-map-marker-glow-50m);
-  background: var(--pf-success);
+  --ap-marker-glow: var(--ap-map-marker-glow-50m);
+  background: var(--ap-success);
 }
 
 .pool-marker-icon--50m.pool-marker-icon--selected {
-  background: var(--pf-success-dark);
+  background: var(--ap-success-dark);
 }
 
 .pool-marker-icon--selected {
   width: 32px;
   height: 32px;
   border-width: 3px;
-  background: var(--pf-map-marker-active);
-  box-shadow: var(--pf-map-marker-shadow-selected);
+  background: var(--ap-map-marker-active);
+  box-shadow: var(--ap-map-marker-shadow-selected);
 }
 
 .pool-marker-icon--selected .pool-marker-icon__symbol {
@@ -130,22 +130,22 @@ html.keyboard-open .pool-map {
 /* 운영중 마커: 마커 색 그대로 은은한 글로우 */
 .pool-marker-icon--operating {
   box-shadow:
-    var(--pf-map-marker-shadow),
-    0 0 8px 2px var(--pf-marker-glow);
+    var(--ap-map-marker-shadow),
+    0 0 8px 2px var(--ap-marker-glow);
 }
 
 /* 선택 상태(더 큰 그림자)와 겹칠 때도 글로우 유지 — --selected 규칙 뒤에 둔다 */
 .pool-marker-icon--operating.pool-marker-icon--selected {
   box-shadow:
-    var(--pf-map-marker-shadow-selected),
-    0 0 12px 3px var(--pf-marker-glow);
+    var(--ap-map-marker-shadow-selected),
+    0 0 12px 3px var(--ap-marker-glow);
 }
 
 .pool-marker-label {
   margin-top: 2px;
   padding: 3px 8px;
   max-width: 140px;
-  color: var(--pf-text);
+  color: var(--ap-text);
   font-size: 11px;
   font-weight: 700;
   line-height: 1.3;
@@ -154,14 +154,14 @@ html.keyboard-open .pool-map {
   text-overflow: ellipsis;
   pointer-events: none;
   transform: translateY(0);
-  -webkit-text-stroke: 3px var(--pf-surface);
+  -webkit-text-stroke: 3px var(--ap-surface);
   paint-order: stroke fill;
 }
 
 .pool-marker-label--selected {
-  color: var(--pf-primary-dark);
+  color: var(--ap-primary-dark);
   font-size: 12px;
-  -webkit-text-stroke: 3.5px var(--pf-surface);
+  -webkit-text-stroke: 3.5px var(--ap-surface);
 }
 
 .user-location-marker {
@@ -175,7 +175,7 @@ html.keyboard-open .pool-map {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: var(--pf-map-user-pulse);
+  background: var(--ap-map-user-pulse);
   animation: user-location-pulse 2.4s ease-out infinite;
 }
 
@@ -187,10 +187,10 @@ html.keyboard-open .pool-map {
   box-sizing: border-box;
   width: 14px;
   height: 14px;
-  border: 2px solid var(--pf-surface);
-  border-radius: var(--pf-radius-circle);
-  background: var(--pf-map-user);
-  box-shadow: var(--pf-map-marker-shadow);
+  border: 2px solid var(--ap-surface);
+  border-radius: var(--ap-radius-circle);
+  background: var(--ap-map-user);
+  box-shadow: var(--ap-map-marker-shadow);
 }
 
 @keyframes user-location-pulse {

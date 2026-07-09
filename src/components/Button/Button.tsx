@@ -1,4 +1,8 @@
-import type { ButtonHTMLAttributes, AnchorHTMLAttributes, ReactNode } from 'react';
+import type {
+  ButtonHTMLAttributes,
+  AnchorHTMLAttributes,
+  ReactNode,
+} from 'react';
 import './Button.css';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'icon';
@@ -29,11 +33,11 @@ function buildClassName({
   className = '',
 }: BaseProps) {
   return [
-    'pf-button',
-    `pf-button--${variant}`,
-    variant !== 'icon' && variant !== 'ghost' ? `pf-button--${size}` : '',
-    active ? 'pf-button--active' : '',
-    favorite ? 'pf-button--favorite' : '',
+    'ap-button',
+    `ap-button--${variant}`,
+    variant !== 'icon' && variant !== 'ghost' ? `ap-button--${size}` : '',
+    active ? 'ap-button--active' : '',
+    favorite ? 'ap-button--favorite' : '',
     className,
   ]
     .filter(Boolean)

@@ -23,8 +23,8 @@
 /* 검색 모드: 상단 검색바 영역을 솔리드 바로 만들어 시트가 그 아래로 지나가게 한다 */
 .explore--searching .explore-map-overlay,
 .explore--50m .explore-map-overlay {
-  background: var(--pf-surface, #fff);
-  box-shadow: var(--pf-shadow-bar);
+  background: var(--ap-surface, #fff);
+  box-shadow: var(--ap-shadow-bar);
 }
 
 /* 연관검색어 모드: 오버레이를 전체 높이로 펼쳐 검색바 아래에 추천 리스트를 깐다 */
@@ -34,7 +34,7 @@
   z-index: 35;
   display: flex;
   flex-direction: column;
-  background: var(--pf-surface, #fff);
+  background: var(--ap-surface, #fff);
   box-shadow: none;
 }
 
@@ -95,25 +95,28 @@
 
 .floating-pill.explore-nearby-entry-pill {
   height: 32px;
-  color: var(--pf-text);
-  font-weight: var(--pf-font-weight-medium);
+  color: var(--ap-text);
+  font-weight: var(--ap-font-weight-medium);
 }
 
 .floating-pill.explore-50m-entry-pill {
   height: 32px;
-  color: var(--pf-text);
-  font-weight: var(--pf-font-weight-medium);
+  color: var(--ap-text);
+  font-weight: var(--ap-font-weight-medium);
 }
 
 .floating-pill.explore-50m-entry-pill--active {
-  background: var(--pf-success-bg-strong);
-  color: var(--pf-success-dark);
+  background: var(--ap-success-bg-strong);
+  color: var(--ap-success-dark);
 }
 
 .explore-nearby-entry-pill__icon {
-  color: var(--pf-primary);
+  color: var(--ap-primary);
   font-size: 16px;
   line-height: 1;
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 500,
+    'GRAD' 0,
+    'opsz' 20;
 }
-

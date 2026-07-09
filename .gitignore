@@ -30,5 +30,7 @@ dist-ssr
 
 data/
 
+CLAUDE.md
+
 *storybook.log
 storybook-static

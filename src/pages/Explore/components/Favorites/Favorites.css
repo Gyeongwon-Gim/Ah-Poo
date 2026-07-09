@@ -11,12 +11,12 @@
 .favorites__title {
   font-size: 15px;
   font-weight: 800;
-  color: var(--pf-text);
+  color: var(--ap-text);
   letter-spacing: -0.02em;
 }
 
 .favorites__count {
-  color: var(--pf-primary-dark);
+  color: var(--ap-primary-dark);
 }
 
 .favorites__list {
@@ -34,13 +34,14 @@
   text-align: center;
   font-size: 14px;
   font-weight: 600;
-  color: var(--pf-text-muted);
+  color: var(--ap-text-muted);
 }
 
 .favorites__empty-slot {
   flex-shrink: 0;
   min-height: 120px;
-  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--ap-text-muted) 15%, transparent);
 }
 
 .favorites__empty-slot .favorites__empty {
@@ -53,7 +54,7 @@
   height: 72px;
   border-radius: 8px;
   overflow: hidden;
-  background: var(--pf-surface);
+  background: var(--ap-surface);
 }
 
 .favorites__media--placeholder {
@@ -61,7 +62,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg, #e0f2fe, #bae6fd);
-  color: var(--pf-primary);
+  color: var(--ap-primary);
 }
 
 .favorites__media-img {
@@ -86,9 +87,9 @@
 }
 
 .favorites__favorite--active {
-  color: var(--pf-favorite);
+  color: var(--ap-favorite);
 }
 
 .favorites__dot {
-  color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
+  color: color-mix(in srgb, var(--ap-text-muted) 40%, transparent);
 }

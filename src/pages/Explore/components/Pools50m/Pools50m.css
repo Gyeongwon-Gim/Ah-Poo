@@ -11,12 +11,12 @@
 .pools50m__title {
   font-size: 15px;
   font-weight: 800;
-  color: var(--pf-text);
+  color: var(--ap-text);
   letter-spacing: -0.02em;
 }
 
 .pools50m__count {
-  color: var(--pf-primary-dark);
+  color: var(--ap-primary-dark);
 }
 
 .pools50m__list {
@@ -34,13 +34,14 @@
   text-align: center;
   font-size: 14px;
   font-weight: 600;
-  color: var(--pf-text-muted);
+  color: var(--ap-text-muted);
 }
 
 .pools50m__empty-slot {
   flex-shrink: 0;
   min-height: 120px;
-  border-bottom: 1px solid color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--ap-text-muted) 15%, transparent);
 }
 
 .pools50m__empty-slot .pools50m__empty {
@@ -53,7 +54,7 @@
   height: 72px;
   border-radius: 8px;
   overflow: hidden;
-  background: var(--pf-surface);
+  background: var(--ap-surface);
 }
 
 .pools50m__media--placeholder {
@@ -61,7 +62,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg, #e0f2fe, #bae6fd);
-  color: var(--pf-primary);
+  color: var(--ap-primary);
 }
 
 .pools50m__media-img {
@@ -86,9 +87,9 @@
 }
 
 .pools50m__favorite--active {
-  color: var(--pf-favorite);
+  color: var(--ap-favorite);
 }
 
 .pools50m__dot {
-  color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
+  color: color-mix(in srgb, var(--ap-text-muted) 40%, transparent);
 }

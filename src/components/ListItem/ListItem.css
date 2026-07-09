@@ -13,7 +13,7 @@
   right: 16px;
   bottom: 0;
   height: 1px;
-  background: color-mix(in srgb, var(--pf-text-muted) 15%, transparent);
+  background: color-mix(in srgb, var(--ap-text-muted) 15%, transparent);
 }
 
 .list-item:active,
@@ -51,7 +51,7 @@
 .list-item__title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--pf-primary-dark);
+  color: var(--ap-primary-dark);
   letter-spacing: -0.02em;
   line-height: 1.35;
   margin: 0;
@@ -66,7 +66,7 @@
   margin: 0;
   font-size: 12px;
   font-weight: 500;
-  color: var(--pf-text-muted);
+  color: var(--ap-text-muted);
   line-height: 1.4;
   text-decoration: none;
   -webkit-touch-callout: none;
@@ -80,7 +80,7 @@
   margin: 2px 0 0;
   font-size: 12px;
   font-weight: 400;
-  color: var(--pf-text-muted);
+  color: var(--ap-text-muted);
   line-height: 1.45;
   display: -webkit-box;
   -webkit-line-clamp: 2;

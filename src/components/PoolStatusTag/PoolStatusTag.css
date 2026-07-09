@@ -7,20 +7,20 @@
   font-size: 11px;
   font-weight: 700;
   padding: 3px 8px;
-  border-radius: var(--pf-radius-xl);
-  background: var(--pf-neutral-100);
-  color: var(--pf-text-muted);
+  border-radius: var(--ap-radius-xl);
+  background: var(--ap-neutral-100);
+  color: var(--ap-text-muted);
 }
 
 .pool-status-tag__dot {
   width: 7px;
   height: 7px;
-  border-radius: var(--pf-radius-circle);
-  background: var(--pf-neutral-400);
+  border-radius: var(--ap-radius-circle);
+  background: var(--ap-neutral-400);
 }
 
 /* 운영중: 초록 불빛(글로우), 텍스트는 기본 그레이 유지 */
 .pool-status-tag--on .pool-status-tag__dot {
-  background: var(--pf-success);
-  box-shadow: 0 0 5px 1px var(--pf-map-marker-glow-50m);
+  background: var(--ap-success);
+  box-shadow: 0 0 5px 1px var(--ap-map-marker-glow-50m);
 }

@@ -2,24 +2,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--pf-space-2);
+  gap: var(--ap-space-2);
   height: 36px;
-  padding: 0 var(--pf-space-5);
+  padding: 0 var(--ap-space-5);
   border: none;
-  border-radius: var(--pf-radius);
-  background: var(--pf-surface);
-  color: var(--pf-primary);
-  box-shadow: var(--pf-shadow);
+  border-radius: var(--ap-radius);
+  background: var(--ap-surface);
+  color: var(--ap-primary);
+  box-shadow: var(--ap-shadow);
   font-family: inherit;
-  font-size: var(--pf-font-body-sm);
-  font-weight: var(--pf-font-weight-semibold);
+  font-size: var(--ap-font-body-sm);
+  font-weight: var(--ap-font-weight-semibold);
   line-height: 1;
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
   transition:
-    transform var(--pf-duration-fast) ease,
-    box-shadow var(--pf-duration-normal);
+    transform var(--ap-duration-fast) ease,
+    box-shadow var(--ap-duration-normal);
 }
 
 .floating-pill:active:not(:disabled) {

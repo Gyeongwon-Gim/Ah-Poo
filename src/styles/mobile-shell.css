@@ -17,7 +17,7 @@ html {
   position: static;
   inset: 0;
   overflow: hidden;
-  background: var(--pf-bg-map);
+  background: var(--ap-bg-map);
   /* background: red; */
   height: var(--screen-h, 100dvh);
 }
