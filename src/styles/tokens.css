@@ -22,6 +22,7 @@
   --pf-success: #22c55e;
   --pf-success-dark: #16a34a;
   --pf-success-bg: rgba(34, 197, 94, 0.12);
+  --pf-success-bg-strong: rgba(22, 163, 74, 0.14);
   --pf-success-border: rgba(34, 197, 94, 0.2);
   --pf-error: #dc2626;
   --pf-error-dark: #b91c1c;
@@ -43,6 +44,8 @@
   --pf-map-user-pulse: rgba(0, 122, 255, 0.22);
   --pf-map-marker-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
   --pf-map-marker-shadow-selected: 0 2px 6px rgba(15, 23, 42, 0.28);
+  --pf-map-marker-glow: rgba(255, 127, 84, 0.7);
+  --pf-map-marker-glow-50m: rgba(34, 197, 94, 0.7);
 
   /* Overlay & shadow */
   --pf-overlay: rgba(15, 23, 42, 0.35);
@@ -104,14 +107,4 @@
   --pf-duration-normal: 0.2s;
   --pf-duration-sheet: 0.34s;
   --pf-duration-sheet-slow: 0.38s;
-
-  /* iOS / glass (reserved)
-  --glassforge-surface-fill: rgba(255, 255, 255, 0.18);
-  --floating-nav-indicator-fill: rgba(142, 142, 147, 0.42);
-  --floating-nav-height: calc(var(--pf-pill-height) * 1.3);
-  --floating-nav-offset: 16px;
-  --ios-label-secondary: rgba(60, 60, 67, 0.6);
-  --ios-system-orange: #ff9500;
-  --floating-nav-pad: 3px;
-  --sheet-bottom-reserve: calc(var(--safe-bottom) + 16px); */
 }

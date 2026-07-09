@@ -7,6 +7,7 @@ import {
   useMemo,
 } from 'react';
 import { isFlagOn } from '@/services/pools';
+import { isPoolOperating } from '@/utils/poolOperating';
 import { getPoolListKey } from '@/utils/poolKey';
 import { computeSearchMapFit } from '@/utils/mapFit';
 import { useKakaoMap } from './useKakaoMap';
@@ -63,9 +64,10 @@ function syncMarkerLabelVisibility(
 function createPoolMarkerIconEl(pool: Pool) {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = isFlagOn(pool?.is50m)
-    ? 'pool-marker-icon pool-marker-icon--50m'
-    : 'pool-marker-icon';
+  const classes = ['pool-marker-icon'];
+  if (isFlagOn(pool?.is50m)) classes.push('pool-marker-icon--50m');
+  if (isPoolOperating(pool)) classes.push('pool-marker-icon--operating');
+  button.className = classes.join(' ');
 
   const symbol = document.createElement('span');
   symbol.className = 'pool-marker-icon__symbol material-symbols-outlined';

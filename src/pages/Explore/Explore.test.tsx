@@ -19,10 +19,14 @@ const mocks = vi.hoisted(() => ({
   supabaseConfigured: true,
 }));
 
-vi.mock('@/services/pools', () => ({
-  fetchPools: mocks.fetchPools,
-  fetchPoolById: mocks.fetchPoolById,
-}));
+vi.mock('@/services/pools', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/services/pools')>();
+  return {
+    ...actual,
+    fetchPools: mocks.fetchPools,
+    fetchPoolById: mocks.fetchPoolById,
+  };
+});
 
 vi.mock('@/lib/supabase', () => ({
   get isSupabaseConfigured() {
@@ -194,6 +198,54 @@ vi.mock('@/pages/Explore/components/NearbyPools', () => ({
   },
 }));
 
+vi.mock('@/pages/Explore/components/Pools50m', () => ({
+  default: function Pools50mStub({
+    pools,
+    onSelectPool,
+    onCollapsedChange,
+    reopenListRef,
+  }: {
+    pools: Pool[];
+    onSelectPool?: (pool: Pool) => void;
+    onCollapsedChange?: (collapsed: boolean) => void;
+    reopenListRef?: React.MutableRefObject<(() => void) | null>;
+  }) {
+    React.useEffect(() => {
+      if (!reopenListRef) return undefined;
+      reopenListRef.current = () => onCollapsedChange?.(false);
+      return () => {
+        reopenListRef.current = null;
+      };
+    }, [onCollapsedChange, reopenListRef]);
+
+    return (
+      <div data-testid="pools50m-panel">
+        <span data-testid="pools50m-count">{pools.length}</span>
+        <button
+          type="button"
+          data-testid="pools50m-collapse"
+          onClick={() => onCollapsedChange?.(true)}
+        >
+          collapse
+        </button>
+        {pools.length === 0 && (
+          <span>등록된 50m 수영장이 없어요</span>
+        )}
+        {pools.map((p) => (
+          <button
+            key={p.name}
+            type="button"
+            data-testid={`pools50m-${p.name}`}
+            onClick={() => onSelectPool?.(p)}
+          >
+            {p.name}
+          </button>
+        ))}
+      </div>
+    );
+  },
+}));
+
 vi.mock('@/pages/Explore/components/SearchSuggestions', () => ({
   default: function SearchSuggestionsStub({ pools }: { pools: Pool[] }) {
     return <div data-testid="suggestions">{pools.length}</div>;
@@ -282,6 +334,11 @@ const POOLS: Pool[] = [
     isHoliday: 0,
   },
 ];
+
+const POOLS_WITH_50M: Pool[] = POOLS.map((pool, index) => ({
+  ...pool,
+  is50m: index < 2 ? 1 : 0,
+}));
 
 function setLocation({
   status = 'pending',
@@ -409,7 +466,7 @@ describe('Explore - 위치 상태', () => {
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
     expect(screen.getByTestId('marker-count')).toHaveTextContent('0');
     expect(
-      screen.getByRole('button', { name: '주변 수영장' }),
+      screen.getByRole('button', { name: '주변수영장' }),
     ).toBeInTheDocument();
   });
 });
@@ -429,7 +486,7 @@ describe('Explore - 주변 수영장', () => {
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
 
-    await userEvent.click(screen.getByRole('button', { name: '주변 수영장' }));
+    await userEvent.click(screen.getByRole('button', { name: '주변수영장' }));
     expect(toggleNearby).toHaveBeenCalled();
   });
 
@@ -484,6 +541,57 @@ describe('Explore - 주변 수영장', () => {
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
 
     await userEvent.click(screen.getByTestId('nearby-collapse'));
+
+    expect(
+      screen.getByRole('button', { name: '목록 열기' }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('Explore - 50m 레인', () => {
+  it('50m레인 pill을 누르면 50m 수영장 목록·마커를 표시한다', async () => {
+    mocks.fetchPools.mockResolvedValue(POOLS_WITH_50M);
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+
+    await userEvent.click(screen.getByRole('button', { name: '50m레인' }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('marker-count')).toHaveTextContent('2'),
+    );
+    expect(screen.getByTestId('pools50m-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('pools50m-count')).toHaveTextContent('2');
+    expect(
+      screen.queryByRole('button', { name: '50m레인' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '주변수영장' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('50m 수영장이 없으면 시트 빈 상태를 보여준다', async () => {
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: '50m레인' }),
+    );
+
+    expect(
+      await screen.findByText('등록된 50m 수영장이 없어요'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('marker-count')).toHaveTextContent('0');
+  });
+
+  it('50m 목록 collapsed 시 목록 열기 pill을 표시한다', async () => {
+    mocks.fetchPools.mockResolvedValue(POOLS_WITH_50M);
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
+    await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
+
+    await userEvent.click(screen.getByRole('button', { name: '50m레인' }));
+    await userEvent.click(screen.getByTestId('pools50m-collapse'));
 
     expect(
       screen.getByRole('button', { name: '목록 열기' }),

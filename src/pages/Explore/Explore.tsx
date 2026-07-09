@@ -9,8 +9,10 @@ import PoolDetailSheet from '@/pages/Explore/components/PoolDetailSheet';
 import SearchResult from '@/pages/Explore/components/SearchResult';
 import Favorites from '@/pages/Explore/components/Favorites';
 import NearbyPools from '@/pages/Explore/components/NearbyPools';
+import Pools50m from '@/pages/Explore/components/Pools50m';
 import SearchSuggestions from '@/pages/Explore/components/SearchSuggestions';
 import MapStatusMessage from '@/pages/Explore/components/MapStatusMessage';
+import Pool50mBadge from '@/components/Pool50mBadge';
 import { getPoolListKey } from '@/utils/poolKey';
 import { useMainTab } from '@/contexts/MainTabContext';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -44,9 +46,12 @@ function Explore() {
   const [favoritesSheetTop, setFavoritesSheetTop] = useState(Number.POSITIVE_INFINITY);
   const [nearbyPanelCollapsed, setNearbyPanelCollapsed] = useState(false);
   const [nearbySheetTop, setNearbySheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [pools50mPanelCollapsed, setPools50mPanelCollapsed] = useState(false);
+  const [pools50mSheetTop, setPools50mSheetTop] = useState(Number.POSITIVE_INFINITY);
   const reopenSearchListRef = useRef<(() => void) | null>(null);
   const reopenFavoritesListRef = useRef<(() => void) | null>(null);
   const reopenNearbyListRef = useRef<(() => void) | null>(null);
+  const reopenPools50mListRef = useRef<(() => void) | null>(null);
   const {
     location: userLocation,
     status: locationStatus,
@@ -100,8 +105,12 @@ function Explore() {
     showFavoritesSheet,
     showNearbyPanel,
     showNearbySheet,
+    show50mPanel,
+    show50mSheet,
     handleRecenter,
     detailClosing,
+    show50mOnly,
+    toggle50mOnly,
   } = interactions;
 
   const showMapFabs = !searchActive && !loading && !error;
@@ -114,10 +123,12 @@ function Explore() {
     onSearchSheetTopChange,
     onFavoritesSheetTopChange,
     onNearbySheetTopChange,
+    onPools50mSheetTopChange,
     onDetailSheetTopChange,
     onSearchSheetDragChange,
     onFavoritesSheetDragChange,
     onNearbySheetDragChange,
+    onPools50mSheetDragChange,
     onDetailSheetDragChange,
   } = useMapFabLift({
     enabled: showMapFabs,
@@ -126,6 +137,7 @@ function Explore() {
     searchPanelHidden: searchPanelBehindDetail,
     favoritesPanelOpen: showFavoritesSheet,
     nearbyPanelOpen: showNearbySheet,
+    pools50mPanelOpen: show50mSheet,
   });
 
   const handleSearchSheetTopChange = useCallback((top: number) => {
@@ -143,6 +155,11 @@ function Explore() {
     onNearbySheetTopChange(top);
   }, [onNearbySheetTopChange]);
 
+  const handlePools50mSheetTopChange = useCallback((top: number) => {
+    setPools50mSheetTop(top);
+    onPools50mSheetTopChange(top);
+  }, [onPools50mSheetTopChange]);
+
   const showSearchOpenPill =
     isSearching &&
     searchPanelCollapsed &&
@@ -150,7 +167,8 @@ function Explore() {
     !error &&
     !selectedPool &&
     !favoritesOpen &&
-    !nearbyOpen;
+    !nearbyOpen &&
+    !show50mOnly;
 
   const searchOpenPillStyle = useMemo((): CSSProperties | undefined => {
     if (!showSearchOpenPill || !Number.isFinite(searchSheetTop)) return undefined;
@@ -215,6 +233,30 @@ function Explore() {
     reopenNearbyListRef.current?.();
   }, []);
 
+  const show50mOpenPill =
+    show50mOnly &&
+    pools50mPanelCollapsed &&
+    show50mSheet &&
+    !isSearching &&
+    !selectedPool;
+
+  const pools50mOpenPillStyle = useMemo((): CSSProperties | undefined => {
+    if (!show50mOpenPill || !Number.isFinite(pools50mSheetTop)) {
+      return undefined;
+    }
+    const viewportH =
+      typeof window !== 'undefined'
+        ? (window.visualViewport?.height ?? window.innerHeight)
+        : 800;
+    return {
+      bottom: Math.max(16, viewportH - pools50mSheetTop + SEARCH_OPEN_PILL_GAP),
+    };
+  }, [show50mOpenPill, pools50mSheetTop]);
+
+  const handleReopenPools50mList = useCallback(() => {
+    reopenPools50mListRef.current?.();
+  }, []);
+
   const showNearbyEntryPill =
     !searchActive &&
     !isSearching &&
@@ -222,6 +264,17 @@ function Explore() {
     !error &&
     !favoritesOpen &&
     !nearbyOpen &&
+    !show50mOnly &&
+    !selectedPool;
+
+  const show50mEntryPill =
+    !searchActive &&
+    !isSearching &&
+    !loading &&
+    !error &&
+    !favoritesOpen &&
+    !nearbyOpen &&
+    !show50mOnly &&
     !selectedPool;
 
   useEffect(() => {
@@ -236,9 +289,14 @@ function Explore() {
     if (!showNearbySheet) setNearbyPanelCollapsed(false);
   }, [showNearbySheet]);
 
+  useEffect(() => {
+    if (!show50mSheet) setPools50mPanelCollapsed(false);
+  }, [show50mSheet]);
+
   const {
     mapPools,
     favoritePools,
+    pools50m,
     mapMarkerPools,
   } = useMapPools({
     pools,
@@ -250,13 +308,14 @@ function Explore() {
     favorites,
     favoritesOpen,
     nearbyOpen,
+    show50mOnly,
     selectedPool,
     onResetSelected: () => setSelectedPool(null),
   });
 
   return (
     <div
-      className={`explore explore--map app-route ${showSearchPanel ? 'explore--searching' : ''} ${searchActive ? 'explore--suggesting' : ''} ${showFavoritesPanel ? 'explore--favorites' : ''} ${showNearbyPanel ? 'explore--nearby' : ''}`}
+      className={`explore explore--map app-route ${showSearchPanel ? 'explore--searching' : ''} ${searchActive ? 'explore--suggesting' : ''} ${showFavoritesPanel ? 'explore--favorites' : ''} ${showNearbyPanel ? 'explore--nearby' : ''} ${show50mPanel ? 'explore--50m' : ''}`}
     >
       <SeoHead title={EXPLORE_TITLE} path="/" jsonLd={buildExploreJsonLd()} />
       <PoolMap
@@ -375,9 +434,39 @@ function Explore() {
         />
       )}
 
+      {show50mSheet && (
+        <Pools50m
+          pools={pools50m}
+          resetKey={`50m-${show50mOnly}-${pools50m.length}`}
+          selectedPool={selectedPool}
+          onSelectPool={handleSelectPool}
+          onCollapsedChange={setPools50mPanelCollapsed}
+          reopenListRef={reopenPools50mListRef}
+          onTopChange={handlePools50mSheetTopChange}
+          onDragChange={onPools50mSheetDragChange}
+        />
+      )}
+
+      {show50mOpenPill && (
+        <FloatingPill
+          className="explore-search-open-pill"
+          style={pools50mOpenPillStyle}
+          onClick={handleReopenPools50mList}
+          aria-label="목록 열기"
+        />
+      )}
+
       <div className="explore-map-overlay">
         <SearchBar
-          value={inputValue}
+          value={
+            favoritesOpen
+              ? '즐겨찾기'
+              : nearbyOpen
+                ? '주변 수영장'
+                : show50mOnly
+                  ? '50m레인'
+                  : inputValue
+          }
           onValueChange={handleDraftChange}
           onSearch={handleSubmitSearch}
           onActivate={handleSearchFocus}
@@ -392,23 +481,35 @@ function Explore() {
             onPick={handlePickSuggestion}
           />
         )}
-        {showNearbyEntryPill && (
+        {(showNearbyEntryPill || show50mEntryPill) && (
           <div className="explore-nearby-entry">
-            <FloatingPill
-              className="explore-nearby-entry-pill"
-              onClick={toggleNearby}
-              aria-label="주변 수영장"
-              icon={
-                <span
-                  className="explore-nearby-entry-pill__icon material-symbols-outlined"
-                  aria-hidden
-                >
-                  pool
-                </span>
-              }
-            >
-              주변 수영장
-            </FloatingPill>
+            {showNearbyEntryPill && (
+              <FloatingPill
+                className="explore-nearby-entry-pill"
+                onClick={toggleNearby}
+                aria-label="주변수영장"
+                icon={
+                  <span
+                    className="explore-nearby-entry-pill__icon material-symbols-outlined"
+                    aria-hidden
+                  >
+                    pool
+                  </span>
+                }
+              >
+                주변수영장
+              </FloatingPill>
+            )}
+            {show50mEntryPill && (
+              <FloatingPill
+                className="explore-50m-entry-pill"
+                onClick={toggle50mOnly}
+                aria-label="50m레인"
+                icon={<Pool50mBadge />}
+              >
+                50m레인
+              </FloatingPill>
+            )}
           </div>
         )}
       </div>

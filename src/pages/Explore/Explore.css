@@ -21,7 +21,8 @@
 }
 
 /* 검색 모드: 상단 검색바 영역을 솔리드 바로 만들어 시트가 그 아래로 지나가게 한다 */
-.explore--searching .explore-map-overlay {
+.explore--searching .explore-map-overlay,
+.explore--50m .explore-map-overlay {
   background: var(--pf-surface, #fff);
   box-shadow: var(--pf-shadow-bar);
 }
@@ -83,6 +84,7 @@
 .explore-nearby-entry {
   display: flex;
   justify-content: flex-start;
+  gap: 8px;
   padding: 8px 16px 0;
   pointer-events: none;
 }
@@ -91,7 +93,25 @@
   pointer-events: auto;
 }
 
+.floating-pill.explore-nearby-entry-pill {
+  height: 32px;
+  color: var(--pf-text);
+  font-weight: var(--pf-font-weight-medium);
+}
+
+.floating-pill.explore-50m-entry-pill {
+  height: 32px;
+  color: var(--pf-text);
+  font-weight: var(--pf-font-weight-medium);
+}
+
+.floating-pill.explore-50m-entry-pill--active {
+  background: var(--pf-success-bg-strong);
+  color: var(--pf-success-dark);
+}
+
 .explore-nearby-entry-pill__icon {
+  color: var(--pf-primary);
   font-size: 16px;
   line-height: 1;
   font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;

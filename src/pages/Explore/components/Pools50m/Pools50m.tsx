@@ -12,19 +12,15 @@ import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { formatDistance } from '@/utils/formatDistance';
 import { getPoolListKey } from '@/utils/poolKey';
 import type { Pool } from '@/types/pool';
-import './SearchResult.css';
+import './Pools50m.css';
 
-interface SearchResultPoolItemProps {
+interface Pools50mItemProps {
   pool: Pool;
   selected: boolean;
   onSelect: (pool: Pool) => void;
 }
 
-function SearchResultPoolItem({
-  pool,
-  selected,
-  onSelect,
-}: SearchResultPoolItemProps) {
+function Pools50mItem({ pool, selected, onSelect }: Pools50mItemProps) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(pool);
   const distanceLabel = formatDistance(pool.distanceKm);
@@ -36,9 +32,9 @@ function SearchResultPoolItem({
   return (
     <ListItem selected={selected} onSelect={() => onSelect(pool)}>
       {poolImageUrl && !poolImageFailed ? (
-        <ListItem.Media className="search-result__media">
+        <ListItem.Media className="pools50m__media">
           <img
-            className="search-result__media-img"
+            className="pools50m__media-img"
             src={poolImageUrl}
             alt=""
             loading="lazy"
@@ -47,7 +43,7 @@ function SearchResultPoolItem({
         </ListItem.Media>
       ) : (
         <ListItem.Media
-          className="search-result__media search-result__media--placeholder"
+          className="pools50m__media pools50m__media--placeholder"
           aria-hidden
         >
           <Waves size={20} />
@@ -68,7 +64,7 @@ function SearchResultPoolItem({
                 <span x-apple-data-detectors="none">{feeLabel}</span>
               )}
               {feeLabel && distanceLabel && (
-                <span className="search-result__dot" aria-hidden>
+                <span className="pools50m__dot" aria-hidden>
                   ·
                 </span>
               )}
@@ -86,8 +82,8 @@ function SearchResultPoolItem({
         <ListItem.Trailing>
           <button
             type="button"
-            className={`search-result__favorite ${
-              favorite ? 'search-result__favorite--active' : ''
+            className={`pools50m__favorite ${
+              favorite ? 'pools50m__favorite--active' : ''
             }`}
             aria-label="즐겨찾기"
             aria-pressed={favorite}
@@ -108,49 +104,35 @@ function SearchResultPoolItem({
   );
 }
 
-const MemoSearchResultPoolItem = memo(SearchResultPoolItem);
+const MemoPools50mItem = memo(Pools50mItem);
 
-export interface SearchResultProps {
+export interface Pools50mProps {
   pools: Pool[];
   selectedPool: Pool | null;
   onSelectPool?: (pool: Pool) => void;
   resetKey?: string | number;
-  searchTerm?: string;
-  behindDetail?: boolean;
-  behindDetailInstant?: boolean;
-  revealFromDetail?: boolean;
-  interactionDisabled?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
   reopenListRef?: MutableRefObject<(() => void) | null>;
   onTopChange?: (top: number) => void;
   onDragChange?: (dragging: boolean) => void;
 }
 
-export default function SearchResult({
+export default function Pools50m({
   pools,
   selectedPool,
   onSelectPool,
   resetKey,
-  searchTerm = '',
-  behindDetail = false,
-  behindDetailInstant = false,
-  revealFromDetail = false,
-  interactionDisabled = false,
   onCollapsedChange,
   reopenListRef,
   onTopChange,
   onDragChange,
-}: SearchResultProps) {
+}: Pools50mProps) {
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null;
 
   const sheet = useListSheet({
     resetKey,
     itemCount: pools.length,
     reservePeekWhenEmpty: true,
-    behindDetail,
-    behindDetailInstant,
-    revealFromDetail,
-    interactionDisabled,
     collapseToHandle: true,
     onCollapsedChange,
     onTopChange,
@@ -175,11 +157,10 @@ export default function SearchResult({
       collapsed={sheet.collapsed}
       dragging={sheet.dragging}
       instant={sheet.instant}
-      inert={sheet.inert}
-      revealing={sheet.revealing}
       softSheet={sheet.softSheet}
       style={{ transform: `translateY(${sheet.translateY}px)` }}
-      aria-label={`'${searchTerm}' 검색 결과`}
+      aria-label="50m 레인"
+      data-testid="pools50m-panel"
       onTouchStartCapture={sheet.handleTouchStart}
       onTouchEndCapture={sheet.handleTouchEnd}
       onTouchCancelCapture={sheet.handleTouchEnd}
@@ -200,23 +181,26 @@ export default function SearchResult({
             sheet.toggleHandle();
           }}
         />
-        <header className="search-result__header">
-          <h2 className="search-result__title">
-            검색 결과{' '}
-            <span className="search-result__count">{pools.length}</span>건
+        <header className="pools50m__header">
+          <h2 className="pools50m__title">
+            50m 레인{' '}
+            <span className="pools50m__count" data-testid="pools50m-count">
+              {pools.length}
+            </span>
+            곳
           </h2>
         </header>
       </BottomSheet.Header>
 
-      <div ref={sheet.listRef} className="search-result__list" role="list">
+      <div ref={sheet.listRef} className="pools50m__list" role="list">
         {pools.length === 0 ? (
-          <div className="search-result__empty-slot" role="listitem">
-            <p className="search-result__empty">검색 결과가 없습니다</p>
+          <div className="pools50m__empty-slot" role="listitem">
+            <p className="pools50m__empty">등록된 50m 수영장이 없어요</p>
           </div>
         ) : (
           pools.map((pool) => (
             <div key={getPoolListKey(pool)} role="listitem">
-              <MemoSearchResultPoolItem
+              <MemoPools50mItem
                 pool={pool}
                 selected={selectedKey === getPoolListKey(pool)}
                 onSelect={(p) => onSelectPool?.(p)}

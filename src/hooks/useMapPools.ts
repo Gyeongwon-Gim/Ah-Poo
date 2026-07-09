@@ -1,5 +1,6 @@
 import { useMemo, useEffect } from 'react';
 import { getPoolListKey } from '@/utils/poolKey';
+import { isFlagOn } from '@/services/pools';
 import { filterBySearchTerm } from '@/utils/poolSearch';
 import {
   filterPoolsWithinKm,
@@ -20,6 +21,7 @@ interface UseMapPoolsParams {
   favorites: Pool[];
   favoritesOpen: boolean;
   nearbyOpen: boolean;
+  show50mOnly: boolean;
   selectedPool: Pool | null;
   onResetSelected: () => void;
 }
@@ -38,6 +40,7 @@ export function useMapPools({
   favorites,
   favoritesOpen,
   nearbyOpen,
+  show50mOnly,
   selectedPool,
   onResetSelected,
 }: UseMapPoolsParams) {
@@ -84,6 +87,16 @@ export function useMapPools({
     );
   }, [favorites, userLocation, locationStatus]);
 
+  const pools50m = useMemo(() => {
+    const filtered = pools.filter((p) => isFlagOn(p.is50m));
+    if (userLocation) {
+      return sortByDistanceAsc(
+        filtered.map((pool) => enrichWithDistance(pool, userLocation)),
+      );
+    }
+    return filtered;
+  }, [pools, userLocation]);
+
   const mapMarkerPools = useMemo(() => {
     let result: Pool[];
 
@@ -93,6 +106,8 @@ export function useMapPools({
       result = favoritePools;
     } else if (nearbyOpen) {
       result = mapPools;
+    } else if (show50mOnly) {
+      result = pools50m;
     } else {
       result = [];
     }
@@ -109,8 +124,10 @@ export function useMapPools({
     isSearching,
     favoritesOpen,
     nearbyOpen,
+    show50mOnly,
     mapPools,
     favoritePools,
+    pools50m,
     selectedPool,
   ]);
 
@@ -122,5 +139,5 @@ export function useMapPools({
     if (!stillVisible) onResetSelected();
   }, [mapPools, selectedPool, isSearching, onResetSelected]);
 
-  return { mapPools, favoritePools, mapMarkerPools };
+  return { mapPools, favoritePools, pools50m, mapMarkerPools };
 }

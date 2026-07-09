@@ -92,13 +92,3 @@
 .nearby-pools__dot {
   color: color-mix(in srgb, var(--pf-text-muted) 40%, transparent);
 }
-
-.nearby-pools__tag {
-  flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(34, 197, 94, 0.12);
-  color: #22c55e;
-}

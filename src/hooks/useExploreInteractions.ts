@@ -15,6 +15,7 @@ export type DetailOrigin =
   | 'search'
   | 'favorites'
   | 'nearby'
+  | '50m'
   | 'suggestion'
   | 'map';
 
@@ -65,6 +66,7 @@ export function useExploreInteractions({
   const [detailClosing, setDetailClosing] = useState(false);
   const [detailOrigin, setDetailOrigin] = useState<DetailOrigin | null>(null);
   const [showUserLocationMarker, setShowUserLocationMarker] = useState(false);
+  const [show50mOnly, setShow50mOnly] = useState(false);
   const mapRef = useRef<PoolMapHandle | null>(null);
 
   const isSearching = Boolean(appliedSearchTerm.trim());
@@ -83,9 +85,10 @@ export function useExploreInteractions({
     if (isSearching) return 'search';
     if (favoritesOpen) return 'favorites';
     if (nearbyOpen) return 'nearby';
+    if (show50mOnly) return '50m';
     if (searchActive) return 'suggestion';
     return 'map';
-  }, [isSearching, favoritesOpen, nearbyOpen, searchActive]);
+  }, [isSearching, favoritesOpen, nearbyOpen, show50mOnly, searchActive]);
 
   const openPoolDetail = useCallback(
     (
@@ -136,6 +139,7 @@ export function useExploreInteractions({
       setInputValue('');
       setAppliedSearchTerm('');
       setSearchActive(false);
+      setShow50mOnly(false);
     }
   }, [favoritesOpen, nearbyOpen]);
 
@@ -143,6 +147,7 @@ export function useExploreInteractions({
     if (isSearching) {
       closeFavorites();
       closeNearby();
+      setShow50mOnly(false);
     }
   }, [isSearching, closeFavorites, closeNearby]);
 
@@ -162,7 +167,21 @@ export function useExploreInteractions({
     setAppliedSearchTerm('');
     setSearchActive(false);
     setSelectedPool(null);
-  }, []);
+    setShow50mOnly(false);
+    closeFavorites();
+    closeNearby();
+  }, [closeFavorites, closeNearby]);
+
+  const toggle50mOnly = useCallback(() => {
+    setShow50mOnly((prev) => {
+      const next = !prev;
+      if (next) {
+        closeFavorites();
+        closeNearby();
+      }
+      return next;
+    });
+  }, [closeFavorites, closeNearby]);
 
   const prepareMapBaselineUI = useCallback(() => {
     closeFavorites();
@@ -240,6 +259,7 @@ export function useExploreInteractions({
   const handleActivateSearch = useCallback(() => {
     closeFavorites();
     closeNearby();
+    setShow50mOnly(false);
     setSearchActive(true);
   }, [closeFavorites, closeNearby]);
 
@@ -321,7 +341,14 @@ export function useExploreInteractions({
     nearbyOpen && !selectedPool && !loading && !error && !isSearching;
   const showNearbySheet =
     nearbyOpen && !selectedPool && !loading && !error && !isSearching;
-  const searchMode = searchActive || isSearching;
+  const show50mPanel =
+    show50mOnly && !selectedPool && !loading && !error && !isSearching;
+  const show50mSheet =
+    show50mOnly && !selectedPool && !loading && !error && !isSearching;
+  // 즐겨찾기·주변수영장·50m레인도 검색창을 "검색된 상태"처럼 보이게 해 뒤로가기(←) 버튼으로
+  // 되돌아갈 수 있게 한다. handleCloseSearch가 closeFavorites/closeNearby/show50mOnly도 함께 호출한다.
+  const searchMode =
+    searchActive || isSearching || favoritesOpen || nearbyOpen || show50mOnly;
 
   return {
     mapRef,
@@ -358,7 +385,12 @@ export function useExploreInteractions({
     showFavoritesSheet,
     showNearbyPanel,
     showNearbySheet,
+    show50mPanel,
+    show50mSheet,
     handleRecenter,
     showUserLocationMarker,
+    // 50m 레인 필터
+    show50mOnly,
+    toggle50mOnly,
   };
 }

@@ -2,6 +2,8 @@ import { memo, useEffect, type MutableRefObject } from 'react';
 import { Star, Waves } from 'lucide-react';
 import BottomSheet from '@/components/BottomSheet';
 import ListItem from '@/components/ListItem';
+import Pool50mBadge from '@/components/Pool50mBadge';
+import PoolStatusTag from '@/components/PoolStatusTag';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
 import { useListSheet } from '@/pages/Explore/hooks/useListSheet';
@@ -52,7 +54,8 @@ function NearbyPoolItem({ pool, selected, onSelect }: NearbyPoolItemProps) {
         <ListItem.Content>
           <ListItem.TitleRow>
             <ListItem.Title>{pool.name}</ListItem.Title>
-            {show50mTag && <span className="nearby-pools__tag">50m</span>}
+            <PoolStatusTag pool={pool} />
+            {show50mTag && <Pool50mBadge />}
           </ListItem.TitleRow>
 
           {(feeLabel || distanceLabel) && (

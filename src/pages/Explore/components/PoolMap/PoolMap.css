@@ -56,6 +56,7 @@ html.keyboard-open .pool-map {
 }
 
 .pool-marker-icon {
+  --pf-marker-glow: var(--pf-map-marker-glow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +102,7 @@ html.keyboard-open .pool-map {
 }
 
 .pool-marker-icon--50m {
+  --pf-marker-glow: var(--pf-map-marker-glow-50m);
   background: var(--pf-success);
 }
 
@@ -123,6 +125,20 @@ html.keyboard-open .pool-map {
     'wght' 500,
     'GRAD' 0,
     'opsz' 20;
+}
+
+/* 운영중 마커: 마커 색 그대로 은은한 글로우 */
+.pool-marker-icon--operating {
+  box-shadow:
+    var(--pf-map-marker-shadow),
+    0 0 8px 2px var(--pf-marker-glow);
+}
+
+/* 선택 상태(더 큰 그림자)와 겹칠 때도 글로우 유지 — --selected 규칙 뒤에 둔다 */
+.pool-marker-icon--operating.pool-marker-icon--selected {
+  box-shadow:
+    var(--pf-map-marker-shadow-selected),
+    0 0 12px 3px var(--pf-marker-glow);
 }
 
 .pool-marker-label {

@@ -10,6 +10,8 @@ import {
 import type { MouseEvent, PointerEvent, Ref } from 'react';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { isFlagOn } from '@/services/pools';
+import Pool50mBadge from '@/components/Pool50mBadge';
+import PoolStatusTag from '@/components/PoolStatusTag';
 import type { Pool } from '@/types/pool';
 
 interface PoolDetailContentProps {
@@ -92,9 +94,8 @@ export default function PoolDetailContent({
           <div className="pool-sheet__titles">
             <div className="pool-sheet__name-row">
               <h2 className="pool-sheet__name">{pool.name}</h2>
-              {isFlagOn(pool.is50m) && (
-                <span className="pool-sheet__tag pool-sheet__tag--50m">50m</span>
-              )}
+              <PoolStatusTag pool={pool} />
+              {isFlagOn(pool.is50m) && <Pool50mBadge />}
             </div>
             {pool.fee && (
               <p className="pool-sheet__meta">
