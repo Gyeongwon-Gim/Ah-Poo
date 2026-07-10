@@ -10,7 +10,7 @@ import {
 import type { MouseEvent, PointerEvent, Ref } from 'react';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { isFlagOn } from '@/services/pools';
-import Pool50mBadge from '@/components/Pool50mBadge';
+import { Tag } from '@/components';
 import PoolStatusTag from '@/components/PoolStatusTag';
 import type { Pool } from '@/types/pool';
 
@@ -95,7 +95,7 @@ export default function PoolDetailContent({
             <div className="pool-sheet__name-row">
               <h2 className="pool-sheet__name">{pool.name}</h2>
               <PoolStatusTag pool={pool} />
-              {isFlagOn(pool.is50m) && <Pool50mBadge />}
+              {isFlagOn(pool.is50m) && <Tag variant="highlight">50m</Tag>}
             </div>
             {pool.fee && (
               <p className="pool-sheet__meta">
@@ -141,7 +141,7 @@ export default function PoolDetailContent({
               href={`tel:${String(pool.phone).replace(/\s/g, '')}`}
             >
               <Phone
-                size={16}
+                size={14}
                 strokeWidth={1.75}
                 className="pool-sheet__contact-icon"
                 aria-hidden

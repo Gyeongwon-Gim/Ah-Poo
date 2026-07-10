@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react';
 import './Tag.css';
 
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'active';
+  variant?: 'default' | 'highlight';
 }
 
 export default function Tag({
@@ -13,7 +13,7 @@ export default function Tag({
 }: TagProps) {
   const cls = [
     'ap-tag',
-    variant === 'active' ? 'ap-tag--active' : '',
+    variant === 'highlight' ? 'ap-tag--highlight' : '',
     className,
   ]
     .filter(Boolean)

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import Tag from './Tag';
 
 const meta = {
-  title: 'Design System/Tag',
+  title: 'Components/Tag',
   component: Tag,
   tags: ['autodocs'],
   parameters: {
@@ -24,16 +24,13 @@ export const Default: Story = {
 };
 
 export const Active: Story = {
-  args: { children: '50m', variant: 'active' },
+  args: { children: '50m', variant: 'highlight' },
 };
 
 export const Group: Story = {
   render: () => (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-      <Tag variant="active">50m</Tag>
-      <Tag>평일</Tag>
-      <Tag>토요일</Tag>
-      <Tag>일요일</Tag>
+      <Tag variant="highlight">50m</Tag>
     </div>
   ),
 };

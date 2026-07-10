@@ -1,3 +1,19 @@
+/* 앱 index.css 중 mobile-shell.css만 제외 — 토큰·기본 리셋은 Storybook에도 필요 */
+@import '../src/styles/tokens.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--ap-surface);
+}
+
+/* mobile-shell.css 대신 Storybook 문서 흐름용 레이아웃 */
 html,
 body {
   position: static;

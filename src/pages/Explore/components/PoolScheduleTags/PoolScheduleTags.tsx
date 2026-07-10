@@ -23,7 +23,7 @@ export default function PoolScheduleTags({ pool }: PoolScheduleTagsProps) {
   return (
     <div className="pool-schedule-tags">
       {active.map(({ key, label }) => (
-        <Tag key={key} variant={key === 'is50m' ? 'active' : 'default'}>
+        <Tag key={key} variant={key === 'is50m' ? 'highlight' : 'default'}>
           {label}
         </Tag>
       ))}

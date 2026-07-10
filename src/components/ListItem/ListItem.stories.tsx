@@ -3,13 +3,14 @@ import { Star } from 'lucide-react';
 import ListItem from './ListItem';
 
 const meta = {
-  title: 'Design System/ListItem',
+  title: 'Components/ListItem',
   component: ListItem,
   tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
-        component: '리스트 시트용 행 shell. 미디어·본문·trailing slot을 조립합니다.',
+        component:
+          '리스트 시트용 행 shell. 미디어·본문·trailing slot을 조립합니다.',
       },
     },
   },

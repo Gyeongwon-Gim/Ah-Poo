@@ -6,11 +6,9 @@
   letter-spacing: 0.02em;
   background: var(--ap-neutral-100);
   color: var(--ap-neutral-500);
-  border: 1px solid var(--ap-border-neutral);
 }
 
-.ap-tag--active {
+.ap-tag--highlight {
   background: var(--ap-success-bg);
   color: var(--ap-success);
-  border-color: var(--ap-success-border);
 }

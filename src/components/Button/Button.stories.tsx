@@ -3,17 +3,9 @@ import { RefreshCw, Star, LocateFixed, ChevronLeft } from 'lucide-react';
 import Button from './Button';
 
 const meta = {
-  title: 'Design System/Button',
+  title: 'Components/Button',
   component: Button,
   tags: ['autodocs'],
-  parameters: {
-    docs: {
-      description: {
-        component:
-          '어푸 공통 버튼. primary(CTA), secondary(보조), ghost(아이콘 뒤로가기), icon(FAB) 변형을 지원합니다.',
-      },
-    },
-  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
