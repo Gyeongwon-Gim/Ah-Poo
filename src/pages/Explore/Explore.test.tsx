@@ -90,152 +90,87 @@ vi.mock('@/pages/Explore/components/PoolDetailSheet', () => ({
   },
 }));
 
-interface SearchResultStubProps {
+interface PoolListSheetStubProps {
   pools: Pool[];
-  onSelectPool: (pool: Pool) => void;
+  onSelectPool?: (pool: Pool) => void;
+  onCollapsedChange?: (collapsed: boolean) => void;
+  reopenListRef?: React.MutableRefObject<(() => void) | null>;
+  // preset에서 주입되는 식별자/문구
+  testId?: string;
+  emptyMessage?: string;
 }
 
-vi.mock('@/pages/Explore/components/SearchResult', () => ({
-  default: function SearchResultStub({
+// 네 목록 시트는 하나의 PoolListSheet로 통합됐다.
+// testId(= preset의 패널 식별자)로 분기해 기존 스텁 DOM을 그대로 재현한다.
+vi.mock('@/pages/Explore/components/PoolListSheet', () => ({
+  default: function PoolListSheetStub({
     pools,
     onSelectPool,
-  }: SearchResultStubProps) {
-    return (
-      <div data-testid="results-panel">
-        <span data-testid="panel-title">검색 결과</span>
-        <span data-testid="panel-count">{pools.length}</span>
-        {pools.length === 0 && <span>검색 결과가 없습니다</span>}
-        {pools.map((p) => (
+    onCollapsedChange,
+    reopenListRef,
+    testId,
+    emptyMessage,
+  }: PoolListSheetStubProps) {
+    React.useEffect(() => {
+      if (!reopenListRef) return undefined;
+      reopenListRef.current = () => onCollapsedChange?.(false);
+      return () => {
+        reopenListRef.current = null;
+      };
+    }, [onCollapsedChange, reopenListRef]);
+
+    if (testId === 'results-panel') {
+      return (
+        <div data-testid="results-panel">
+          <span data-testid="panel-title">검색 결과</span>
+          <span data-testid="panel-count">{pools.length}</span>
+          {pools.length === 0 && <span>검색 결과가 없습니다</span>}
+          {pools.map((p) => (
+            <button
+              key={p.name}
+              type="button"
+              data-testid={`result-${p.name}`}
+              onClick={() => onSelectPool?.(p)}
+            >
+              {p.name}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    if (testId === 'favorites-panel') {
+      return (
+        <div data-testid="favorites-panel">
           <button
-            key={p.name}
             type="button"
-            data-testid={`result-${p.name}`}
-            onClick={() => onSelectPool(p)}
+            data-testid="favorites-collapse"
+            onClick={() => onCollapsedChange?.(true)}
           >
-            {p.name}
+            collapse
           </button>
-        ))}
-      </div>
-    );
-  },
-}));
+        </div>
+      );
+    }
 
-vi.mock('@/pages/Explore/components/Favorites', () => ({
-  default: function FavoritesStub({
-    onCollapsedChange,
-    reopenListRef,
-  }: {
-    onCollapsedChange?: (collapsed: boolean) => void;
-    reopenListRef?: React.MutableRefObject<(() => void) | null>;
-  }) {
-    React.useEffect(() => {
-      if (!reopenListRef) return undefined;
-      reopenListRef.current = () => onCollapsedChange?.(false);
-      return () => {
-        reopenListRef.current = null;
-      };
-    }, [onCollapsedChange, reopenListRef]);
-
+    // nearby-panel | pools50m-panel — 개수/빈 문구/아이템 버튼 구조가 동일
+    const prefix = testId === 'pools50m-panel' ? 'pools50m' : 'nearby';
     return (
-      <div data-testid="favorites-panel">
+      <div data-testid={testId}>
+        <span data-testid={`${prefix}-count`}>{pools.length}</span>
         <button
           type="button"
-          data-testid="favorites-collapse"
+          data-testid={`${prefix}-collapse`}
           onClick={() => onCollapsedChange?.(true)}
         >
           collapse
         </button>
-      </div>
-    );
-  },
-}));
-
-vi.mock('@/pages/Explore/components/NearbyPools', () => ({
-  default: function NearbyPoolsStub({
-    pools,
-    onSelectPool,
-    onCollapsedChange,
-    reopenListRef,
-  }: {
-    pools: Pool[];
-    onSelectPool?: (pool: Pool) => void;
-    onCollapsedChange?: (collapsed: boolean) => void;
-    reopenListRef?: React.MutableRefObject<(() => void) | null>;
-  }) {
-    React.useEffect(() => {
-      if (!reopenListRef) return undefined;
-      reopenListRef.current = () => onCollapsedChange?.(false);
-      return () => {
-        reopenListRef.current = null;
-      };
-    }, [onCollapsedChange, reopenListRef]);
-
-    return (
-      <div data-testid="nearby-panel">
-        <span data-testid="nearby-count">{pools.length}</span>
-        <button
-          type="button"
-          data-testid="nearby-collapse"
-          onClick={() => onCollapsedChange?.(true)}
-        >
-          collapse
-        </button>
-        {pools.length === 0 && (
-          <span>주변에 등록된 수영장이 없어요</span>
-        )}
+        {pools.length === 0 && <span>{emptyMessage}</span>}
         {pools.map((p) => (
           <button
             key={p.name}
             type="button"
-            data-testid={`nearby-${p.name}`}
-            onClick={() => onSelectPool?.(p)}
-          >
-            {p.name}
-          </button>
-        ))}
-      </div>
-    );
-  },
-}));
-
-vi.mock('@/pages/Explore/components/Pools50m', () => ({
-  default: function Pools50mStub({
-    pools,
-    onSelectPool,
-    onCollapsedChange,
-    reopenListRef,
-  }: {
-    pools: Pool[];
-    onSelectPool?: (pool: Pool) => void;
-    onCollapsedChange?: (collapsed: boolean) => void;
-    reopenListRef?: React.MutableRefObject<(() => void) | null>;
-  }) {
-    React.useEffect(() => {
-      if (!reopenListRef) return undefined;
-      reopenListRef.current = () => onCollapsedChange?.(false);
-      return () => {
-        reopenListRef.current = null;
-      };
-    }, [onCollapsedChange, reopenListRef]);
-
-    return (
-      <div data-testid="pools50m-panel">
-        <span data-testid="pools50m-count">{pools.length}</span>
-        <button
-          type="button"
-          data-testid="pools50m-collapse"
-          onClick={() => onCollapsedChange?.(true)}
-        >
-          collapse
-        </button>
-        {pools.length === 0 && (
-          <span>등록된 50m 수영장이 없어요</span>
-        )}
-        {pools.map((p) => (
-          <button
-            key={p.name}
-            type="button"
-            data-testid={`pools50m-${p.name}`}
+            data-testid={`${prefix}-${p.name}`}
             onClick={() => onSelectPool?.(p)}
           >
             {p.name}

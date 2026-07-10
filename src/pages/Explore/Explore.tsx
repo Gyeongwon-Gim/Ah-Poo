@@ -3,16 +3,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, Star } from 'lucide-react';
 import SearchBar from '@/pages/Explore/components/SearchBar';
-import { Button, FloatingPill } from '@/components';
+import { Button, FloatingPill, Tag } from '@/components';
 import PoolMap from '@/pages/Explore/components/PoolMap';
 import PoolDetailSheet from '@/pages/Explore/components/PoolDetailSheet';
-import SearchResult from '@/pages/Explore/components/SearchResult';
-import Favorites from '@/pages/Explore/components/Favorites';
-import NearbyPools from '@/pages/Explore/components/NearbyPools';
-import Pools50m from '@/pages/Explore/components/Pools50m';
+import PoolListSheet from '@/pages/Explore/components/PoolListSheet';
+import {
+  POOL_LIST_PRESETS,
+  searchResultPreset,
+} from '@/pages/Explore/components/PoolListSheet/presets';
 import SearchSuggestions from '@/pages/Explore/components/SearchSuggestions';
 import MapStatusMessage from '@/pages/Explore/components/MapStatusMessage';
-import Pool50mBadge from '@/components/Pool50mBadge';
 import { getPoolListKey } from '@/utils/poolKey';
 import { useMainTab } from '@/contexts/MainTabContext';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -41,13 +41,21 @@ function Explore() {
   } = useMainTab();
   const { favorites } = useFavorites();
   const [searchPanelCollapsed, setSearchPanelCollapsed] = useState(false);
-  const [searchSheetTop, setSearchSheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [searchSheetTop, setSearchSheetTop] = useState(
+    Number.POSITIVE_INFINITY,
+  );
   const [favoritesPanelCollapsed, setFavoritesPanelCollapsed] = useState(false);
-  const [favoritesSheetTop, setFavoritesSheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [favoritesSheetTop, setFavoritesSheetTop] = useState(
+    Number.POSITIVE_INFINITY,
+  );
   const [nearbyPanelCollapsed, setNearbyPanelCollapsed] = useState(false);
-  const [nearbySheetTop, setNearbySheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [nearbySheetTop, setNearbySheetTop] = useState(
+    Number.POSITIVE_INFINITY,
+  );
   const [pools50mPanelCollapsed, setPools50mPanelCollapsed] = useState(false);
-  const [pools50mSheetTop, setPools50mSheetTop] = useState(Number.POSITIVE_INFINITY);
+  const [pools50mSheetTop, setPools50mSheetTop] = useState(
+    Number.POSITIVE_INFINITY,
+  );
   const reopenSearchListRef = useRef<(() => void) | null>(null);
   const reopenFavoritesListRef = useRef<(() => void) | null>(null);
   const reopenNearbyListRef = useRef<(() => void) | null>(null);
@@ -140,25 +148,37 @@ function Explore() {
     pools50mPanelOpen: show50mSheet,
   });
 
-  const handleSearchSheetTopChange = useCallback((top: number) => {
-    setSearchSheetTop(top);
-    onSearchSheetTopChange(top);
-  }, [onSearchSheetTopChange]);
+  const handleSearchSheetTopChange = useCallback(
+    (top: number) => {
+      setSearchSheetTop(top);
+      onSearchSheetTopChange(top);
+    },
+    [onSearchSheetTopChange],
+  );
 
-  const handleFavoritesSheetTopChange = useCallback((top: number) => {
-    setFavoritesSheetTop(top);
-    onFavoritesSheetTopChange(top);
-  }, [onFavoritesSheetTopChange]);
+  const handleFavoritesSheetTopChange = useCallback(
+    (top: number) => {
+      setFavoritesSheetTop(top);
+      onFavoritesSheetTopChange(top);
+    },
+    [onFavoritesSheetTopChange],
+  );
 
-  const handleNearbySheetTopChange = useCallback((top: number) => {
-    setNearbySheetTop(top);
-    onNearbySheetTopChange(top);
-  }, [onNearbySheetTopChange]);
+  const handleNearbySheetTopChange = useCallback(
+    (top: number) => {
+      setNearbySheetTop(top);
+      onNearbySheetTopChange(top);
+    },
+    [onNearbySheetTopChange],
+  );
 
-  const handlePools50mSheetTopChange = useCallback((top: number) => {
-    setPools50mSheetTop(top);
-    onPools50mSheetTopChange(top);
-  }, [onPools50mSheetTopChange]);
+  const handlePools50mSheetTopChange = useCallback(
+    (top: number) => {
+      setPools50mSheetTop(top);
+      onPools50mSheetTopChange(top);
+    },
+    [onPools50mSheetTopChange],
+  );
 
   const showSearchOpenPill =
     isSearching &&
@@ -171,7 +191,8 @@ function Explore() {
     !show50mOnly;
 
   const searchOpenPillStyle = useMemo((): CSSProperties | undefined => {
-    if (!showSearchOpenPill || !Number.isFinite(searchSheetTop)) return undefined;
+    if (!showSearchOpenPill || !Number.isFinite(searchSheetTop))
+      return undefined;
     const viewportH =
       typeof window !== 'undefined'
         ? (window.visualViewport?.height ?? window.innerHeight)
@@ -201,7 +222,10 @@ function Explore() {
         ? (window.visualViewport?.height ?? window.innerHeight)
         : 800;
     return {
-      bottom: Math.max(16, viewportH - favoritesSheetTop + SEARCH_OPEN_PILL_GAP),
+      bottom: Math.max(
+        16,
+        viewportH - favoritesSheetTop + SEARCH_OPEN_PILL_GAP,
+      ),
     };
   }, [showFavoritesOpenPill, favoritesSheetTop]);
 
@@ -293,12 +317,7 @@ function Explore() {
     if (!show50mSheet) setPools50mPanelCollapsed(false);
   }, [show50mSheet]);
 
-  const {
-    mapPools,
-    favoritePools,
-    pools50m,
-    mapMarkerPools,
-  } = useMapPools({
+  const { mapPools, favoritePools, pools50m, mapMarkerPools } = useMapPools({
     pools,
     appliedSearchTerm,
     isSearching,
@@ -364,10 +383,10 @@ function Explore() {
       )}
 
       {showSearchPanel && (
-        <SearchResult
+        <PoolListSheet
+          {...searchResultPreset(appliedSearchTerm)}
           pools={mapPools}
           resetKey={appliedSearchTerm}
-          searchTerm={appliedSearchTerm}
           selectedPool={selectedPool}
           onSelectPool={handleSelectPool}
           behindDetail={searchPanelBehindDetail}
@@ -391,7 +410,8 @@ function Explore() {
       )}
 
       {showFavoritesSheet && (
-        <Favorites
+        <PoolListSheet
+          {...POOL_LIST_PRESETS.favorites}
           pools={favoritePools}
           resetKey={`favorites-${favoritesOpen}-${favorites.length}`}
           selectedPool={selectedPool}
@@ -413,7 +433,8 @@ function Explore() {
       )}
 
       {showNearbySheet && (
-        <NearbyPools
+        <PoolListSheet
+          {...POOL_LIST_PRESETS.nearby}
           pools={mapPools}
           resetKey={`nearby-${nearbyOpen}-${mapPools.length}`}
           selectedPool={selectedPool}
@@ -435,7 +456,8 @@ function Explore() {
       )}
 
       {show50mSheet && (
-        <Pools50m
+        <PoolListSheet
+          {...POOL_LIST_PRESETS.pools50m}
           pools={pools50m}
           resetKey={`50m-${show50mOnly}-${pools50m.length}`}
           selectedPool={selectedPool}
@@ -464,7 +486,7 @@ function Explore() {
               : nearbyOpen
                 ? '주변 수영장'
                 : show50mOnly
-                  ? '50m레인'
+                  ? '레인'
                   : inputValue
           }
           onValueChange={handleDraftChange}
@@ -505,9 +527,9 @@ function Explore() {
                 className="explore-50m-entry-pill"
                 onClick={toggle50mOnly}
                 aria-label="50m레인"
-                icon={<Pool50mBadge />}
+                icon={<Tag variant="highlight">50m</Tag>}
               >
-                50m레인
+                레인
               </FloatingPill>
             )}
           </div>

@@ -1,35 +1,42 @@
-.bottom-sheet--list.is-collapsed .search-result__header,
-.bottom-sheet--list.is-collapsed .search-result__list {
+.bottom-sheet--list.is-collapsed .pool-list__header,
+.bottom-sheet--list.is-collapsed .pool-list__list {
   pointer-events: none;
 }
 
-.search-result__header {
+.pool-list__header {
   flex-shrink: 0;
   padding: 4px 16px 12px;
 }
 
-.search-result__title {
+.pool-list__title {
   font-size: 15px;
   font-weight: 800;
   color: var(--ap-text);
   letter-spacing: -0.02em;
 }
 
-.search-result__count {
+.pool-list__count {
   color: var(--ap-primary-dark);
 }
 
-.search-result__list {
+.pool-list__list {
   flex: none;
   overflow: visible;
   padding-bottom: var(--sheet-bottom-reserve, 0px);
 }
 
-.explore--searching .search-result__list {
+.explore--searching .pool-list__list,
+.explore--favorites .pool-list__list,
+.explore--nearby .pool-list__list,
+.explore--50m .pool-list__list {
   padding-bottom: 0;
 }
 
-.search-result__empty {
+.bottom-sheet--list.is-soft-sheet .list-item {
+  touch-action: manipulation;
+}
+
+.pool-list__empty {
   padding: 32px 16px;
   text-align: center;
   font-size: 14px;
@@ -37,23 +44,19 @@
   color: var(--ap-text-muted);
 }
 
-.bottom-sheet--list.is-soft-sheet .list-item {
-  touch-action: manipulation;
-}
-
-.search-result__empty-slot {
+.pool-list__empty-slot {
   flex-shrink: 0;
   min-height: 120px;
   border-bottom: 1px solid
     color-mix(in srgb, var(--ap-text-muted) 15%, transparent);
 }
 
-.search-result__empty-slot .search-result__empty {
+.pool-list__empty-slot .pool-list__empty {
   padding: 14px 16px;
   text-align: left;
 }
 
-.search-result__media {
+.pool-list__media {
   width: 100%;
   height: 72px;
   border-radius: 8px;
@@ -61,7 +64,7 @@
   background: var(--ap-surface);
 }
 
-.search-result__media--placeholder {
+.pool-list__media--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,14 +72,14 @@
   color: var(--ap-primary);
 }
 
-.search-result__media-img {
+.pool-list__media-img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.search-result__favorite {
+.pool-list__favorite {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,10 +93,10 @@
   cursor: pointer;
 }
 
-.search-result__favorite--active {
+.pool-list__favorite--active {
   color: var(--ap-favorite);
 }
 
-.search-result__dot {
+.pool-list__dot {
   color: color-mix(in srgb, var(--ap-text-muted) 40%, transparent);
 }
