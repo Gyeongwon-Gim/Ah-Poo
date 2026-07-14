@@ -21,12 +21,19 @@ import { usePoolData } from '@/hooks/usePoolData';
 import { useMapPools } from '@/hooks/useMapPools';
 import { useExploreInteractions } from '@/hooks/useExploreInteractions';
 import { useMapFabLift } from '@/hooks/useMapFabLift';
+import { getLayoutHeight } from '@/utils/appViewport';
 import SeoHead, { buildExploreJsonLd } from '@/components/SeoHead';
 import './Explore.css';
 
 const EXPLORE_TITLE = '어푸! | 전국 일일입장·자유수영 수영장 찾기';
 
 const SEARCH_OPEN_PILL_GAP = 10;
+
+function computeOpenPillStyle(sheetTop: number): CSSProperties {
+  return {
+    bottom: Math.max(16, getLayoutHeight() - sheetTop + SEARCH_OPEN_PILL_GAP),
+  };
+}
 
 function Explore() {
   const location = useLocation();
@@ -193,13 +200,7 @@ function Explore() {
   const searchOpenPillStyle = useMemo((): CSSProperties | undefined => {
     if (!showSearchOpenPill || !Number.isFinite(searchSheetTop))
       return undefined;
-    const viewportH =
-      typeof window !== 'undefined'
-        ? (window.visualViewport?.height ?? window.innerHeight)
-        : 800;
-    return {
-      bottom: Math.max(16, viewportH - searchSheetTop + SEARCH_OPEN_PILL_GAP),
-    };
+    return computeOpenPillStyle(searchSheetTop);
   }, [showSearchOpenPill, searchSheetTop]);
 
   const handleReopenSearchList = useCallback(() => {
@@ -217,16 +218,7 @@ function Explore() {
     if (!showFavoritesOpenPill || !Number.isFinite(favoritesSheetTop)) {
       return undefined;
     }
-    const viewportH =
-      typeof window !== 'undefined'
-        ? (window.visualViewport?.height ?? window.innerHeight)
-        : 800;
-    return {
-      bottom: Math.max(
-        16,
-        viewportH - favoritesSheetTop + SEARCH_OPEN_PILL_GAP,
-      ),
-    };
+    return computeOpenPillStyle(favoritesSheetTop);
   }, [showFavoritesOpenPill, favoritesSheetTop]);
 
   const handleReopenFavoritesList = useCallback(() => {
@@ -244,13 +236,7 @@ function Explore() {
     if (!showNearbyOpenPill || !Number.isFinite(nearbySheetTop)) {
       return undefined;
     }
-    const viewportH =
-      typeof window !== 'undefined'
-        ? (window.visualViewport?.height ?? window.innerHeight)
-        : 800;
-    return {
-      bottom: Math.max(16, viewportH - nearbySheetTop + SEARCH_OPEN_PILL_GAP),
-    };
+    return computeOpenPillStyle(nearbySheetTop);
   }, [showNearbyOpenPill, nearbySheetTop]);
 
   const handleReopenNearbyList = useCallback(() => {
@@ -268,13 +254,7 @@ function Explore() {
     if (!show50mOpenPill || !Number.isFinite(pools50mSheetTop)) {
       return undefined;
     }
-    const viewportH =
-      typeof window !== 'undefined'
-        ? (window.visualViewport?.height ?? window.innerHeight)
-        : 800;
-    return {
-      bottom: Math.max(16, viewportH - pools50mSheetTop + SEARCH_OPEN_PILL_GAP),
-    };
+    return computeOpenPillStyle(pools50mSheetTop);
   }, [show50mOpenPill, pools50mSheetTop]);
 
   const handleReopenPools50mList = useCallback(() => {

@@ -49,6 +49,7 @@ vi.mock('@/contexts/MainTabContext', () => ({
 
 vi.mock('@/utils/appViewport', () => ({
   syncAppViewport: mocks.syncAppViewport,
+  getLayoutHeight: () => 800,
 }));
 
 interface PoolMapStubProps {
@@ -231,10 +232,6 @@ const POOLS: Pool[] = [
     url2: '',
     phone: '',
     is50m: 0,
-    isWeekday: 0,
-    isSaturday: 0,
-    isSunday: 0,
-    isHoliday: 0,
   },
   {
     id: '2',
@@ -247,10 +244,6 @@ const POOLS: Pool[] = [
     url2: '',
     phone: '',
     is50m: 0,
-    isWeekday: 0,
-    isSaturday: 0,
-    isSunday: 0,
-    isHoliday: 0,
   },
   {
     id: '3',
@@ -263,10 +256,6 @@ const POOLS: Pool[] = [
     url2: '',
     phone: '',
     is50m: 0,
-    isWeekday: 0,
-    isSaturday: 0,
-    isSunday: 0,
-    isHoliday: 0,
   },
 ];
 

@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { getLayoutHeight } from '@/utils/appViewport';
 
 export const FAB_GAP = 12;
 export const FAB_STACK_H = 94; // 42 + 10 + 42
@@ -145,24 +146,20 @@ export function useMapFabLift({
 
   const defaultBottomPx = useMemo(() => 16 + readSafeBottomPx(), []);
 
-  const [viewportHeight, setViewportHeight] = useState(() =>
-    typeof window !== 'undefined'
-      ? (window.visualViewport?.height ?? window.innerHeight)
-      : 800,
-  );
+  const [viewportHeight, setViewportHeight] = useState(() => getLayoutHeight());
 
   useLayoutEffect(() => {
     if (!enabled || typeof window === 'undefined') return undefined;
 
     const syncViewport = () => {
-      setViewportHeight(window.visualViewport?.height ?? window.innerHeight);
+      setViewportHeight(getLayoutHeight());
     };
 
     syncViewport();
-    window.visualViewport?.addEventListener('resize', syncViewport);
+    window.addEventListener('screen-resize', syncViewport);
     window.addEventListener('resize', syncViewport);
     return () => {
-      window.visualViewport?.removeEventListener('resize', syncViewport);
+      window.removeEventListener('screen-resize', syncViewport);
       window.removeEventListener('resize', syncViewport);
     };
   }, [enabled]);

@@ -28,6 +28,16 @@ function measureSafeAreaInsets(): SafeAreaInsets {
 const KEYBOARD_THRESHOLD_PX = 120;
 
 /**
+ * 시트 translateY·pill/FAB bottom과 같은 좌표계(.explore = body)의 높이.
+ * visualViewport.height는 safe-bottom을 제외해 컨테이너 좌표와 어긋난다 —
+ * bottom 오프셋 계산에는 반드시 이 값을 쓸 것.
+ */
+export function getLayoutHeight(): number {
+  if (typeof document === 'undefined') return 800;
+  return document.body?.clientHeight || window.innerHeight;
+}
+
+/**
  * iOS viewport-fit=cover: innerHeight는 홈 인디케이터 위까지만 잡힌다.
  * --screen-h를 innerHeight + safe-bottom 으로 맞춰 물리 화면 끝까지 채운다.
  */
