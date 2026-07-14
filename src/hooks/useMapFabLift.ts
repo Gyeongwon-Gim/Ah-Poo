@@ -1,11 +1,13 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { getLayoutHeight } from '@/utils/appViewport';
+import { isPwa } from '@/utils/platform';
 
 export const FAB_GAP = 12;
 export const FAB_STACK_H = 94; // 42 + 10 + 42
 export const HALF_SCREEN_RATIO = 0.5;
 const NO_SHEET_TOP = Number.POSITIVE_INFINITY;
-const FAB_DEFAULT_BOTTOM = 54;
+const FAB_DEFAULT_BOTTOM_PWA = 54;
+const FAB_DEFAULT_BOTTOM_BROWSER = 24;
 
 type SheetSource = 'search' | 'favorites' | 'nearby' | 'pools50m' | 'detail';
 
@@ -146,7 +148,9 @@ export function useMapFabLift({
   );
 
   const defaultBottomPx = useMemo(
-    () => FAB_DEFAULT_BOTTOM + readSafeBottomPx(),
+    () =>
+      (isPwa() ? FAB_DEFAULT_BOTTOM_PWA : FAB_DEFAULT_BOTTOM_BROWSER) +
+      readSafeBottomPx(),
     [],
   );
 

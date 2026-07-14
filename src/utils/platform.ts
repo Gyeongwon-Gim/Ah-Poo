@@ -9,7 +9,8 @@ export function isIOS(): boolean {
 
 /** 홈 화면 추가 등 PWA(standalone)로 실행 중인지 */
 export function isPwa(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false;
 
   const standaloneMedia = window.matchMedia(
     '(display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui)',
