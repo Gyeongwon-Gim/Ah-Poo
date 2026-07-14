@@ -5,7 +5,7 @@ export const FAB_GAP = 12;
 export const FAB_STACK_H = 94; // 42 + 10 + 42
 export const HALF_SCREEN_RATIO = 0.5;
 const NO_SHEET_TOP = Number.POSITIVE_INFINITY;
-const FAB_DEFAULT_BOTTOM = 24;
+const FAB_DEFAULT_BOTTOM = 54;
 
 type SheetSource = 'search' | 'favorites' | 'nearby' | 'pools50m' | 'detail';
 
