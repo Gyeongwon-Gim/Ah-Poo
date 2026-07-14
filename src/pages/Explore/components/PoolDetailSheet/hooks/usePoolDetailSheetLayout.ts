@@ -7,7 +7,7 @@ import {
   useState,
   type AnimationEvent as ReactAnimationEvent,
 } from 'react';
-import { useBottomSheet } from './useBottomSheet';
+import { useBottomSheet } from '@/hooks/useBottomSheet';
 import {
   usePoolDetailSheetExpand,
   type PoolDetailExpandState,
@@ -18,13 +18,13 @@ import {
   restoreDefaultThemeColor,
 } from '@/utils/themeColor';
 import type { Pool } from '@/types/pool';
-import type { ExpandPhase } from '@/pages/Explore/components/PoolDetailSheet';
 import {
   SHEET_CLOSE_MS,
   SHEET_CLOSE_THRESHOLD,
   SHEET_ENTER_MS,
   getScreenHeight,
-} from '@/pages/Explore/components/PoolDetailSheet';
+  type ExpandPhase,
+} from '../constants';
 
 export interface UsePoolDetailSheetLayoutParams {
   pool: Pool;

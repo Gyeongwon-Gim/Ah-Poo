@@ -1,8 +1,9 @@
 import { memo } from 'react';
-import { Star, Waves } from 'lucide-react';
+import { Star } from 'lucide-react';
 import ListItem from '@/components/ListItem';
 import { Tag } from '@/components';
 import PoolStatusTag from '@/components/PoolStatusTag';
+import PoolImagePlaceholder from '@/components/PoolImagePlaceholder';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
 import { isFlagOn } from '@/services/pools';
@@ -38,11 +39,8 @@ function PoolListItem({ pool, selected, onSelect }: PoolListItemProps) {
           />
         </ListItem.Media>
       ) : (
-        <ListItem.Media
-          className="pool-list__media pool-list__media--placeholder"
-          aria-hidden
-        >
-          <Waves size={20} />
+        <ListItem.Media className="pool-list__media" aria-hidden>
+          <PoolImagePlaceholder size={20} />
         </ListItem.Media>
       )}
 

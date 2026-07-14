@@ -4,7 +4,6 @@ import {
   Home,
   Copy,
   Phone,
-  Waves,
   type LucideIcon,
 } from 'lucide-react';
 import type { MouseEvent, PointerEvent, Ref } from 'react';
@@ -12,6 +11,7 @@ import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { isFlagOn } from '@/services/pools';
 import { Tag } from '@/components';
 import PoolStatusTag from '@/components/PoolStatusTag';
+import PoolImagePlaceholder from '@/components/PoolImagePlaceholder';
 import type { Pool } from '@/types/pool';
 
 interface PoolDetailContentProps {
@@ -83,11 +83,8 @@ export default function PoolDetailContent({
               />
             </div>
           ) : (
-            <div
-              className="pool-sheet__hero-wrap pool-sheet__hero-wrap--placeholder"
-              aria-hidden
-            >
-              <Waves size={32} />
+            <div className="pool-sheet__hero-wrap" aria-hidden>
+              <PoolImagePlaceholder size={32} />
             </div>
           )}
 

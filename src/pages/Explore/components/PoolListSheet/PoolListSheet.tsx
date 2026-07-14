@@ -1,6 +1,6 @@
 import { useEffect, type MutableRefObject } from 'react';
 import BottomSheet from '@/components/BottomSheet';
-import { useListSheet } from '@/pages/Explore/hooks/useListSheet';
+import { useListSheet } from './hooks/useListSheet';
 import { getPoolListKey } from '@/utils/poolKey';
 import type { Pool } from '@/types/pool';
 import type { PoolListPreset } from './presets';

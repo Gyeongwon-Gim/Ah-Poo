@@ -152,14 +152,6 @@
   object-fit: cover;
 }
 
-.pool-sheet__hero-wrap--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, #e0f2fe, #bae6fd);
-  color: var(--ap-primary);
-}
-
 .pool-sheet__head {
   display: flex;
   flex-direction: column;

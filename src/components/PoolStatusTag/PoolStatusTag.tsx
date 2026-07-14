@@ -1,6 +1,6 @@
+import Tag from '@/components/Tag/Tag';
 import { getPoolOpenState } from '@/utils/poolOperating';
 import type { Pool } from '@/types/pool';
-import './PoolStatusTag.css';
 
 interface PoolStatusTagProps {
   pool: Pool;
@@ -12,15 +12,8 @@ export default function PoolStatusTag({ pool }: PoolStatusTagProps) {
 
   const open = state === 'open';
   return (
-    <span
-      className={`pool-status-tag ${
-        open ? 'pool-status-tag--on' : 'pool-status-tag--off'
-      }`}
-    >
-      <span className="pool-status-tag__dot" aria-hidden />
-      <span className="pool-status-tag__label">
-        {open ? '운영중' : '운영종료'}
-      </span>
-    </span>
+    <Tag variant="status" active={open} dot>
+      {open ? '운영중' : '운영종료'}
+    </Tag>
   );
 }

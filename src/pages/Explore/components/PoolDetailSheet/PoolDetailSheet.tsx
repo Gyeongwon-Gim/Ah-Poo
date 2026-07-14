@@ -5,7 +5,7 @@ import { openNaverDirections } from '@/utils/naverDirectionsUrl';
 import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolBlogReviews } from '@/hooks/usePoolBlogReviews';
-import { usePoolDetailSheetLayout } from '@/hooks/usePoolDetailSheetLayout';
+import { usePoolDetailSheetLayout } from './hooks/usePoolDetailSheetLayout';
 import type { Pool } from '@/types/pool';
 import PoolDetailToolbar from './PoolDetailToolbar';
 import PoolDetailContent from './PoolDetailContent';

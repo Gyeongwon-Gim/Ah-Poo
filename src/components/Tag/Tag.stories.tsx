@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          '운영 요일·50m 등 상태를 표시하는 pill 태그. active 변형은 강조(녹색) 스타일입니다.',
+          '운영 요일·50m 등 상태를 표시하는 pill 태그. highlight 변형은 강조(녹색) 스타일입니다.',
       },
     },
   },

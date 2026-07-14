@@ -6,7 +6,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TransitionEvent as ReactTransitionEvent,
 } from 'react';
-import { computeDragTranslate } from './useBottomSheet';
+import { computeDragTranslate } from '@/hooks/useBottomSheet';
 import { clamp } from '@/utils/clamp';
 import type { BottomSheetSnapPoints } from '@/types/sheet';
 import {
@@ -18,7 +18,7 @@ import {
   type ExpandPhase,
   type HeaderGesture,
   type PeekBodyGesture,
-} from '@/pages/Explore/components/PoolDetailSheet';
+} from '../constants';
 
 export interface PoolDetailExpandState {
   isFullscreen: boolean;
