@@ -198,7 +198,9 @@ export function useExploreInteractions({
     setDetailOrigin(null);
   }, [prepareMapBaselineUI]);
 
-  const handleDetailBackStart = useCallback(() => {
+  // 닫기(X)/뒤로가기 버튼 모두 애니메이션 시작 시점엔 동일하게 처리한다 —
+  // 시트가 슬라이드다운되는 동안 뒤에 드러나는 화면을 미리 지도 기본 상태로 맞춰둔다.
+  const handleDetailDismissStart = useCallback(() => {
     setDetailClosing(true);
     if (detailOrigin === 'map') {
       prepareMapBaselineUI();
@@ -210,13 +212,6 @@ export function useExploreInteractions({
     setDetailClosing(false);
     setDetailOrigin(null);
   }, []);
-
-  const handleDetailCloseStart = useCallback(() => {
-    setDetailClosing(true);
-    if (detailOrigin === 'map') {
-      prepareMapBaselineUI();
-    }
-  }, [detailOrigin, prepareMapBaselineUI]);
 
   const handleDetailClose = useCallback(() => {
     if (detailOrigin === 'map') {
@@ -233,11 +228,7 @@ export function useExploreInteractions({
         selectedPool &&
         getPoolListKey(selectedPool) === getPoolListKey(pool)
       ) {
-        if (detailOrigin === 'map') {
-          resetToMapBaseline();
-        } else {
-          handleDetailBack();
-        }
+        handleDetailClose();
         return;
       }
       setDetailClosing(false);
@@ -246,14 +237,7 @@ export function useExploreInteractions({
       setSelectedPool(enriched);
       mapRef.current?.panToPool(enriched);
     },
-    [
-      enrichPool,
-      resetToMapBaseline,
-      handleDetailBack,
-      resolveDetailOrigin,
-      selectedPool,
-      detailOrigin,
-    ],
+    [enrichPool, handleDetailClose, resolveDetailOrigin, selectedPool],
   );
 
   const handleActivateSearch = useCallback(() => {
@@ -333,18 +317,11 @@ export function useExploreInteractions({
     Boolean(selectedPool) && detailOrigin === 'search' && !detailClosing;
   const searchPanelRevealFromDetail =
     detailClosing && detailOrigin === 'search';
-  const showFavoritesPanel =
-    favoritesOpen && !selectedPool && !loading && !error && !isSearching;
-  const showFavoritesSheet =
-    favoritesOpen && !selectedPool && !loading && !error && !isSearching;
-  const showNearbyPanel =
-    nearbyOpen && !selectedPool && !loading && !error && !isSearching;
-  const showNearbySheet =
-    nearbyOpen && !selectedPool && !loading && !error && !isSearching;
-  const show50mPanel =
-    show50mOnly && !selectedPool && !loading && !error && !isSearching;
-  const show50mSheet =
-    show50mOnly && !selectedPool && !loading && !error && !isSearching;
+  const canShowBaselinePanel =
+    !selectedPool && !loading && !error && !isSearching;
+  const showFavoritesPanel = favoritesOpen && canShowBaselinePanel;
+  const showNearbyPanel = nearbyOpen && canShowBaselinePanel;
+  const show50mPanel = show50mOnly && canShowBaselinePanel;
   // 즐겨찾기·주변수영장·50m레인도 검색창을 "검색된 상태"처럼 보이게 해 뒤로가기(←) 버튼으로
   // 되돌아갈 수 있게 한다. handleCloseSearch가 closeFavorites/closeNearby/show50mOnly도 함께 호출한다.
   const searchMode =
@@ -370,9 +347,9 @@ export function useExploreInteractions({
     detailClosing,
     sheetInstantEnter,
     handleSelectPool,
-    handleDetailCloseStart,
+    handleDetailCloseStart: handleDetailDismissStart,
     handleDetailClose,
-    handleDetailBackStart,
+    handleDetailBackStart: handleDetailDismissStart,
     handleDetailBack,
     // 위치 / 파생 플래그
     isNearbyMode,
@@ -382,11 +359,11 @@ export function useExploreInteractions({
     searchPanelBehindDetail,
     searchPanelRevealFromDetail,
     showFavoritesPanel,
-    showFavoritesSheet,
+    showFavoritesSheet: showFavoritesPanel,
     showNearbyPanel,
-    showNearbySheet,
+    showNearbySheet: showNearbyPanel,
     show50mPanel,
-    show50mSheet,
+    show50mSheet: show50mPanel,
     handleRecenter,
     showUserLocationMarker,
     // 50m 레인 필터

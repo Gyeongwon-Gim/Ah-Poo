@@ -172,35 +172,35 @@ export function useMapFabLift({
     };
   }, [enabled]);
 
-  const onSearchSheetTopChange = useCallback((top: number) => {
-    setSheetTops((prev) =>
-      prev.search === top ? prev : { ...prev, search: top },
-    );
-  }, []);
+  const makeTopChangeHandler = useCallback(
+    (source: SheetSource) => (top: number) => {
+      setSheetTops((prev) =>
+        prev[source] === top ? prev : { ...prev, [source]: top },
+      );
+    },
+    [],
+  );
 
-  const onFavoritesSheetTopChange = useCallback((top: number) => {
-    setSheetTops((prev) =>
-      prev.favorites === top ? prev : { ...prev, favorites: top },
-    );
-  }, []);
-
-  const onNearbySheetTopChange = useCallback((top: number) => {
-    setSheetTops((prev) =>
-      prev.nearby === top ? prev : { ...prev, nearby: top },
-    );
-  }, []);
-
-  const onPools50mSheetTopChange = useCallback((top: number) => {
-    setSheetTops((prev) =>
-      prev.pools50m === top ? prev : { ...prev, pools50m: top },
-    );
-  }, []);
-
-  const onDetailSheetTopChange = useCallback((top: number) => {
-    setSheetTops((prev) =>
-      prev.detail === top ? prev : { ...prev, detail: top },
-    );
-  }, []);
+  const onSearchSheetTopChange = useMemo(
+    () => makeTopChangeHandler('search'),
+    [makeTopChangeHandler],
+  );
+  const onFavoritesSheetTopChange = useMemo(
+    () => makeTopChangeHandler('favorites'),
+    [makeTopChangeHandler],
+  );
+  const onNearbySheetTopChange = useMemo(
+    () => makeTopChangeHandler('nearby'),
+    [makeTopChangeHandler],
+  );
+  const onPools50mSheetTopChange = useMemo(
+    () => makeTopChangeHandler('pools50m'),
+    [makeTopChangeHandler],
+  );
+  const onDetailSheetTopChange = useMemo(
+    () => makeTopChangeHandler('detail'),
+    [makeTopChangeHandler],
+  );
 
   const activeSheetTop = useMemo(() => {
     if (!enabled) return NO_SHEET_TOP;
