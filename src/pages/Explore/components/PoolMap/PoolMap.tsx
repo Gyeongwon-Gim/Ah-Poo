@@ -12,7 +12,7 @@ import { getPoolListKey } from '@/utils/poolKey';
 import { computeSearchMapFit } from '@/utils/mapFit';
 import { useKakaoMap } from './useKakaoMap';
 import type { Pool } from '@/types/pool';
-import type { GeoCoords } from '@/hooks/useUserLocation';
+import type { GeoCoords } from '@/pages/Explore/hooks/useUserLocation';
 import './PoolMap.css';
 
 interface MarkerEntry {

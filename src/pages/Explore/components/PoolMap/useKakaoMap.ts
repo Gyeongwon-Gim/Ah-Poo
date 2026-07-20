@@ -5,9 +5,9 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useKakaoMapLoader } from '@/hooks/useKakaoMapLoader';
+import { useKakaoMapLoader } from '@/pages/Explore/hooks/useKakaoMapLoader';
 import { attachMapInertia } from '@/utils/mapInertia';
-import type { GeoCoords } from '@/hooks/useUserLocation';
+import type { GeoCoords } from '@/pages/Explore/hooks/useUserLocation';
 
 /**
  * 지도의 "생명주기"(로드 → 컨테이너 크기 준비 → 인스턴스 생성 → relayout 유지 → 관성)를

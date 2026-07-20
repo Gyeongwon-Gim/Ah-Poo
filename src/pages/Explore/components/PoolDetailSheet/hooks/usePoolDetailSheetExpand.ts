@@ -6,7 +6,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type TransitionEvent as ReactTransitionEvent,
 } from 'react';
-import { computeDragTranslate } from '@/hooks/useBottomSheet';
+import { computeDragTranslate } from '@/pages/Explore/hooks/useBottomSheet';
 import { clamp } from '@/utils/clamp';
 import type { BottomSheetSnapPoints } from '@/types/sheet';
 import {

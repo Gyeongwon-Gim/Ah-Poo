@@ -5,7 +5,7 @@ import { Tag } from '@/components';
 import PoolStatusTag from '@/components/PoolStatusTag';
 import PoolImagePlaceholder from '@/components/PoolImagePlaceholder';
 import { useFavorites } from '@/hooks/useFavorites';
-import { usePoolImageUrl } from '@/hooks/usePoolImageUrl';
+import { usePoolImageUrl } from '@/pages/Explore/hooks/usePoolImageUrl';
 import { isFlagOn } from '@/services/pools';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { formatDistance } from '@/utils/formatDistance';

@@ -5,14 +5,14 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import type { Pool } from '@/types/pool';
-import type { GeoCoords } from '@/hooks/useUserLocation';
+import type { GeoCoords } from '@/pages/Explore/hooks/useUserLocation';
 
 const mocks = vi.hoisted(() => ({
   fetchPools: vi.fn(),
   fetchPoolById: vi.fn(),
   useUserLocation: vi.fn(),
   useFavorites: vi.fn(),
-  useMainTab: vi.fn(),
+  usePoolFilter: vi.fn(),
   syncAppViewport: vi.fn(),
   panToPool: vi.fn(),
   panToUserLocation: vi.fn(),
@@ -35,7 +35,7 @@ vi.mock('@/lib/supabase', () => ({
   supabase: null,
 }));
 
-vi.mock('@/hooks/useUserLocation', () => ({
+vi.mock('@/pages/Explore/hooks/useUserLocation', () => ({
   useUserLocation: mocks.useUserLocation,
 }));
 
@@ -43,8 +43,8 @@ vi.mock('@/hooks/useFavorites', () => ({
   useFavorites: mocks.useFavorites,
 }));
 
-vi.mock('@/contexts/MainTabContext', () => ({
-  useMainTab: mocks.useMainTab,
+vi.mock('@/contexts/PoolFilterContext', () => ({
+  usePoolFilter: mocks.usePoolFilter,
 }));
 
 vi.mock('@/utils/appViewport', () => ({
@@ -264,6 +264,21 @@ const POOLS_WITH_50M: Pool[] = POOLS.map((pool, index) => ({
   is50m: index < 2 ? 1 : 0,
 }));
 
+function mockPoolFilter(overrides: Record<string, unknown> = {}) {
+  mocks.usePoolFilter.mockReturnValue({
+    favoritesOpen: false,
+    closeFavorites: vi.fn(),
+    toggleFavorites: vi.fn(),
+    nearbyOpen: false,
+    closeNearby: vi.fn(),
+    toggleNearby: vi.fn(),
+    show50mOnly: false,
+    close50m: vi.fn(),
+    toggle50m: vi.fn(),
+    ...overrides,
+  });
+}
+
 function setLocation({
   status = 'pending',
   location = null,
@@ -303,14 +318,7 @@ beforeEach(() => {
   mocks.fetchPools.mockResolvedValue(POOLS);
   mocks.fetchPoolById.mockResolvedValue(null);
   mocks.useFavorites.mockReturnValue({ favorites: [] });
-  mocks.useMainTab.mockReturnValue({
-    favoritesOpen: false,
-    closeFavorites: vi.fn(),
-    toggleFavorites: vi.fn(),
-    nearbyOpen: false,
-    closeNearby: vi.fn(),
-    toggleNearby: vi.fn(),
-  });
+  mockPoolFilter();
   setLocation({ status: 'pending' });
 });
 
@@ -398,14 +406,7 @@ describe('Explore - 위치 상태', () => {
 describe('Explore - 주변 수영장', () => {
   it('주변 수영장 pill을 누르면 반경 내 목록·마커를 표시한다', async () => {
     const toggleNearby = vi.fn();
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: false,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: false,
-      closeNearby: vi.fn(),
-      toggleNearby,
-    });
+    mockPoolFilter({ toggleNearby });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
@@ -415,14 +416,7 @@ describe('Explore - 주변 수영장', () => {
   });
 
   it('nearbyOpen이면 반경 내 수영장만 마커·시트로 표시한다', async () => {
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: false,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: true,
-      closeNearby: vi.fn(),
-      toggleNearby: vi.fn(),
-    });
+    mockPoolFilter({ nearbyOpen: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
 
@@ -434,14 +428,7 @@ describe('Explore - 주변 수영장', () => {
   });
 
   it('nearbyOpen인데 반경 내 수영장이 없으면 시트 빈 상태를 보여준다', async () => {
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: false,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: true,
-      closeNearby: vi.fn(),
-      toggleNearby: vi.fn(),
-    });
+    mockPoolFilter({ nearbyOpen: true });
     setLocation({ status: 'ready', location: { lat: 33.0, lng: 126.5 } });
     renderHome();
 
@@ -452,14 +439,7 @@ describe('Explore - 주변 수영장', () => {
   });
 
   it('주변 목록 collapsed 시 목록 열기 pill을 표시한다', async () => {
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: false,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: true,
-      closeNearby: vi.fn(),
-      toggleNearby: vi.fn(),
-    });
+    mockPoolFilter({ nearbyOpen: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
@@ -473,13 +453,22 @@ describe('Explore - 주변 수영장', () => {
 });
 
 describe('Explore - 50m 레인', () => {
-  it('50m레인 pill을 누르면 50m 수영장 목록·마커를 표시한다', async () => {
-    mocks.fetchPools.mockResolvedValue(POOLS_WITH_50M);
+  it('50m레인 pill을 누르면 toggle50m을 호출한다', async () => {
+    const toggle50m = vi.fn();
+    mockPoolFilter({ toggle50m });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
 
     await userEvent.click(screen.getByRole('button', { name: '50m레인' }));
+    expect(toggle50m).toHaveBeenCalled();
+  });
+
+  it('show50mOnly면 50m 수영장 목록·마커를 표시한다', async () => {
+    mocks.fetchPools.mockResolvedValue(POOLS_WITH_50M);
+    mockPoolFilter({ show50mOnly: true });
+    setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
+    renderHome();
 
     await waitFor(() =>
       expect(screen.getByTestId('marker-count')).toHaveTextContent('2'),
@@ -495,12 +484,9 @@ describe('Explore - 50m 레인', () => {
   });
 
   it('50m 수영장이 없으면 시트 빈 상태를 보여준다', async () => {
+    mockPoolFilter({ show50mOnly: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
-
-    await userEvent.click(
-      await screen.findByRole('button', { name: '50m레인' }),
-    );
 
     expect(
       await screen.findByText('등록된 50m 수영장이 없어요'),
@@ -510,11 +496,11 @@ describe('Explore - 50m 레인', () => {
 
   it('50m 목록 collapsed 시 목록 열기 pill을 표시한다', async () => {
     mocks.fetchPools.mockResolvedValue(POOLS_WITH_50M);
+    mockPoolFilter({ show50mOnly: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
 
-    await userEvent.click(screen.getByRole('button', { name: '50m레인' }));
     await userEvent.click(screen.getByTestId('pools50m-collapse'));
 
     expect(
@@ -557,14 +543,7 @@ describe('Explore - 검색', () => {
 
 describe('Explore - 수영장 선택', () => {
   it('마커를 선택하면 상세 시트가 열리고 지도가 해당 위치로 이동한다', async () => {
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: false,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: true,
-      closeNearby: vi.fn(),
-      toggleNearby: vi.fn(),
-    });
+    mockPoolFilter({ nearbyOpen: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     const marker = await screen.findByTestId('map-marker-강남수영장');
@@ -579,14 +558,7 @@ describe('Explore - 수영장 선택', () => {
 
 describe('Explore - 즐겨찾기 collapsed', () => {
   it('즐겨찾기 collapsed 시 목록 열기 pill을 표시한다', async () => {
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: true,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: false,
-      closeNearby: vi.fn(),
-      toggleNearby: vi.fn(),
-    });
+    mockPoolFilter({ favoritesOpen: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());
@@ -599,14 +571,7 @@ describe('Explore - 즐겨찾기 collapsed', () => {
   });
 
   it('목록 열기 pill을 누르면 collapsed가 해제된다', async () => {
-    mocks.useMainTab.mockReturnValue({
-      favoritesOpen: true,
-      closeFavorites: vi.fn(),
-      toggleFavorites: vi.fn(),
-      nearbyOpen: false,
-      closeNearby: vi.fn(),
-      toggleNearby: vi.fn(),
-    });
+    mockPoolFilter({ favoritesOpen: true });
     setLocation({ status: 'ready', location: { lat: 37.5, lng: 127.05 } });
     renderHome();
     await waitFor(() => expect(mocks.fetchPools).toHaveBeenCalled());

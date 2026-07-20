@@ -35,6 +35,8 @@ interface UseExploreInteractionsParams {
   closeFavorites: () => void;
   nearbyOpen: boolean;
   closeNearby: () => void;
+  show50mOnly: boolean;
+  close50m: () => void;
   refreshLocation: () => Promise<GeoCoords>;
   location: Location;
   navigate: NavigateFunction;
@@ -54,6 +56,8 @@ export function useExploreInteractions({
   closeFavorites,
   nearbyOpen,
   closeNearby,
+  show50mOnly,
+  close50m,
   refreshLocation,
   location,
   navigate,
@@ -66,7 +70,6 @@ export function useExploreInteractions({
   const [detailClosing, setDetailClosing] = useState(false);
   const [detailOrigin, setDetailOrigin] = useState<DetailOrigin | null>(null);
   const [showUserLocationMarker, setShowUserLocationMarker] = useState(false);
-  const [show50mOnly, setShow50mOnly] = useState(false);
   const mapRef = useRef<PoolMapHandle | null>(null);
 
   const isSearching = Boolean(appliedSearchTerm.trim());
@@ -139,7 +142,6 @@ export function useExploreInteractions({
       setInputValue('');
       setAppliedSearchTerm('');
       setSearchActive(false);
-      setShow50mOnly(false);
     }
   }, [favoritesOpen, nearbyOpen]);
 
@@ -147,9 +149,9 @@ export function useExploreInteractions({
     if (isSearching) {
       closeFavorites();
       closeNearby();
-      setShow50mOnly(false);
+      close50m();
     }
-  }, [isSearching, closeFavorites, closeNearby]);
+  }, [isSearching, closeFavorites, closeNearby, close50m]);
 
   // 연관검색 모드에서는 .explore--suggesting .pool-map 이 visibility:hidden 이 된다.
   // visibility 변화는 ResizeObserver·IntersectionObserver 가 감지하지 못해
@@ -167,21 +169,10 @@ export function useExploreInteractions({
     setAppliedSearchTerm('');
     setSearchActive(false);
     setSelectedPool(null);
-    setShow50mOnly(false);
+    close50m();
     closeFavorites();
     closeNearby();
-  }, [closeFavorites, closeNearby]);
-
-  const toggle50mOnly = useCallback(() => {
-    setShow50mOnly((prev) => {
-      const next = !prev;
-      if (next) {
-        closeFavorites();
-        closeNearby();
-      }
-      return next;
-    });
-  }, [closeFavorites, closeNearby]);
+  }, [closeFavorites, closeNearby, close50m]);
 
   const prepareMapBaselineUI = useCallback(() => {
     closeFavorites();
@@ -243,9 +234,9 @@ export function useExploreInteractions({
   const handleActivateSearch = useCallback(() => {
     closeFavorites();
     closeNearby();
-    setShow50mOnly(false);
+    close50m();
     setSearchActive(true);
-  }, [closeFavorites, closeNearby]);
+  }, [closeFavorites, closeNearby, close50m]);
 
   const handleSearchFocus = useCallback(() => {
     if (!appliedSearchTerm.trim()) {
@@ -366,8 +357,5 @@ export function useExploreInteractions({
     show50mSheet: show50mPanel,
     handleRecenter,
     showUserLocationMarker,
-    // 50m 레인 필터
-    show50mOnly,
-    toggle50mOnly,
   };
 }

@@ -14,13 +14,13 @@ import {
 import SearchSuggestions from '@/pages/Explore/components/SearchSuggestions';
 import MapStatusMessage from '@/pages/Explore/components/MapStatusMessage';
 import { getPoolListKey } from '@/utils/poolKey';
-import { useMainTab } from '@/contexts/MainTabContext';
+import { usePoolFilter } from '@/contexts/PoolFilterContext';
 import { useFavorites } from '@/hooks/useFavorites';
-import { useUserLocation } from '@/hooks/useUserLocation';
-import { usePoolData } from '@/hooks/usePoolData';
-import { useMapPools } from '@/hooks/useMapPools';
-import { useExploreInteractions } from '@/hooks/useExploreInteractions';
-import { useMapFabLift } from '@/hooks/useMapFabLift';
+import { useUserLocation } from '@/pages/Explore/hooks/useUserLocation';
+import { usePoolData } from '@/pages/Explore/hooks/usePoolData';
+import { useMapPools } from '@/pages/Explore/hooks/useMapPools';
+import { useExploreInteractions } from '@/pages/Explore/hooks/useExploreInteractions';
+import { useMapFabLift } from '@/pages/Explore/hooks/useMapFabLift';
 import { getLayoutHeight } from '@/utils/appViewport';
 import SeoHead, { buildExploreJsonLd } from '@/components/SeoHead';
 import './Explore.css';
@@ -45,7 +45,10 @@ function Explore() {
     nearbyOpen,
     closeNearby,
     toggleNearby,
-  } = useMainTab();
+    show50mOnly,
+    close50m,
+    toggle50m,
+  } = usePoolFilter();
   const { favorites } = useFavorites();
   const [searchPanelCollapsed, setSearchPanelCollapsed] = useState(false);
   const [searchSheetTop, setSearchSheetTop] = useState(
@@ -85,6 +88,8 @@ function Explore() {
     closeFavorites,
     nearbyOpen,
     closeNearby,
+    show50mOnly,
+    close50m,
     refreshLocation,
     location,
     navigate,
@@ -124,8 +129,6 @@ function Explore() {
     show50mSheet,
     handleRecenter,
     detailClosing,
-    show50mOnly,
-    toggle50mOnly,
   } = interactions;
 
   const showMapFabs = !searchActive && !loading && !error;
@@ -505,7 +508,7 @@ function Explore() {
             {show50mEntryPill && (
               <FloatingPill
                 className="explore-50m-entry-pill"
-                onClick={toggle50mOnly}
+                onClick={toggle50m}
                 aria-label="50m레인"
                 icon={<Tag variant="highlight">50m</Tag>}
               >

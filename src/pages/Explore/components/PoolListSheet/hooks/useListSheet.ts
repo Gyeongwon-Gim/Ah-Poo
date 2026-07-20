@@ -7,7 +7,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type TouchEvent as ReactTouchEvent,
 } from 'react';
-import { computeDragTranslate } from '@/hooks/useBottomSheet';
+import { computeDragTranslate } from '@/pages/Explore/hooks/useBottomSheet';
 import { clamp } from '@/utils/clamp';
 import { runSheetInertia } from '@/utils/sheetInertia';
 

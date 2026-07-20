@@ -7,7 +7,7 @@ import {
   useState,
   type AnimationEvent as ReactAnimationEvent,
 } from 'react';
-import { useBottomSheet } from '@/hooks/useBottomSheet';
+import { useBottomSheet } from '@/pages/Explore/hooks/useBottomSheet';
 import {
   usePoolDetailSheetExpand,
   type PoolDetailExpandState,

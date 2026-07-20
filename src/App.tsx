@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Explore from '@/pages/Explore/Explore';
 import PoolDetail from '@/pages/PoolDetail/PoolDetail';
-import { MainTabProvider } from '@/contexts/MainTabContext';
+import { PoolFilterProvider } from '@/contexts/PoolFilterContext';
 import { FavoritesProvider } from '@/hooks/useFavorites';
 import './App.css';
 
@@ -9,7 +9,7 @@ function App() {
   return (
     <Router>
       <FavoritesProvider>
-        <MainTabProvider>
+        <PoolFilterProvider>
           <div className="app">
             <div className="app__main">
               <Routes>
@@ -18,7 +18,7 @@ function App() {
               </Routes>
             </div>
           </div>
-        </MainTabProvider>
+        </PoolFilterProvider>
       </FavoritesProvider>
     </Router>
   );
