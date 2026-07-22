@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, Star } from 'lucide-react';
 import SearchBar from '@/pages/Explore/components/SearchBar';
@@ -20,7 +20,8 @@ import { useUserLocation } from '@/pages/Explore/hooks/useUserLocation';
 import { usePoolData } from '@/pages/Explore/hooks/usePoolData';
 import { useMapPools } from '@/pages/Explore/hooks/useMapPools';
 import { useExploreInteractions } from '@/pages/Explore/hooks/useExploreInteractions';
-import { useMapFabLift } from '@/pages/Explore/hooks/useMapFabLift';
+import { useFabLift } from '@/pages/Explore/hooks/useFabLift';
+import { usePanelSheet } from '@/pages/Explore/hooks/usePanelSheet';
 import { getLayoutHeight } from '@/utils/appViewport';
 import SeoHead, { buildExploreJsonLd } from '@/components/SeoHead';
 import './Explore.css';
@@ -33,6 +34,18 @@ function computeOpenPillStyle(sheetTop: number): CSSProperties {
   return {
     bottom: Math.max(16, getLayoutHeight() - sheetTop + SEARCH_OPEN_PILL_GAP),
   };
+}
+
+type PanelSheet = ReturnType<typeof usePanelSheet>;
+
+/** 패널이 접힌 채 열려 있을 때 뜨는 "목록 열기" 핀 하나의 표시 여부·위치. */
+function useOpenPill(active: boolean, sheet: PanelSheet) {
+  const show = active && sheet.collapsed;
+  const style = useMemo((): CSSProperties | undefined => {
+    if (!show || !Number.isFinite(sheet.sheetTop)) return undefined;
+    return computeOpenPillStyle(sheet.sheetTop);
+  }, [show, sheet.sheetTop]);
+  return { show, style };
 }
 
 function Explore() {
@@ -50,26 +63,6 @@ function Explore() {
     toggle50m,
   } = usePoolFilter();
   const { favorites } = useFavorites();
-  const [searchPanelCollapsed, setSearchPanelCollapsed] = useState(false);
-  const [searchSheetTop, setSearchSheetTop] = useState(
-    Number.POSITIVE_INFINITY,
-  );
-  const [favoritesPanelCollapsed, setFavoritesPanelCollapsed] = useState(false);
-  const [favoritesSheetTop, setFavoritesSheetTop] = useState(
-    Number.POSITIVE_INFINITY,
-  );
-  const [nearbyPanelCollapsed, setNearbyPanelCollapsed] = useState(false);
-  const [nearbySheetTop, setNearbySheetTop] = useState(
-    Number.POSITIVE_INFINITY,
-  );
-  const [pools50mPanelCollapsed, setPools50mPanelCollapsed] = useState(false);
-  const [pools50mSheetTop, setPools50mSheetTop] = useState(
-    Number.POSITIVE_INFINITY,
-  );
-  const reopenSearchListRef = useRef<(() => void) | null>(null);
-  const reopenFavoritesListRef = useRef<(() => void) | null>(null);
-  const reopenNearbyListRef = useRef<(() => void) | null>(null);
-  const reopenPools50mListRef = useRef<(() => void) | null>(null);
   const {
     location: userLocation,
     status: locationStatus,
@@ -122,11 +115,8 @@ function Explore() {
     searchPanelBehindDetail,
     searchPanelRevealFromDetail,
     showFavoritesPanel,
-    showFavoritesSheet,
     showNearbyPanel,
-    showNearbySheet,
     show50mPanel,
-    show50mSheet,
     handleRecenter,
     detailClosing,
   } = interactions;
@@ -148,123 +138,50 @@ function Explore() {
     onNearbySheetDragChange,
     onPools50mSheetDragChange,
     onDetailSheetDragChange,
-  } = useMapFabLift({
+  } = useFabLift({
     enabled: showMapFabs,
     detailOpen: Boolean(selectedPool) && !detailClosing,
     searchPanelOpen: showSearchPanel,
     searchPanelHidden: searchPanelBehindDetail,
-    favoritesPanelOpen: showFavoritesSheet,
-    nearbyPanelOpen: showNearbySheet,
-    pools50mPanelOpen: show50mSheet,
+    favoritesPanelOpen: showFavoritesPanel,
+    nearbyPanelOpen: showNearbyPanel,
+    pools50mPanelOpen: show50mPanel,
   });
 
-  const handleSearchSheetTopChange = useCallback(
-    (top: number) => {
-      setSearchSheetTop(top);
-      onSearchSheetTopChange(top);
-    },
-    [onSearchSheetTopChange],
-  );
+  const searchSheet = usePanelSheet({
+    show: showSearchPanel,
+    onTopChange: onSearchSheetTopChange,
+  });
+  const favoritesSheet = usePanelSheet({
+    show: showFavoritesPanel,
+    onTopChange: onFavoritesSheetTopChange,
+  });
+  const nearbySheet = usePanelSheet({
+    show: showNearbyPanel,
+    onTopChange: onNearbySheetTopChange,
+  });
+  const pools50mSheet = usePanelSheet({
+    show: show50mPanel,
+    onTopChange: onPools50mSheetTopChange,
+  });
 
-  const handleFavoritesSheetTopChange = useCallback(
-    (top: number) => {
-      setFavoritesSheetTop(top);
-      onFavoritesSheetTopChange(top);
-    },
-    [onFavoritesSheetTopChange],
-  );
-
-  const handleNearbySheetTopChange = useCallback(
-    (top: number) => {
-      setNearbySheetTop(top);
-      onNearbySheetTopChange(top);
-    },
-    [onNearbySheetTopChange],
-  );
-
-  const handlePools50mSheetTopChange = useCallback(
-    (top: number) => {
-      setPools50mSheetTop(top);
-      onPools50mSheetTopChange(top);
-    },
-    [onPools50mSheetTopChange],
-  );
-
-  const showSearchOpenPill =
+  // showFavoritesPanel/showNearbyPanel/show50mPanel은 이미 !isSearching && !selectedPool을
+  // 포함하므로(useExploreInteractions의 canShowBaselinePanel) 여기서 다시 체크하지 않는다.
+  const searchOpenPill = useOpenPill(
     isSearching &&
-    searchPanelCollapsed &&
-    !loading &&
-    !error &&
-    !selectedPool &&
-    !favoritesOpen &&
-    !nearbyOpen &&
-    !show50mOnly;
+      !loading &&
+      !error &&
+      !selectedPool &&
+      !favoritesOpen &&
+      !nearbyOpen &&
+      !show50mOnly,
+    searchSheet,
+  );
+  const favoritesOpenPill = useOpenPill(showFavoritesPanel, favoritesSheet);
+  const nearbyOpenPill = useOpenPill(showNearbyPanel, nearbySheet);
+  const pools50mOpenPill = useOpenPill(show50mPanel, pools50mSheet);
 
-  const searchOpenPillStyle = useMemo((): CSSProperties | undefined => {
-    if (!showSearchOpenPill || !Number.isFinite(searchSheetTop))
-      return undefined;
-    return computeOpenPillStyle(searchSheetTop);
-  }, [showSearchOpenPill, searchSheetTop]);
-
-  const handleReopenSearchList = useCallback(() => {
-    reopenSearchListRef.current?.();
-  }, []);
-
-  const showFavoritesOpenPill =
-    favoritesOpen &&
-    favoritesPanelCollapsed &&
-    showFavoritesSheet &&
-    !isSearching &&
-    !selectedPool;
-
-  const favoritesOpenPillStyle = useMemo((): CSSProperties | undefined => {
-    if (!showFavoritesOpenPill || !Number.isFinite(favoritesSheetTop)) {
-      return undefined;
-    }
-    return computeOpenPillStyle(favoritesSheetTop);
-  }, [showFavoritesOpenPill, favoritesSheetTop]);
-
-  const handleReopenFavoritesList = useCallback(() => {
-    reopenFavoritesListRef.current?.();
-  }, []);
-
-  const showNearbyOpenPill =
-    nearbyOpen &&
-    nearbyPanelCollapsed &&
-    showNearbySheet &&
-    !isSearching &&
-    !selectedPool;
-
-  const nearbyOpenPillStyle = useMemo((): CSSProperties | undefined => {
-    if (!showNearbyOpenPill || !Number.isFinite(nearbySheetTop)) {
-      return undefined;
-    }
-    return computeOpenPillStyle(nearbySheetTop);
-  }, [showNearbyOpenPill, nearbySheetTop]);
-
-  const handleReopenNearbyList = useCallback(() => {
-    reopenNearbyListRef.current?.();
-  }, []);
-
-  const show50mOpenPill =
-    show50mOnly &&
-    pools50mPanelCollapsed &&
-    show50mSheet &&
-    !isSearching &&
-    !selectedPool;
-
-  const pools50mOpenPillStyle = useMemo((): CSSProperties | undefined => {
-    if (!show50mOpenPill || !Number.isFinite(pools50mSheetTop)) {
-      return undefined;
-    }
-    return computeOpenPillStyle(pools50mSheetTop);
-  }, [show50mOpenPill, pools50mSheetTop]);
-
-  const handleReopenPools50mList = useCallback(() => {
-    reopenPools50mListRef.current?.();
-  }, []);
-
-  const showNearbyEntryPill =
+  const canShowEntryPills =
     !searchActive &&
     !isSearching &&
     !loading &&
@@ -273,32 +190,6 @@ function Explore() {
     !nearbyOpen &&
     !show50mOnly &&
     !selectedPool;
-
-  const show50mEntryPill =
-    !searchActive &&
-    !isSearching &&
-    !loading &&
-    !error &&
-    !favoritesOpen &&
-    !nearbyOpen &&
-    !show50mOnly &&
-    !selectedPool;
-
-  useEffect(() => {
-    if (!showSearchPanel) setSearchPanelCollapsed(false);
-  }, [showSearchPanel]);
-
-  useEffect(() => {
-    if (!showFavoritesSheet) setFavoritesPanelCollapsed(false);
-  }, [showFavoritesSheet]);
-
-  useEffect(() => {
-    if (!showNearbySheet) setNearbyPanelCollapsed(false);
-  }, [showNearbySheet]);
-
-  useEffect(() => {
-    if (!show50mSheet) setPools50mPanelCollapsed(false);
-  }, [show50mSheet]);
 
   const { mapPools, favoritePools, pools50m, mapMarkerPools } = useMapPools({
     pools,
@@ -314,6 +205,39 @@ function Explore() {
     selectedPool,
     onResetSelected: () => setSelectedPool(null),
   });
+
+  const baselinePanels = [
+    {
+      key: 'favorites',
+      show: showFavoritesPanel,
+      preset: POOL_LIST_PRESETS.favorites,
+      pools: favoritePools,
+      resetKey: `favorites-${favoritesOpen}-${favorites.length}`,
+      sheet: favoritesSheet,
+      onDragChange: onFavoritesSheetDragChange,
+      openPill: favoritesOpenPill,
+    },
+    {
+      key: 'nearby',
+      show: showNearbyPanel,
+      preset: POOL_LIST_PRESETS.nearby,
+      pools: mapPools,
+      resetKey: `nearby-${nearbyOpen}-${mapPools.length}`,
+      sheet: nearbySheet,
+      onDragChange: onNearbySheetDragChange,
+      openPill: nearbyOpenPill,
+    },
+    {
+      key: 'pools50m',
+      show: show50mPanel,
+      preset: POOL_LIST_PRESETS.pools50m,
+      pools: pools50m,
+      resetKey: `50m-${show50mOnly}-${pools50m.length}`,
+      sheet: pools50mSheet,
+      onDragChange: onPools50mSheetDragChange,
+      openPill: pools50mOpenPill,
+    },
+  ];
 
   return (
     <div
@@ -376,90 +300,48 @@ function Explore() {
           behindDetailInstant={sheetInstantEnter && searchPanelBehindDetail}
           revealFromDetail={searchPanelRevealFromDetail}
           interactionDisabled={searchPanelBehindDetail}
-          onCollapsedChange={setSearchPanelCollapsed}
-          reopenListRef={reopenSearchListRef}
-          onTopChange={handleSearchSheetTopChange}
+          onCollapsedChange={searchSheet.onCollapsedChange}
+          reopenListRef={searchSheet.reopenListRef}
+          onTopChange={searchSheet.handleTopChange}
           onDragChange={onSearchSheetDragChange}
         />
       )}
 
-      {showSearchOpenPill && (
+      {searchOpenPill.show && (
         <FloatingPill
           className="explore-search-open-pill"
-          style={searchOpenPillStyle}
-          onClick={handleReopenSearchList}
+          style={searchOpenPill.style}
+          onClick={searchSheet.handleReopen}
           aria-label="목록 열기"
         />
       )}
 
-      {showFavoritesSheet && (
-        <PoolListSheet
-          {...POOL_LIST_PRESETS.favorites}
-          pools={favoritePools}
-          resetKey={`favorites-${favoritesOpen}-${favorites.length}`}
-          selectedPool={selectedPool}
-          onSelectPool={handleSelectPool}
-          onCollapsedChange={setFavoritesPanelCollapsed}
-          reopenListRef={reopenFavoritesListRef}
-          onTopChange={handleFavoritesSheetTopChange}
-          onDragChange={onFavoritesSheetDragChange}
-        />
-      )}
+      {baselinePanels.map((panel) => (
+        <Fragment key={panel.key}>
+          {panel.show && (
+            <PoolListSheet
+              {...panel.preset}
+              pools={panel.pools}
+              resetKey={panel.resetKey}
+              selectedPool={selectedPool}
+              onSelectPool={handleSelectPool}
+              onCollapsedChange={panel.sheet.onCollapsedChange}
+              reopenListRef={panel.sheet.reopenListRef}
+              onTopChange={panel.sheet.handleTopChange}
+              onDragChange={panel.onDragChange}
+            />
+          )}
 
-      {showFavoritesOpenPill && (
-        <FloatingPill
-          className="explore-search-open-pill"
-          style={favoritesOpenPillStyle}
-          onClick={handleReopenFavoritesList}
-          aria-label="목록 열기"
-        />
-      )}
-
-      {showNearbySheet && (
-        <PoolListSheet
-          {...POOL_LIST_PRESETS.nearby}
-          pools={mapPools}
-          resetKey={`nearby-${nearbyOpen}-${mapPools.length}`}
-          selectedPool={selectedPool}
-          onSelectPool={handleSelectPool}
-          onCollapsedChange={setNearbyPanelCollapsed}
-          reopenListRef={reopenNearbyListRef}
-          onTopChange={handleNearbySheetTopChange}
-          onDragChange={onNearbySheetDragChange}
-        />
-      )}
-
-      {showNearbyOpenPill && (
-        <FloatingPill
-          className="explore-search-open-pill"
-          style={nearbyOpenPillStyle}
-          onClick={handleReopenNearbyList}
-          aria-label="목록 열기"
-        />
-      )}
-
-      {show50mSheet && (
-        <PoolListSheet
-          {...POOL_LIST_PRESETS.pools50m}
-          pools={pools50m}
-          resetKey={`50m-${show50mOnly}-${pools50m.length}`}
-          selectedPool={selectedPool}
-          onSelectPool={handleSelectPool}
-          onCollapsedChange={setPools50mPanelCollapsed}
-          reopenListRef={reopenPools50mListRef}
-          onTopChange={handlePools50mSheetTopChange}
-          onDragChange={onPools50mSheetDragChange}
-        />
-      )}
-
-      {show50mOpenPill && (
-        <FloatingPill
-          className="explore-search-open-pill"
-          style={pools50mOpenPillStyle}
-          onClick={handleReopenPools50mList}
-          aria-label="목록 열기"
-        />
-      )}
+          {panel.openPill.show && (
+            <FloatingPill
+              className="explore-search-open-pill"
+              style={panel.openPill.style}
+              onClick={panel.sheet.handleReopen}
+              aria-label="목록 열기"
+            />
+          )}
+        </Fragment>
+      ))}
 
       <div className="explore-map-overlay">
         <SearchBar
@@ -486,35 +368,31 @@ function Explore() {
             onPick={handlePickSuggestion}
           />
         )}
-        {(showNearbyEntryPill || show50mEntryPill) && (
+        {canShowEntryPills && (
           <div className="explore-nearby-entry">
-            {showNearbyEntryPill && (
-              <FloatingPill
-                className="explore-nearby-entry-pill"
-                onClick={toggleNearby}
-                aria-label="주변수영장"
-                icon={
-                  <span
-                    className="explore-nearby-entry-pill__icon material-symbols-outlined"
-                    aria-hidden
-                  >
-                    pool
-                  </span>
-                }
-              >
-                주변수영장
-              </FloatingPill>
-            )}
-            {show50mEntryPill && (
-              <FloatingPill
-                className="explore-50m-entry-pill"
-                onClick={toggle50m}
-                aria-label="50m레인"
-                icon={<Tag variant="highlight">50m</Tag>}
-              >
-                레인
-              </FloatingPill>
-            )}
+            <FloatingPill
+              className="explore-nearby-entry-pill"
+              onClick={toggleNearby}
+              aria-label="주변수영장"
+              icon={
+                <span
+                  className="explore-nearby-entry-pill__icon material-symbols-outlined"
+                  aria-hidden
+                >
+                  pool
+                </span>
+              }
+            >
+              주변수영장
+            </FloatingPill>
+            <FloatingPill
+              className="explore-50m-entry-pill"
+              onClick={toggle50m}
+              aria-label="50m레인"
+              icon={<Tag variant="highlight">50m</Tag>}
+            >
+              레인
+            </FloatingPill>
           </div>
         )}
       </div>
