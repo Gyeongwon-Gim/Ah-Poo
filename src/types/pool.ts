@@ -1,5 +1,13 @@
 export type PoolFlag = 0 | 1 | boolean;
 
+/** 0=일 … 6=토 (Date#getDay()와 동일한 기준) */
+export interface PoolOperatingHour {
+  dayOfWeek: number;
+  openTime: string | null;
+  closeTime: string | null;
+  closed: boolean;
+}
+
 export interface Pool {
   id?: string;
   name: string;
@@ -11,11 +19,16 @@ export interface Pool {
   url2: string;
   phone: string;
   is50m: PoolFlag;
-  isWeekday: PoolFlag;
-  isSaturday: PoolFlag;
-  isSunday: PoolFlag;
-  isHoliday: PoolFlag;
   distanceKm?: number;
+  /** 요일별 운영시간. 데이터가 없는(=알 수 없는) 수영장은 undefined/빈 배열. */
+  operatingHours?: PoolOperatingHour[];
+}
+
+export interface PoolOperatingHourRow {
+  day_of_week: number;
+  open_time: string | null;
+  close_time: string | null;
+  closed: boolean;
 }
 
 export interface PoolRow {
@@ -29,8 +42,5 @@ export interface PoolRow {
   url2: string | null;
   phone: string | number | null;
   is_50m: PoolFlag;
-  is_weekday: PoolFlag;
-  is_saturday: PoolFlag;
-  is_sunday: PoolFlag;
-  is_holiday: PoolFlag;
+  pool_operating_hours?: PoolOperatingHourRow[] | null;
 }

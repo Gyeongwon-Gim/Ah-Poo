@@ -3,9 +3,9 @@ import { filterBySearchTerm, poolMatchesQuery } from './poolSearch';
 import type { Pool } from '@/types/pool';
 
 const pools: Pool[] = [
-  { name: '강남수영장', roadAddress: '서울 강남구 테헤란로 1', fee: '5000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
-  { name: 'Olympic Pool', roadAddress: '서울 송파구 올림픽로 25', fee: '무료', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
-  { name: '없음풀', roadAddress: '', fee: '', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
+  { name: '강남수영장', roadAddress: '서울 강남구 테헤란로 1', fee: '5000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
+  { name: 'Olympic Pool', roadAddress: '서울 송파구 올림픽로 25', fee: '무료', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
+  { name: '없음풀', roadAddress: '', fee: '', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
 ];
 
 describe('filterBySearchTerm', () => {
@@ -52,10 +52,10 @@ describe('filterBySearchTerm', () => {
 
 describe('위치 인식 검색 (region 칼럼 없이 주소 토큰 기반)', () => {
   const regionPools: Pool[] = [
-    { name: '두류수영장', roadAddress: '대구 달서구 두류공원로 1', fee: '3000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
-    { name: '수성못수영장', roadAddress: '대구 수성구 무학로 2', fee: '3000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
-    { name: '해운대수영장', roadAddress: '부산 해운대구 우동 3', fee: '4000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
-    { name: '경산시민수영장', roadAddress: '경상북도 경산시 경안로 43', fee: '2000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0, isWeekday: 0, isSaturday: 0, isSunday: 0, isHoliday: 0 },
+    { name: '두류수영장', roadAddress: '대구 달서구 두류공원로 1', fee: '3000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
+    { name: '수성못수영장', roadAddress: '대구 수성구 무학로 2', fee: '3000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
+    { name: '해운대수영장', roadAddress: '부산 해운대구 우동 3', fee: '4000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
+    { name: '경산시민수영장', roadAddress: '경상북도 경산시 경안로 43', fee: '2000원', lat: 0, lng: 0, official_url: '', url2: '', phone: '', is50m: 0 },
   ];
 
   it("'대구' 검색이 '해운대구' 풀을 잡지 않는다", () => {

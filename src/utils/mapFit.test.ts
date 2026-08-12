@@ -10,10 +10,6 @@ const basePool = {
   url2: '',
   phone: '',
   is50m: 0,
-  isWeekday: 0,
-  isSaturday: 0,
-  isSunday: 0,
-  isHoliday: 0,
 } satisfies Omit<Pool, 'lat' | 'lng' | 'id'>;
 
 describe('mapFit', () => {
