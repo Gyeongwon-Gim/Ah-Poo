@@ -37,7 +37,7 @@ const SPACING = [
   '--ap-space-9',
 ];
 
-function Swatch({ name, label }: { name: string; label: string }) {
+const Swatch = ({ name, label }: { name: string; label: string }) => {
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 96 }}
@@ -57,9 +57,9 @@ function Swatch({ name, label }: { name: string; label: string }) {
       </code>
     </div>
   );
-}
+};
 
-function FoundationsPreview() {
+const FoundationsPreview = () => {
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', gap: 32, padding: 8 }}
@@ -157,7 +157,7 @@ function FoundationsPreview() {
       </section>
     </div>
   );
-}
+};
 
 const meta = {
   title: 'Design System/Foundations',

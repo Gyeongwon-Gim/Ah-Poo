@@ -26,10 +26,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function InteractiveSuggestions({
+const InteractiveSuggestions = ({
   draft: initialDraft,
   ...args
-}: React.ComponentProps<typeof SearchSuggestions>) {
+}: React.ComponentProps<typeof SearchSuggestions>) => {
   const [draft, setDraft] = useState(initialDraft ?? '');
   return (
     <div style={{ maxWidth: 440, margin: '0 auto' }}>
@@ -49,7 +49,7 @@ function InteractiveSuggestions({
       <SearchSuggestions {...args} draft={draft} />
     </div>
   );
-}
+};
 
 export const Interactive: Story = {
   render: InteractiveSuggestions,

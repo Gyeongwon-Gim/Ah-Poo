@@ -21,14 +21,14 @@ export interface GeoCoords {
   lng: number;
 }
 
-function getCurrentPosition(options: PositionOptions) {
+const getCurrentPosition = (options: PositionOptions) => {
   return new Promise<GeolocationPosition>((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(resolve, reject, options);
   });
-}
+};
 
 /** watchPosition은 iOS Safari에서 getCurrentPosition보다 안정적인 경우가 있다 */
-function watchPositionOnce(options: PositionOptions) {
+const watchPositionOnce = (options: PositionOptions) => {
   return new Promise<GeolocationPosition>((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('unsupported'));
@@ -62,9 +62,9 @@ function watchPositionOnce(options: PositionOptions) {
       options,
     );
   });
-}
+};
 
-async function queryGeolocationPermission() {
+const queryGeolocationPermission = async () => {
   if (!navigator.permissions?.query) return null;
   try {
     const result = await navigator.permissions.query({ name: 'geolocation' });
@@ -72,20 +72,20 @@ async function queryGeolocationPermission() {
   } catch {
     return null;
   }
-}
+};
 
-function resolveLocationStatus(
+const resolveLocationStatus = (
   error: GeolocationPositionError | (Error & { code?: number }) | undefined,
   permissionState: PermissionState | null,
-): LocationStatus {
+): LocationStatus => {
   if (permissionState === 'granted') return 'unavailable';
   if (error?.code === PERMISSION_DENIED || permissionState === 'denied') {
     return 'denied';
   }
   return 'unavailable';
-}
+};
 
-async function requestLocation() {
+const requestLocation = async () => {
   const permissionState = await queryGeolocationPermission();
   if (permissionState === 'denied') {
     const err = new Error('denied') as Error & { code?: number };
@@ -115,9 +115,9 @@ async function requestLocation() {
   const wrapped = new Error(status) as Error & { code?: number };
   wrapped.code = lastError?.code;
   throw wrapped;
-}
+};
 
-export function useUserLocation() {
+export const useUserLocation = () => {
   const [location, setLocation] = useState<GeoCoords | null>(null);
   const [status, setStatus] = useState<LocationStatus>('pending');
 
@@ -155,4 +155,4 @@ export function useUserLocation() {
   }, [refreshLocation]);
 
   return { location, status, refreshLocation };
-}
+};

@@ -46,7 +46,7 @@ interface UseExploreInteractionsParams {
  * 홈 화면의 상호작용 상태 머신: 검색, 상세 시트, 즐겨찾기·주변 시트를
  * 한곳에서 관리한다. 이 영역들은 서로를 닫고 여는 관계라 응집도를 위해 하나의 훅으로 묶었다.
  */
-export function useExploreInteractions({
+export const useExploreInteractions = ({
   pools,
   userLocation,
   locationStatus,
@@ -61,7 +61,7 @@ export function useExploreInteractions({
   refreshLocation,
   location,
   navigate,
-}: UseExploreInteractionsParams) {
+}: UseExploreInteractionsParams) => {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [searchActive, setSearchActive] = useState(false);
@@ -350,12 +350,9 @@ export function useExploreInteractions({
     searchPanelBehindDetail,
     searchPanelRevealFromDetail,
     showFavoritesPanel,
-    showFavoritesSheet: showFavoritesPanel,
     showNearbyPanel,
-    showNearbySheet: showNearbyPanel,
     show50mPanel,
-    show50mSheet: show50mPanel,
     handleRecenter,
     showUserLocationMarker,
   };
-}
+};

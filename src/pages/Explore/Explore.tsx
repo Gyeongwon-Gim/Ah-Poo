@@ -39,16 +39,16 @@ function computeOpenPillStyle(sheetTop: number): CSSProperties {
 type PanelSheet = ReturnType<typeof usePanelSheet>;
 
 /** 패널이 접힌 채 열려 있을 때 뜨는 "목록 열기" 핀 하나의 표시 여부·위치. */
-function useOpenPill(active: boolean, sheet: PanelSheet) {
+const useOpenPill = (active: boolean, sheet: PanelSheet) => {
   const show = active && sheet.collapsed;
   const style = useMemo((): CSSProperties | undefined => {
     if (!show || !Number.isFinite(sheet.sheetTop)) return undefined;
     return computeOpenPillStyle(sheet.sheetTop);
   }, [show, sheet.sheetTop]);
   return { show, style };
-}
+};
 
-function Explore() {
+const Explore = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {
@@ -423,6 +423,6 @@ function Explore() {
       )}
     </div>
   );
-}
+};
 
 export default Explore;

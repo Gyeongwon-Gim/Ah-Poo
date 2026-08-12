@@ -57,11 +57,11 @@ interface SearchSuggestionsProps {
   onPick: (pool: Pool) => void;
 }
 
-export default function SearchSuggestions({
+const SearchSuggestions = ({
   draft,
   pools,
   onPick,
-}: SearchSuggestionsProps) {
+}: SearchSuggestionsProps) => {
   const suggestions = useMemo(
     () => buildSuggestions(pools, draft),
     [pools, draft],
@@ -114,4 +114,6 @@ export default function SearchSuggestions({
       )}
     </div>
   );
-}
+};
+
+export default SearchSuggestions;

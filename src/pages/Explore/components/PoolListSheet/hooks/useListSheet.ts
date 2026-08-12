@@ -25,7 +25,7 @@ const MIN_FLING_VELOCITY = 0.25;
 const VELOCITY_SMOOTH_PREV = 0.6;
 const VELOCITY_SMOOTH_INST = 0.4;
 
-function readCssVarPx(varName: string) {
+const readCssVarPx = (varName: string) => {
   if (typeof document === 'undefined') return 0;
   const probe = document.createElement('div');
   probe.style.cssText =
@@ -36,7 +36,7 @@ function readCssVarPx(varName: string) {
   const px = probe.getBoundingClientRect().height;
   probe.remove();
   return px;
-}
+};
 
 const getContainerH = (el: HTMLElement | null) => {
   if (typeof document === 'undefined') return 800;
@@ -66,7 +66,7 @@ export interface UseListSheetOptions {
   onDragChange?: (dragging: boolean) => void;
 }
 
-export function useListSheet({
+export const useListSheet = ({
   resetKey,
   itemCount,
   reservePeekWhenEmpty = false,
@@ -84,7 +84,7 @@ export function useListSheet({
   onDismiss,
   onTopChange,
   onDragChange,
-}: UseListSheetOptions) {
+}: UseListSheetOptions) => {
   const sectionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -763,4 +763,4 @@ export function useListSheet({
     handleTouchEnd,
     handleMouseDown,
   };
-}
+};

@@ -44,7 +44,7 @@ function buildClassName({
     .join(' ');
 }
 
-export default function Button(props: ButtonProps) {
+const Button = (props: ButtonProps) => {
   const {
     variant = 'primary',
     size = 'md',
@@ -73,4 +73,6 @@ export default function Button(props: ButtonProps) {
       {children}
     </button>
   );
-}
+};
+
+export default Button;

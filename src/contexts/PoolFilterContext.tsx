@@ -29,7 +29,7 @@ interface PoolFilterContextValue {
 
 const PoolFilterContext = createContext<PoolFilterContextValue | null>(null);
 
-export function PoolFilterProvider({ children }: { children: ReactNode }) {
+export const PoolFilterProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<PoolFilterKey | null>(null);
 
@@ -85,12 +85,12 @@ export function PoolFilterProvider({ children }: { children: ReactNode }) {
       {children}
     </PoolFilterContext.Provider>
   );
-}
+};
 
-export function usePoolFilter() {
+export const usePoolFilter = () => {
   const ctx = useContext(PoolFilterContext);
   if (!ctx) {
     throw new Error('usePoolFilter must be used within PoolFilterProvider');
   }
   return ctx;
-}
+};

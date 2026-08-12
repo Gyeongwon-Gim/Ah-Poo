@@ -28,7 +28,7 @@ interface PoolDetailContentProps {
   onPointerDownStop: (e: PointerEvent | MouseEvent) => void;
 }
 
-export default function PoolDetailContent({
+const PoolDetailContent = ({
   pool,
   poolImageUrl,
   poolImageFailed,
@@ -40,7 +40,7 @@ export default function PoolDetailContent({
   onOpenHomepage,
   essentialRef,
   onPointerDownStop,
-}: PoolDetailContentProps) {
+}: PoolDetailContentProps) => {
   const actions: {
     id: string;
     icon: LucideIcon;
@@ -166,4 +166,6 @@ export default function PoolDetailContent({
       </div>
     </>
   );
-}
+};
+
+export default PoolDetailContent;

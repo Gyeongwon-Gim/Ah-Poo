@@ -4,7 +4,7 @@ import { useListSheet } from './useListSheet';
 
 let sheetApi: ReturnType<typeof useListSheet> | null = null;
 
-function ListSheetHarness() {
+const ListSheetHarness = () => {
   const sheet = useListSheet({
     itemCount: 1,
     reservePeekWhenEmpty: true,
@@ -30,7 +30,7 @@ function ListSheetHarness() {
       </section>
     </div>
   );
-}
+};
 
 describe('useListSheet toggleHandle', () => {
   beforeEach(() => {

@@ -5,7 +5,7 @@ import { PoolFilterProvider } from '@/contexts/PoolFilterContext';
 import { FavoritesProvider } from '@/hooks/useFavorites';
 import './App.css';
 
-function App() {
+const App = () => {
   return (
     <Router>
       <FavoritesProvider>
@@ -22,6 +22,6 @@ function App() {
       </FavoritesProvider>
     </Router>
   );
-}
+};
 
 export default App;

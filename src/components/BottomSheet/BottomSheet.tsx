@@ -59,7 +59,7 @@ export type BottomSheetProps = BottomSheetStateProps & {
 } & Omit<ComponentPropsWithoutRef<'div'>, 'as' | 'children' | 'className'>;
 
 const BottomSheetRoot = forwardRef<HTMLElement, BottomSheetProps>(
-  function BottomSheetRoot(
+  (
     {
       variant,
       as,
@@ -76,7 +76,7 @@ const BottomSheetRoot = forwardRef<HTMLElement, BottomSheetProps>(
       ...rest
     },
     ref,
-  ) {
+  ) => {
     const Component = as ?? (variant === 'list' ? 'section' : 'div');
 
     return (
@@ -101,41 +101,37 @@ const BottomSheetRoot = forwardRef<HTMLElement, BottomSheetProps>(
     );
   },
 );
+BottomSheetRoot.displayName = 'BottomSheetRoot';
 
 type BottomSheetHeaderProps = ComponentPropsWithoutRef<'div'>;
 
 const BottomSheetHeader = forwardRef<HTMLDivElement, BottomSheetHeaderProps>(
-  function BottomSheetHeader({ className = '', ...rest }, ref) {
-    return (
-      <div
-        ref={ref}
-        className={['bottom-sheet__header', className].filter(Boolean).join(' ')}
-        {...rest}
-      />
-    );
-  },
+  ({ className = '', ...rest }, ref) => (
+    <div
+      ref={ref}
+      className={['bottom-sheet__header', className].filter(Boolean).join(' ')}
+      {...rest}
+    />
+  ),
 );
+BottomSheetHeader.displayName = 'BottomSheetHeader';
 
 type BottomSheetHandleProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   ariaLabel: string;
 };
 
 const BottomSheetHandle = forwardRef<HTMLButtonElement, BottomSheetHandleProps>(
-  function BottomSheetHandle(
-    { ariaLabel, className = '', type = 'button', ...rest },
-    ref,
-  ) {
-    return (
-      <button
-        ref={ref}
-        type={type}
-        className={['bottom-sheet__handle', className].filter(Boolean).join(' ')}
-        aria-label={ariaLabel}
-        {...rest}
-      />
-    );
-  },
+  ({ ariaLabel, className = '', type = 'button', ...rest }, ref) => (
+    <button
+      ref={ref}
+      type={type}
+      className={['bottom-sheet__handle', className].filter(Boolean).join(' ')}
+      aria-label={ariaLabel}
+      {...rest}
+    />
+  ),
 );
+BottomSheetHandle.displayName = 'BottomSheetHandle';
 
 const BottomSheet = Object.assign(BottomSheetRoot, {
   Header: BottomSheetHeader,

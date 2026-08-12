@@ -11,14 +11,14 @@ interface PoolDetailToolbarProps {
   onPointerDownStop: (e: PointerEvent | MouseEvent) => void;
 }
 
-export default function PoolDetailToolbar({
+const PoolDetailToolbar = ({
   favorite,
   onToggleFavorite,
   pool,
   onBack,
   onClose,
   onPointerDownStop,
-}: PoolDetailToolbarProps) {
+}: PoolDetailToolbarProps) => {
   return (
     <div className="pool-sheet__toolbar">
       <button
@@ -55,4 +55,6 @@ export default function PoolDetailToolbar({
       </div>
     </div>
   );
-}
+};
+
+export default PoolDetailToolbar;

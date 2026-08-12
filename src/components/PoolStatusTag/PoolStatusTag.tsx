@@ -6,7 +6,7 @@ interface PoolStatusTagProps {
   pool: Pool;
 }
 
-export default function PoolStatusTag({ pool }: PoolStatusTagProps) {
+const PoolStatusTag = ({ pool }: PoolStatusTagProps) => {
   const state = getPoolOpenState(pool);
   if (state === 'unknown') return null; // 운영시간 데이터 없는 곳은 태그 숨김
 
@@ -16,4 +16,6 @@ export default function PoolStatusTag({ pool }: PoolStatusTagProps) {
       {open ? '운영중' : '운영종료'}
     </Tag>
   );
-}
+};
+
+export default PoolStatusTag;

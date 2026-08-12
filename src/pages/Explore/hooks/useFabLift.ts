@@ -19,18 +19,18 @@ interface SheetTops {
   detail: number;
 }
 
-interface ComputeMapFabPlacementParams {
+interface ComputeFabPlacementParams {
   sheetTop: number;
   viewportHeight: number;
   defaultBottomPx: number;
 }
 
-interface MapFabPlacement {
+interface FabPlacement {
   translateY: number;
   interactive: boolean;
 }
 
-interface UseMapFabLiftParams {
+interface UseFabLiftParams {
   enabled: boolean;
   detailOpen: boolean;
   searchPanelOpen: boolean;
@@ -40,7 +40,7 @@ interface UseMapFabLiftParams {
   pools50mPanelOpen: boolean;
 }
 
-function readSafeBottomPx() {
+const readSafeBottomPx = () => {
   if (typeof document === 'undefined') return 0;
   const probe = document.createElement('div');
   probe.style.cssText =
@@ -49,25 +49,25 @@ function readSafeBottomPx() {
   const px = parseFloat(getComputedStyle(probe).paddingBottom) || 0;
   probe.remove();
   return px;
-}
+};
 
-function computeFabLift(
+const computeFabLift = (
   sheetTop: number,
   viewportHeight: number,
   defaultBottomPx: number,
-) {
+) => {
   const desiredBottomFromViewportBottom = viewportHeight - sheetTop + FAB_GAP;
   return Math.max(0, desiredBottomFromViewportBottom - defaultBottomPx);
-}
+};
 
 /**
  * 시트 top에 맞춰 FAB를 위로 올린다. 화면 50% 이상이면 50% 지점에서 멈추고 시트에 가려진다.
  */
-export function computeMapFabPlacement({
+export const computeFabPlacement = ({
   sheetTop,
   viewportHeight,
   defaultBottomPx,
-}: ComputeMapFabPlacementParams): MapFabPlacement {
+}: ComputeFabPlacementParams): FabPlacement => {
   const vh = viewportHeight;
   const halfTop = vh * HALF_SCREEN_RATIO;
 
@@ -82,12 +82,12 @@ export function computeMapFabPlacement({
 
   const lift = computeFabLift(sheetTop, vh, defaultBottomPx);
   return { translateY: -lift, interactive: true };
-}
+};
 
 /**
  * 하단 시트에 맞춰 FAB를 아래로 밀어 낸다 (시트와 겹치지 않음).
  */
-export function useMapFabLift({
+export const useFabLift = ({
   enabled,
   detailOpen,
   searchPanelOpen,
@@ -95,7 +95,7 @@ export function useMapFabLift({
   favoritesPanelOpen,
   nearbyPanelOpen,
   pools50mPanelOpen,
-}: UseMapFabLiftParams) {
+}: UseFabLiftParams) => {
   const [sheetTops, setSheetTops] = useState<SheetTops>({
     search: NO_SHEET_TOP,
     favorites: NO_SHEET_TOP,
@@ -228,7 +228,7 @@ export function useMapFabLift({
 
     const vh = viewportHeight;
 
-    return computeMapFabPlacement({
+    return computeFabPlacement({
       sheetTop: activeSheetTop,
       viewportHeight: vh,
       defaultBottomPx,
@@ -260,4 +260,4 @@ export function useMapFabLift({
     onPools50mSheetDragChange,
     onDetailSheetDragChange,
   };
-}
+};

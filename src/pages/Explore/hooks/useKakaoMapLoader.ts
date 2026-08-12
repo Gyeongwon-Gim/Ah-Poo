@@ -8,14 +8,14 @@ const MAP_SETUP_HINT =
 
 let loadPromise: Promise<typeof window.kakao> | null = null;
 
-function rejectIfNoKakaoMaps(reject: (reason?: unknown) => void) {
+const rejectIfNoKakaoMaps = (reject: (reason?: unknown) => void) => {
   loadPromise = null;
   reject(
     new Error(`카카오맵 API를 초기화하지 못했습니다. ${MAP_SETUP_HINT}`),
   );
-}
+};
 
-function loadKakaoSdk(appKey: string) {
+const loadKakaoSdk = (appKey: string) => {
   if (window.kakao?.maps?.Map) {
     return Promise.resolve(window.kakao);
   }
@@ -101,7 +101,7 @@ function loadKakaoSdk(appKey: string) {
   });
 
   return loadPromise;
-}
+};
 
 // 모듈이 평가되는 즉시 SDK 다운로드를 선제적으로 시작한다.
 // 컴포넌트 마운트·effect 실행을 기다리지 않으므로 지도 타일이 더 빨리 그려진다.
@@ -111,11 +111,11 @@ if (typeof window !== 'undefined' && PREFETCH_APP_KEY) {
   loadKakaoSdk(PREFETCH_APP_KEY).catch(() => {});
 }
 
-function isKakaoMapReady() {
+const isKakaoMapReady = () => {
   return typeof window !== 'undefined' && Boolean(window.kakao?.maps?.Map);
-}
+};
 
-export function useKakaoMapLoader() {
+export const useKakaoMapLoader = () => {
   const appKey = import.meta.env.VITE_KAKAO_MAP_APP_KEY;
   const [ready, setReady] = useState(isKakaoMapReady);
   const [error, setError] = useState<string | null>(null);
@@ -151,4 +151,4 @@ export function useKakaoMapLoader() {
   }, [appKey]);
 
   return { ready, error, appKey };
-}
+};

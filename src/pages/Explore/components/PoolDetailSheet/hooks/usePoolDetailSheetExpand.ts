@@ -49,7 +49,7 @@ export interface UsePoolDetailSheetExpandParams {
   expandState: PoolDetailExpandState;
 }
 
-export function usePoolDetailSheetExpand({
+export const usePoolDetailSheetExpand = ({
   sheetRef,
   peekRef,
   translateRef,
@@ -63,7 +63,7 @@ export function usePoolDetailSheetExpand({
   clearExpandStyles,
   applyFullscreenTransform,
   expandState,
-}: UsePoolDetailSheetExpandParams) {
+}: UsePoolDetailSheetExpandParams) => {
   const {
     isFullscreenRef,
     setIsFullscreen,
@@ -484,4 +484,4 @@ export function usePoolDetailSheetExpand({
     onPeekBodyPointerUp,
     onPeekBodyPointerCancel,
   };
-}
+};

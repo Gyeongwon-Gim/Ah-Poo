@@ -17,7 +17,7 @@ interface PoolListItemProps {
   onSelect: (pool: Pool) => void;
 }
 
-function PoolListItem({ pool, selected, onSelect }: PoolListItemProps) {
+const PoolListItem = ({ pool, selected, onSelect }: PoolListItemProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(pool);
   const distanceLabel = formatDistance(pool.distanceKm);
@@ -96,6 +96,6 @@ function PoolListItem({ pool, selected, onSelect }: PoolListItemProps) {
       </ListItem.Body>
     </ListItem>
   );
-}
+};
 
 export default memo(PoolListItem);

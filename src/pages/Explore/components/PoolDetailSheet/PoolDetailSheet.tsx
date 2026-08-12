@@ -23,7 +23,7 @@ interface PoolDetailSheetProps {
   onDragChange?: (dragging: boolean) => void;
 }
 
-export default function PoolDetailSheet({
+const PoolDetailSheet = ({
   pool,
   onClose,
   onCloseStart,
@@ -32,7 +32,7 @@ export default function PoolDetailSheet({
   instantEnter = false,
   onTopChange,
   onDragChange,
-}: PoolDetailSheetProps) {
+}: PoolDetailSheetProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(pool);
   const { poolImageUrl, poolImageFailed, markPoolImageFailed } =
@@ -200,4 +200,6 @@ export default function PoolDetailSheet({
       </div>
     </BottomSheet>
   );
-}
+};
+
+export default PoolDetailSheet;

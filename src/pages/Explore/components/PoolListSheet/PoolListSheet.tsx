@@ -23,7 +23,7 @@ export interface PoolListSheetProps extends PoolListPreset {
   interactionDisabled?: boolean;
 }
 
-export default function PoolListSheet({
+const PoolListSheet = ({
   ariaLabel,
   title,
   countSuffix,
@@ -42,7 +42,7 @@ export default function PoolListSheet({
   behindDetailInstant = false,
   revealFromDetail = false,
   interactionDisabled = false,
-}: PoolListSheetProps) {
+}: PoolListSheetProps) => {
   const selectedKey = selectedPool ? getPoolListKey(selectedPool) : null;
 
   const sheet = useListSheet({
@@ -133,4 +133,6 @@ export default function PoolListSheet({
       </div>
     </BottomSheet>
   );
-}
+};
+
+export default PoolListSheet;

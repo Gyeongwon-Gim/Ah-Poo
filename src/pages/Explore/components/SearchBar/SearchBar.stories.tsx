@@ -35,14 +35,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function ControlledSearchBar(args: React.ComponentProps<typeof SearchBar>) {
+const ControlledSearchBar = (args: React.ComponentProps<typeof SearchBar>) => {
   const [value, setValue] = useState(args.value ?? '');
   return (
     <div style={{ maxWidth: 440, margin: '0 auto', paddingTop: 24 }}>
       <SearchBar {...args} value={value} onValueChange={setValue} />
     </div>
   );
-}
+};
 
 export const Default: Story = {
   render: ControlledSearchBar,

@@ -22,11 +22,11 @@ function buildPoolDescription(pool: Pool): string {
   if (pool.fee) {
     parts.push(formatDailyAdmissionFee(pool.fee));
   }
-  parts.push('50m 레인·운영일 정보');
+  parts.push('50m 레인 정보');
   return `${parts.filter(Boolean).join(' · ')} — 어푸!에서 전국 일일입장·자유수영 수영장 정보를 확인하세요.`;
 }
 
-function PoolDetail() {
+const PoolDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [pool, setPool] = useState<Pool | null>(null);
@@ -197,6 +197,6 @@ function PoolDetail() {
       </div>
     </div>
   );
-}
+};
 
 export default PoolDetail;

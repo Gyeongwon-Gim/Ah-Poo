@@ -14,7 +14,7 @@ interface PoolDetailBlogSectionProps {
   onThumbError: (link: string) => void;
 }
 
-export default function PoolDetailBlogSection({
+const PoolDetailBlogSection = ({
   loading,
   error,
   visibleReviews,
@@ -25,7 +25,7 @@ export default function PoolDetailBlogSection({
   onRetry,
   onLoadMore,
   onThumbError,
-}: PoolDetailBlogSectionProps) {
+}: PoolDetailBlogSectionProps) => {
   return (
     <section className="pool-sheet__blog" aria-live="polite">
       <h3 className="pool-sheet__blog-title">블로그 리뷰</h3>
@@ -102,4 +102,6 @@ export default function PoolDetailBlogSection({
       <p className="pool-sheet__blog-attribution">검색 결과 제공: NAVER</p>
     </section>
   );
-}
+};
+
+export default PoolDetailBlogSection;

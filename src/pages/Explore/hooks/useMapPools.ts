@@ -30,7 +30,7 @@ interface UseMapPoolsParams {
  * 현재 모드(검색/주변/즐겨찾기)에 따라 지도·시트에 표시할 수영장 목록을 계산한다.
  * 검색 중 선택된 수영장이 결과에서 사라지면 선택을 해제한다.
  */
-export function useMapPools({
+export const useMapPools = ({
   pools,
   appliedSearchTerm,
   isSearching,
@@ -43,7 +43,7 @@ export function useMapPools({
   show50mOnly,
   selectedPool,
   onResetSelected,
-}: UseMapPoolsParams) {
+}: UseMapPoolsParams) => {
   const mapPools = useMemo(() => {
     let result: Pool[];
 
@@ -140,4 +140,4 @@ export function useMapPools({
   }, [mapPools, selectedPool, isSearching, onResetSelected]);
 
   return { mapPools, favoritePools, pools50m, mapMarkerPools };
-}
+};

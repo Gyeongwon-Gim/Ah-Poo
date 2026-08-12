@@ -9,14 +9,14 @@ export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
   dot?: boolean;
 }
 
-export default function Tag({
+const Tag = ({
   variant = 'default',
   active = false,
   dot = false,
   className = '',
   children,
   ...rest
-}: TagProps) {
+}: TagProps) => {
   const cls = [
     'ap-tag',
     variant === 'highlight' ? 'ap-tag--highlight' : '',
@@ -33,4 +33,6 @@ export default function Tag({
       {children}
     </span>
   );
-}
+};
+
+export default Tag;

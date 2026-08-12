@@ -9,7 +9,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'pool 객체의 운영 플래그를 Tag(highlight/default) 조합으로 표시합니다. 활성 태그가 없으면 렌더링하지 않습니다.',
+          'pool 객체의 50m 레인 플래그를 Tag(highlight)로 표시합니다. 50m가 아니면 렌더링하지 않습니다.',
       },
     },
   },
@@ -19,62 +19,22 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const AllTags: Story = {
-  args: {
-    pool: {
-      name: '',
-      roadAddress: '',
-      lat: 0,
-      lng: 0,
-      fee: '',
-      official_url: '',
-      url2: '',
-      phone: '',
-      is50m: 1,
-      isWeekday: 1,
-      isSaturday: 1,
-      isSunday: 1,
-      isHoliday: 1,
-    },
-  },
-};
+const basePool = {
+  name: '',
+  roadAddress: '',
+  lat: 0,
+  lng: 0,
+  fee: '',
+  official_url: '',
+  url2: '',
+  phone: '',
+} as const;
 
-export const WeekdayOnly: Story = {
+export const FiftyMeter: Story = {
   args: {
     pool: {
-      name: '',
-      roadAddress: '',
-      lat: 0,
-      lng: 0,
-      fee: '',
-      official_url: '',
-      url2: '',
-      phone: '',
-      is50m: 0,
-      isWeekday: 1,
-      isSaturday: 0,
-      isSunday: 0,
-      isHoliday: 0,
-    },
-  },
-};
-
-export const FiftyMeterWeekend: Story = {
-  args: {
-    pool: {
-      name: '',
-      roadAddress: '',
-      lat: 0,
-      lng: 0,
-      fee: '',
-      official_url: '',
-      url2: '',
-      phone: '',
+      ...basePool,
       is50m: 1,
-      isWeekday: 0,
-      isSaturday: 1,
-      isSunday: 1,
-      isHoliday: 0,
     },
   },
 };
@@ -82,19 +42,8 @@ export const FiftyMeterWeekend: Story = {
 export const Empty: Story = {
   args: {
     pool: {
-      name: '',
-      roadAddress: '',
-      lat: 0,
-      lng: 0,
-      fee: '',
-      official_url: '',
-      url2: '',
-      phone: '',
+      ...basePool,
       is50m: 0,
-      isWeekday: 0,
-      isSaturday: 0,
-      isSunday: 0,
-      isHoliday: 0,
     },
   },
 };

@@ -15,7 +15,7 @@ interface MapStatusMessageProps {
 }
 
 /** 지도 위 로딩·에러·빈 상태 안내 */
-export default function MapStatusMessage({
+const MapStatusMessage = ({
   loading,
   error,
   onRetry,
@@ -24,7 +24,7 @@ export default function MapStatusMessage({
   isSearching,
   locationStatus,
   poolCount,
-}: MapStatusMessageProps) {
+}: MapStatusMessageProps) => {
   return (
     <>
       {loading && (
@@ -101,4 +101,6 @@ export default function MapStatusMessage({
       )}
     </>
   );
-}
+};
+
+export default MapStatusMessage;

@@ -38,7 +38,7 @@ export interface UsePoolDetailSheetLayoutParams {
   onDragChange?: (dragging: boolean) => void;
 }
 
-export function usePoolDetailSheetLayout({
+export const usePoolDetailSheetLayout = ({
   pool,
   instantEnter = false,
   poolImageUrl,
@@ -48,7 +48,7 @@ export function usePoolDetailSheetLayout({
   onBackStart,
   onTopChange,
   onDragChange,
-}: UsePoolDetailSheetLayoutParams) {
+}: UsePoolDetailSheetLayoutParams) => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const grabberRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -467,4 +467,4 @@ export function usePoolDetailSheetLayout({
     onPeekBodyPointerUp,
     onPeekBodyPointerCancel,
   };
-}
+};

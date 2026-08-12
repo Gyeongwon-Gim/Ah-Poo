@@ -18,10 +18,10 @@ import type { GeoCoords } from '@/pages/Explore/hooks/useUserLocation';
  * 동일한 형태의 useNaverMap을 만들면 이 훅만 갈아끼우면 된다.
  */
 
-function syncMapLayout(
+const syncMapLayout = (
   mapEl: HTMLDivElement | null,
   map: kakao.maps.Map | null,
-) {
+) => {
   if (!mapEl) return;
 
   const shell = mapEl.closest('.pool-map') as HTMLElement | null;
@@ -34,18 +34,18 @@ function syncMapLayout(
   mapEl.style.width = '100%';
   mapEl.style.height = '100%';
   map?.relayout();
-}
+};
 
-function refreshMapTiles(map: kakao.maps.Map | null) {
+const refreshMapTiles = (map: kakao.maps.Map | null) => {
   if (!map) return;
   const center = map.getCenter?.();
   if (center) map.setCenter(center);
-}
+};
 
-function scheduleMapRelayout(
+const scheduleMapRelayout = (
   map: kakao.maps.Map,
   mapEl: HTMLDivElement | null,
-) {
+) => {
   const run = () => {
     syncMapLayout(mapEl, map);
     map.relayout();
@@ -60,7 +60,7 @@ function scheduleMapRelayout(
   const raf = requestAnimationFrame(run);
 
   return () => cancelAnimationFrame(raf);
-}
+};
 
 export interface KakaoMapController {
   /** 지도 캔버스가 붙을 컨테이너 ref */
@@ -82,10 +82,10 @@ interface UseKakaoMapOptions {
   initialLevel: number;
 }
 
-export function useKakaoMap({
+export const useKakaoMap = ({
   initialCenter,
   initialLevel,
-}: UseKakaoMapOptions): KakaoMapController {
+}: UseKakaoMapOptions): KakaoMapController => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<kakao.maps.Map | null>(null);
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
@@ -226,4 +226,4 @@ export function useKakaoMap({
   }, []);
 
   return { mapRef, map, ready, error, relayout };
-}
+};

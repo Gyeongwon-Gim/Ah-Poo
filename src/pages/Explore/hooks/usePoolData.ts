@@ -3,7 +3,7 @@ import { fetchPools } from '@/services/pools';
 import type { Pool } from '@/types/pool';
 
 /** 수영장 목록 로딩/에러 상태와 재시도 함수를 제공한다. */
-export function usePoolData() {
+export const usePoolData = () => {
   const [pools, setPools] = useState<Pool[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,4 +31,4 @@ export function usePoolData() {
   }, [reload]);
 
   return { pools, loading, error, reload };
-}
+};

@@ -16,7 +16,7 @@ interface SearchBarProps {
   searchMode?: boolean;
 }
 
-export default function SearchBar({
+const SearchBar = ({
   value = '',
   onValueChange,
   onSearch,
@@ -24,7 +24,7 @@ export default function SearchBar({
   onClose,
   variant = 'default',
   searchMode = false,
-}: SearchBarProps) {
+}: SearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -106,4 +106,6 @@ export default function SearchBar({
       </form>
     </div>
   );
-}
+};
+
+export default SearchBar;

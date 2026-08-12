@@ -16,7 +16,7 @@ const listeners = new Set<() => void>();
 let cachedRaw: string | null = null;
 let cachedSnapshot: Pool[] = EMPTY_FAVORITES;
 
-function subscribe(listener: () => void) {
+const subscribe = (listener: () => void) => {
   listeners.add(listener);
   const onStorage = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY || event.key === null) {
@@ -29,13 +29,13 @@ function subscribe(listener: () => void) {
     listeners.delete(listener);
     window.removeEventListener('storage', onStorage);
   };
-}
+};
 
-function emit() {
+const emit = () => {
   listeners.forEach((listener) => listener());
-}
+};
 
-function readFavorites(): Pool[] {
+const readFavorites = (): Pool[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY) ?? '';
     if (raw === cachedRaw) return cachedSnapshot;
@@ -54,15 +54,15 @@ function readFavorites(): Pool[] {
     cachedSnapshot = EMPTY_FAVORITES;
     return cachedSnapshot;
   }
-}
+};
 
-function writeFavorites(pools: Pool[]) {
+const writeFavorites = (pools: Pool[]) => {
   const raw = JSON.stringify(pools);
   localStorage.setItem(STORAGE_KEY, raw);
   cachedRaw = raw;
   cachedSnapshot = pools;
   emit();
-}
+};
 
 interface FavoritesContextValue {
   favorites: Pool[];
@@ -72,7 +72,7 @@ interface FavoritesContextValue {
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
-export function FavoritesProvider({ children }: { children: ReactNode }) {
+export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
   const favorites = useSyncExternalStore(
     subscribe,
     readFavorites,
@@ -110,12 +110,12 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       {children}
     </FavoritesContext.Provider>
   );
-}
+};
 
-export function useFavorites() {
+export const useFavorites = () => {
   const ctx = useContext(FavoritesContext);
   if (!ctx) {
     throw new Error('useFavorites must be used within FavoritesProvider');
   }
   return ctx;
-}
+};

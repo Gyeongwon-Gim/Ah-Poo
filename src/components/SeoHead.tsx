@@ -82,7 +82,7 @@ interface SeoHeadProps {
   noindex?: boolean;
 }
 
-function SeoHead({
+const SeoHead = ({
   title,
   description = DEFAULT_DESCRIPTION,
   path = '/',
@@ -90,7 +90,7 @@ function SeoHead({
   type = 'website',
   jsonLd,
   noindex = false,
-}: SeoHeadProps) {
+}: SeoHeadProps) => {
   const canonicalUrl = `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 
   const jsonLdItems = Array.isArray(jsonLd)
@@ -130,6 +130,6 @@ function SeoHead({
       ))}
     </Helmet>
   );
-}
+};
 
 export default SeoHead;

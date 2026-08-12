@@ -21,17 +21,17 @@ export interface UseBottomSheetParams extends UseBottomSheetOptions {
 }
 
 /** 수직 시트 드래그 translate 계산 (PoolListSheet 등) */
-export function computeDragTranslate(
+export const computeDragTranslate = (
   startTranslate: number,
   startY: number,
   clientY: number,
   min: number,
   max: number,
-): number {
+): number => {
   return clamp(startTranslate + (clientY - startY), min, max);
-}
+};
 
-export function useBottomSheet({
+export const useBottomSheet = ({
   maxTranslate,
   snapPoints,
   closeThreshold = DEFAULT_CLOSE_THRESHOLD,
@@ -39,7 +39,7 @@ export function useBottomSheet({
   onDragChange,
   onClose,
   onAfterDrag,
-}: UseBottomSheetParams) {
+}: UseBottomSheetParams) => {
   const [translate, setTranslateState] = useState(snapPoints.peek);
   const [dragging, setDragging] = useState(false);
   const translateRef = useRef(translate);
@@ -144,4 +144,4 @@ export function useBottomSheet({
     snapTo,
     snapToPeek,
   };
-}
+};

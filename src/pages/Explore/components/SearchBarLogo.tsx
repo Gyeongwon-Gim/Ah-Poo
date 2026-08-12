@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 const LOGO_TEXT = 'Ah-Poo!';
 const LOGO_CHAR_DELAY_MS = 380;
 
-export default function SearchBarLogo() {
+const SearchBarLogo = () => {
   const [length, setLength] = useState(0);
   const [showCursor, setShowCursor] = useState(true);
 
@@ -50,4 +50,6 @@ export default function SearchBarLogo() {
       </span>
     </div>
   );
-}
+};
+
+export default SearchBarLogo;

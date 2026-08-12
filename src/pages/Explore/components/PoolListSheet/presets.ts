@@ -21,7 +21,7 @@ export interface PoolListPreset {
 export const POOL_LIST_PRESETS = {
   favorites: {
     ariaLabel: '즐겨찾기',
-    title: '즐겨찾기',
+    title: '즐겨찾는 수영장',
     countSuffix: '곳',
     emptyMessage: '즐겨찾기한 수영장이 없어요',
     testId: 'favorites-panel',
@@ -29,14 +29,14 @@ export const POOL_LIST_PRESETS = {
   nearby: {
     ariaLabel: '주변 수영장',
     title: '주변 수영장',
-    countSuffix: '곳',
+    countSuffix: '곳을 찾아왔어요',
     emptyMessage: '주변에 등록된 수영장이 없어요',
     testId: 'nearby-panel',
     countTestId: 'nearby-count',
   },
   pools50m: {
     ariaLabel: '50m 레인',
-    title: '50m 레인',
+    title: '50m레인',
     countSuffix: '곳',
     emptyMessage: '등록된 50m 수영장이 없어요',
     testId: 'pools50m-panel',

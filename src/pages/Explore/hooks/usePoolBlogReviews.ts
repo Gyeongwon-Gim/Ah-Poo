@@ -10,7 +10,7 @@ import {
   BLOG_LOAD_MORE_STEP,
 } from '@/pages/Explore/components/PoolDetailSheet';
 
-export function usePoolBlogReviews(pool: Pool) {
+export const usePoolBlogReviews = (pool: Pool) => {
   const [blogReviews, setBlogReviews] = useState<PoolBlogReviewItem[]>([]);
   const [blogTotal, setBlogTotal] = useState(0);
   const [blogQuery, setBlogQuery] = useState('');
@@ -138,4 +138,4 @@ export function usePoolBlogReviews(pool: Pool) {
     retry,
     markThumbFailed,
   };
-}
+};

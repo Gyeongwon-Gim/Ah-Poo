@@ -293,10 +293,10 @@ function setLocation({
   });
 }
 
-function LocationProbe() {
+const LocationProbe = () => {
   const location = useLocation();
   return <div data-testid="location">{location.pathname}</div>;
-}
+};
 
 function renderHome(initialEntries: string[] = ['/']) {
   return render(
