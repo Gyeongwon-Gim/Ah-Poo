@@ -16,6 +16,17 @@ interface SearchBarProps {
   searchMode?: boolean;
 }
 
+const STATIC_INPUT_PROPS = {
+  type: 'search',
+  enterKeyHint: 'search',
+  autoComplete: 'off',
+  autoCorrect: 'off',
+  spellCheck: false,
+  placeholder: '어푸어푸! 수영하러 가볼까요?',
+  'aria-label': '수영장 검색',
+  wrapClassName: 'search-bar',
+} as const;
+
 const SearchBar = ({
   value = '',
   onValueChange,
@@ -49,8 +60,40 @@ const SearchBar = ({
     onClose?.();
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onValueChange?.(e.target.value);
+  };
+
+  const handleFocus = () => {
+    setIosKeyboardInputFocused(true);
+    onActivate?.();
+  };
+
+  const handleBlur = () => {
+    setIosKeyboardInputFocused(false);
+  };
+
   const isMapVariant = variant === 'map';
   const showLogo = isMapVariant && !searchMode;
+
+  const leading = searchMode ? (
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={handleBack}
+      aria-label="검색 닫기"
+    >
+      <ChevronLeft size={22} strokeWidth={2.5} />
+    </Button>
+  ) : (
+    <Search size={20} strokeWidth={2.5} aria-hidden />
+  );
+
+  const trailing = value ? (
+    <button type="button" onClick={handleClear} aria-label="검색어 지우기">
+      <X size={18} strokeWidth={2.5} />
+    </button>
+  ) : undefined;
 
   return (
     <div
@@ -60,48 +103,15 @@ const SearchBar = ({
       <form className="search-bar-container" onSubmit={handleSubmit}>
         <Input
           ref={inputRef}
-          type="search"
-          enterKeyHint="search"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
-          placeholder="어푸어푸! 수영하러 가볼까요?"
+          {...STATIC_INPUT_PROPS}
           value={value}
-          onChange={(e) => onValueChange?.(e.target.value)}
-          onFocus={() => {
-            setIosKeyboardInputFocused(true);
-            onActivate?.();
-          }}
-          onBlur={() => setIosKeyboardInputFocused(false)}
-          aria-label="수영장 검색"
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           variant={isMapVariant ? 'pill' : 'default'}
           bordered={searchMode}
-          wrapClassName="search-bar"
-          leading={
-            searchMode ? (
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleBack}
-                aria-label="검색 닫기"
-              >
-                <ChevronLeft size={22} strokeWidth={2.5} />
-              </Button>
-            ) : (
-              <Search size={20} strokeWidth={2.5} aria-hidden />
-            )
-          }
-          trailing={
-            value ? (
-              <button
-                type="button"
-                onClick={handleClear}
-                aria-label="검색어 지우기"
-              >
-                <X size={18} strokeWidth={2.5} />
-              </button>
-            ) : undefined
-          }
+          leading={leading}
+          trailing={trailing}
         />
       </form>
     </div>
