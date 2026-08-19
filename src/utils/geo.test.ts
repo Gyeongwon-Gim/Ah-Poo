@@ -50,7 +50,9 @@ describe('filterPoolsWithinKm', () => {
     expect(result.map((p) => p.name)).toEqual(['가까운풀', '중간풀', '먼풀']);
     result.forEach((p) => expect(typeof p.distanceKm).toBe('number'));
     for (let i = 1; i < result.length; i += 1) {
-      expect(result[i]!.distanceKm).toBeGreaterThanOrEqual(result[i - 1]!.distanceKm);
+      expect(result[i]!.distanceKm).toBeGreaterThanOrEqual(
+        result[i - 1]!.distanceKm,
+      );
     }
   });
 

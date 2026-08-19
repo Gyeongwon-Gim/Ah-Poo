@@ -5,12 +5,17 @@ function getPluginName(plugin: PluginOption): string | undefined {
   if (!plugin || typeof plugin !== 'object') return undefined;
   if (Array.isArray(plugin)) {
     const first = plugin[0];
-    return first && typeof first === 'object' && 'name' in first && typeof first.name === 'string'
+    return first &&
+      typeof first === 'object' &&
+      'name' in first &&
+      typeof first.name === 'string'
       ? first.name
       : undefined;
   }
   if ('then' in plugin) return undefined;
-  return 'name' in plugin && typeof plugin.name === 'string' ? plugin.name : undefined;
+  return 'name' in plugin && typeof plugin.name === 'string'
+    ? plugin.name
+    : undefined;
 }
 
 const config: StorybookConfig = {

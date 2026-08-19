@@ -14,9 +14,7 @@ const basePool = {
 
 describe('mapFit', () => {
   it('단일 풀은 level 5로 반환한다', () => {
-    const fit = computeSearchMapFit([
-      { ...basePool, lat: 35.87, lng: 128.6 },
-    ]);
+    const fit = computeSearchMapFit([{ ...basePool, lat: 35.87, lng: 128.6 }]);
     expect(fit).toEqual({ lat: 35.87, lng: 128.6, level: 5 });
   });
 

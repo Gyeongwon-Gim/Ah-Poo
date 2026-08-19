@@ -10,11 +10,7 @@ const GEO_STRATEGIES: PositionOptions[] = [
 ];
 
 export type LocationStatus =
-  | 'pending'
-  | 'ready'
-  | 'denied'
-  | 'unsupported'
-  | 'unavailable';
+  'pending' | 'ready' | 'denied' | 'unsupported' | 'unavailable';
 
 export interface GeoCoords {
   lat: number;
@@ -93,7 +89,8 @@ const requestLocation = async () => {
     throw err;
   }
 
-  let lastError: GeolocationPositionError | (Error & { code?: number }) | undefined;
+  let lastError:
+    GeolocationPositionError | (Error & { code?: number }) | undefined;
 
   for (const options of GEO_STRATEGIES) {
     try {

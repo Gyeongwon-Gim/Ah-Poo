@@ -183,7 +183,10 @@ export const useListSheet = ({
   const measureHandleStripH = () => {
     const handleH = handleRef.current?.offsetHeight ?? 4;
     return (
-      PEEK_BAR_PADDING_TOP + handleH + HANDLE_MARGIN_BOTTOM + COLLAPSED_SHELL_PAD
+      PEEK_BAR_PADDING_TOP +
+      handleH +
+      HANDLE_MARGIN_BOTTOM +
+      COLLAPSED_SHELL_PAD
     );
   };
 
@@ -484,7 +487,10 @@ export const useListSheet = ({
     );
     setTranslateY(next);
     setExpanded(next <= getExpandedY() + SNAP_EPSILON);
-    if (collapseToHandleRef.current && next < collapsedTopRef.current - SNAP_EPSILON) {
+    if (
+      collapseToHandleRef.current &&
+      next < collapsedTopRef.current - SNAP_EPSILON
+    ) {
       setCollapsed(false);
     }
 
@@ -549,7 +555,9 @@ export const useListSheet = ({
       } else {
         const points = [expandedY, peek, collapsedY];
         target = points.reduce((nearest, point) =>
-          Math.abs(current - point) < Math.abs(current - nearest) ? point : nearest,
+          Math.abs(current - point) < Math.abs(current - nearest)
+            ? point
+            : nearest,
         );
       }
 

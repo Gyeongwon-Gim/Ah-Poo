@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  computeFabPlacement,
-  FAB_GAP,
-  HALF_SCREEN_RATIO,
-} from './useFabLift';
+import { computeFabPlacement, FAB_GAP, HALF_SCREEN_RATIO } from './useFabLift';
 
 const VH = 800;
 const DEFAULT_BOTTOM = 16;

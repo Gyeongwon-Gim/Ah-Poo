@@ -33,9 +33,11 @@ describe('buildNaverDirectionsAndroidIntentUrl', () => {
     expect(url.startsWith('intent://search?')).toBe(true);
     expect(url).toContain('query=');
     expect(url).toContain('appname=');
-    expect(url.endsWith(
-      '#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;end',
-    )).toBe(true);
+    expect(
+      url.endsWith(
+        '#Intent;scheme=nmap;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.nhn.android.nmap;end',
+      ),
+    ).toBe(true);
   });
 });
 

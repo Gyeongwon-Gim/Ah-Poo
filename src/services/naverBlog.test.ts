@@ -24,9 +24,9 @@ function item(
 
 describe('naverBlog fetch errors', () => {
   it('Failed to fetch를 네트워크 안내 문구로 바꾼다', () => {
-    expect(
-      toBlogFetchErrorMessage(new TypeError('Failed to fetch')),
-    ).toBe('네트워크 연결을 확인한 뒤 다시 시도해 주세요.');
+    expect(toBlogFetchErrorMessage(new TypeError('Failed to fetch'))).toBe(
+      '네트워크 연결을 확인한 뒤 다시 시도해 주세요.',
+    );
   });
 
   it('Safari Load failed도 네트워크 오류로 본다', () => {
@@ -49,9 +49,7 @@ describe('naverBlog fetch errors', () => {
   });
 
   it('네이버 API 오류는 일시 장애 안내로 바꾼다', () => {
-    expect(
-      toBlogFetchErrorMessage(new Error('네이버 API 오류 (429)')),
-    ).toBe(
+    expect(toBlogFetchErrorMessage(new Error('네이버 API 오류 (429)'))).toBe(
       '블로그 검색 서비스에 일시적인 문제가 있어요. 잠시 후 다시 시도해 주세요.',
     );
   });
@@ -81,9 +79,15 @@ describe('filterRelevantBlogReviews', () => {
   it('pickBestBlogReview는 첫 번째 관련 글을 반환한다', () => {
     const items = [
       item({ title: '강남구민체육센터 후기', link: 'https://a.com/1' }),
-      item({ title: '다른 글', link: 'https://a.com/2', description: '강남구민체육센터' }),
+      item({
+        title: '다른 글',
+        link: 'https://a.com/2',
+        description: '강남구민체육센터',
+      }),
     ];
-    expect(pickBestBlogReview(items, pool)?.title).toContain('강남구민체육센터');
+    expect(pickBestBlogReview(items, pool)?.title).toContain(
+      '강남구민체육센터',
+    );
   });
 });
 

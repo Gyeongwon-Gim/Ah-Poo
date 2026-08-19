@@ -16,7 +16,9 @@ function buildSearchQuery(name: string): string {
 }
 
 /** 네이버 지도 앱 통합 검색 URL (nmap://) */
-export function buildNaverDirectionsAppUrl(dest: DirectionsDestination): string {
+export function buildNaverDirectionsAppUrl(
+  dest: DirectionsDestination,
+): string {
   return `nmap://search?${buildSearchQuery(dest.name)}`;
 }
 
@@ -28,7 +30,9 @@ export function buildNaverDirectionsAndroidIntentUrl(
 }
 
 /** 네이버 지도 웹 통합 검색 URL */
-export function buildNaverDirectionsWebUrl(dest: DirectionsDestination): string {
+export function buildNaverDirectionsWebUrl(
+  dest: DirectionsDestination,
+): string {
   return `https://map.naver.com/p/search/${encodeURIComponent(dest.name)}`;
 }
 

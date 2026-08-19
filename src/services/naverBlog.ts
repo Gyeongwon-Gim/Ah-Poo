@@ -27,15 +27,13 @@ export function buildBlogSearchQueryFallbacks(
   pool: Pick<Pool, 'name'>,
 ): string[] {
   const name = pool.name.trim();
-  return [
-    `"${name}" 자유수영`,
-    `"${name}"`,
-    `${name} 수영장`,
-  ];
+  return [`"${name}" 자유수영`, `"${name}"`, `${name} 수영장`];
 }
 
 /** YYYYMMDD → YYYY.MM.DD */
-export function formatPostDate(postDate: string | number | null | undefined): string {
+export function formatPostDate(
+  postDate: string | number | null | undefined,
+): string {
   const s = String(postDate ?? '');
   if (s.length !== 8 || !/^\d{8}$/.test(s)) return s;
   return `${s.slice(0, 4)}.${s.slice(4, 6)}.${s.slice(6, 8)}`;
@@ -54,15 +52,15 @@ function isLowQualityTitle(title: string | null | undefined): boolean {
   return /^[\d\s&+.,!?\-_/|\\]*$/.test(title);
 }
 
-function mentionsPool(text: string | null | undefined, variants: string[]): boolean {
+function mentionsPool(
+  text: string | null | undefined,
+  variants: string[],
+): boolean {
   if (!text) return false;
   return variants.some((name) => text.includes(name));
 }
 
-function blogReviewScore(
-  item: PoolBlogReviewItem,
-  variants: string[],
-): number {
+function blogReviewScore(item: PoolBlogReviewItem, variants: string[]): number {
   if (isLowQualityTitle(item.title)) return 0;
   const titleMention = mentionsPool(item.title, variants);
   const descMention = mentionsPool(item.description, variants);
@@ -85,10 +83,14 @@ export function filterRelevantBlogReviews(
     .map((item) => ({ item, score: blogReviewScore(item, variants) }))
     .sort((a, b) => b.score - a.score);
 
-  const relevant = scored.filter(({ score }) => score >= 40).map(({ item }) => item);
+  const relevant = scored
+    .filter(({ score }) => score >= 40)
+    .map(({ item }) => item);
   if (relevant.length) return relevant;
 
-  const withKoreanTitle = items.filter((item) => !isLowQualityTitle(item.title));
+  const withKoreanTitle = items.filter(
+    (item) => !isLowQualityTitle(item.title),
+  );
   if (withKoreanTitle.length) return withKoreanTitle;
 
   return items.slice(0, 10);
@@ -101,9 +103,7 @@ export function pickBestBlogReview(
 ): PoolBlogReviewItem | null {
   const filtered = filterRelevantBlogReviews(items, pool);
   if (!filtered.length) return null;
-  return (
-    filtered.find((item) => item.thumbnailUrl) ?? filtered[0] ?? null
-  );
+  return filtered.find((item) => item.thumbnailUrl) ?? filtered[0] ?? null;
 }
 
 const CLIENT_TIMEOUT_MS = 15000;
@@ -213,14 +213,14 @@ interface FetchPoolBlogReviewsOptions {
   signal?: AbortSignal;
 }
 
-async function fetchPoolBlogReviewsPageOnce(
-  {
-    query,
-    display = DEFAULT_DISPLAY,
-    start = 1,
-    signal,
-  }: FetchPoolBlogReviewsOptions & { query: string },
-): Promise<PoolBlogReviewsResult> {
+async function fetchPoolBlogReviewsPageOnce({
+  query,
+  display = DEFAULT_DISPLAY,
+  start = 1,
+  signal,
+}: FetchPoolBlogReviewsOptions & {
+  query: string;
+}): Promise<PoolBlogReviewsResult> {
   const params = new URLSearchParams({
     query,
     display: String(display),
@@ -280,16 +280,28 @@ async function fetchPoolBlogReviewsPage(
 
 export async function fetchPoolBlogReviews(
   pool: Pick<Pool, 'name'>,
-  { display = DEFAULT_DISPLAY, start = 1, signal }: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
+  {
+    display = DEFAULT_DISPLAY,
+    start = 1,
+    signal,
+  }: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
 ): Promise<PoolBlogReviewItem[]> {
-  const result = await fetchPoolBlogReviewsForPool(pool, { display, start, signal });
+  const result = await fetchPoolBlogReviewsForPool(pool, {
+    display,
+    start,
+    signal,
+  });
   return result.items;
 }
 
 /** fallback 검색어를 순차 시도해 첫 성공 결과 반환 */
 export async function fetchPoolBlogReviewsForPool(
   pool: Pick<Pool, 'name'>,
-  { display = DEFAULT_DISPLAY, start = 1, signal }: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
+  {
+    display = DEFAULT_DISPLAY,
+    start = 1,
+    signal,
+  }: Omit<FetchPoolBlogReviewsOptions, 'query'> = {},
 ): Promise<PoolBlogReviewsResult> {
   const queries = buildBlogSearchQueryFallbacks(pool);
   let lastResult: PoolBlogReviewsResult = {
@@ -300,7 +312,12 @@ export async function fetchPoolBlogReviewsForPool(
   };
 
   for (const query of queries) {
-    const result = await fetchPoolBlogReviewsPage({ query, display, start, signal });
+    const result = await fetchPoolBlogReviewsPage({
+      query,
+      display,
+      start,
+      signal,
+    });
     lastResult = result;
     if (result.items.length > 0) {
       const filtered = filterRelevantBlogReviews(result.items, pool);
@@ -324,7 +341,12 @@ export async function fetchMorePoolBlogReviews(
     signal,
   }: { query: string; start: number; display?: number; signal?: AbortSignal },
 ): Promise<PoolBlogReviewsResult> {
-  const result = await fetchPoolBlogReviewsPage({ query, display, start, signal });
+  const result = await fetchPoolBlogReviewsPage({
+    query,
+    display,
+    start,
+    signal,
+  });
   return {
     ...result,
     items: filterRelevantBlogReviews(result.items, pool),

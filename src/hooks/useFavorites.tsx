@@ -47,7 +47,9 @@ const readFavorites = (): Pool[] => {
     }
 
     const parsed: unknown = JSON.parse(raw);
-    cachedSnapshot = Array.isArray(parsed) ? (parsed as Pool[]) : EMPTY_FAVORITES;
+    cachedSnapshot = Array.isArray(parsed)
+      ? (parsed as Pool[])
+      : EMPTY_FAVORITES;
     return cachedSnapshot;
   } catch {
     cachedRaw = '';

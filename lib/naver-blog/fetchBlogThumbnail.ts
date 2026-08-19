@@ -1,5 +1,4 @@
-const OG_IMAGE_RE =
-  /property=["']og:image["'][^>]*content=["']([^"']+)["']/i;
+const OG_IMAGE_RE = /property=["']og:image["'][^>]*content=["']([^"']+)["']/i;
 const OG_IMAGE_RE_ALT =
   /content=["']([^"']+)["'][^>]*property=["']og:image["']/i;
 

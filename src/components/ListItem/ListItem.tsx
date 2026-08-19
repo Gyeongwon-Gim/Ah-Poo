@@ -14,7 +14,18 @@ export type ListItemProps = {
 } & Omit<ComponentPropsWithoutRef<'article'>, 'onSelect'>;
 
 const ListItemRoot = forwardRef<HTMLElement, ListItemProps>(
-  ({ selected = false, onSelect, className = '', children, onClick, onKeyDown, ...rest }, ref) => {
+  (
+    {
+      selected = false,
+      onSelect,
+      className = '',
+      children,
+      onClick,
+      onKeyDown,
+      ...rest
+    },
+    ref,
+  ) => {
     const handleClick: ComponentPropsWithoutRef<'article'>['onClick'] = (e) => {
       onClick?.(e);
       if (!e.defaultPrevented) onSelect?.();
@@ -32,7 +43,11 @@ const ListItemRoot = forwardRef<HTMLElement, ListItemProps>(
     return (
       <article
         ref={ref}
-        className={['list-item', selected ? 'list-item--selected' : '', className]
+        className={[
+          'list-item',
+          selected ? 'list-item--selected' : '',
+          className,
+        ]
           .filter(Boolean)
           .join(' ')}
         onClick={handleClick}
@@ -54,15 +69,24 @@ type ListItemSlotProps = ComponentPropsWithoutRef<'div'> & {
 };
 
 const ListItemMedia = ({ className = '', ...rest }: ListItemSlotProps) => (
-  <div className={['list-item__media', className].filter(Boolean).join(' ')} {...rest} />
+  <div
+    className={['list-item__media', className].filter(Boolean).join(' ')}
+    {...rest}
+  />
 );
 
 const ListItemBody = ({ className = '', ...rest }: ListItemSlotProps) => (
-  <div className={['list-item__body', className].filter(Boolean).join(' ')} {...rest} />
+  <div
+    className={['list-item__body', className].filter(Boolean).join(' ')}
+    {...rest}
+  />
 );
 
 const ListItemContent = ({ className = '', ...rest }: ListItemSlotProps) => (
-  <div className={['list-item__content', className].filter(Boolean).join(' ')} {...rest} />
+  <div
+    className={['list-item__content', className].filter(Boolean).join(' ')}
+    {...rest}
+  />
 );
 
 const ListItemTitleRow = ({ className = '', ...rest }: ListItemSlotProps) => (
@@ -76,14 +100,23 @@ const ListItemTitle = ({
   className = '',
   ...rest
 }: ComponentPropsWithoutRef<'h3'>) => (
-  <h3 className={['list-item__title', className].filter(Boolean).join(' ')} {...rest} />
+  <h3
+    className={['list-item__title', className].filter(Boolean).join(' ')}
+    {...rest}
+  />
 );
 
 const ListItemSubline = ({ className = '', ...rest }: ListItemSlotProps) => (
-  <p className={['list-item__subline', className].filter(Boolean).join(' ')} {...rest} />
+  <p
+    className={['list-item__subline', className].filter(Boolean).join(' ')}
+    {...rest}
+  />
 );
 
-const ListItemDescription = ({ className = '', ...rest }: ListItemSlotProps) => (
+const ListItemDescription = ({
+  className = '',
+  ...rest
+}: ListItemSlotProps) => (
   <p
     className={['list-item__description', className].filter(Boolean).join(' ')}
     {...rest}
@@ -91,7 +124,10 @@ const ListItemDescription = ({ className = '', ...rest }: ListItemSlotProps) => 
 );
 
 const ListItemTrailing = ({ className = '', ...rest }: ListItemSlotProps) => (
-  <div className={['list-item__trailing', className].filter(Boolean).join(' ')} {...rest} />
+  <div
+    className={['list-item__trailing', className].filter(Boolean).join(' ')}
+    {...rest}
+  />
 );
 
 const ListItem = Object.assign(ListItemRoot, {

@@ -1,5 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { isNaverBlogSearchError, searchNaverBlog } from '../lib/naver-blog/naverBlogSearch.js';
+import {
+  isNaverBlogSearchError,
+  searchNaverBlog,
+} from '../lib/naver-blog/naverBlogSearch.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
@@ -26,6 +29,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
     console.error('[naver-blog]', error);
-    return res.status(500).json({ error: '블로그 검색 중 오류가 발생했습니다.' });
+    return res
+      .status(500)
+      .json({ error: '블로그 검색 중 오류가 발생했습니다.' });
   }
 }

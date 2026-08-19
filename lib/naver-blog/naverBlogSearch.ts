@@ -1,9 +1,7 @@
 import { enrichBlogThumbnails } from './fetchBlogThumbnail.js';
 
 export type NaverBlogSearchErrorCode =
-  | 'INVALID_QUERY'
-  | 'MISSING_CREDENTIALS'
-  | 'NAVER_API_ERROR';
+  'INVALID_QUERY' | 'MISSING_CREDENTIALS' | 'NAVER_API_ERROR';
 
 export interface NaverBlogSearchError extends Error {
   code: NaverBlogSearchErrorCode;
@@ -55,7 +53,10 @@ export function stripHtml(text: string | null | undefined): string {
   return decodeNumericEntities(
     (text ?? '')
       .replace(/<[^>]+>/g, '')
-      .replace(/&(?:quot|amp|lt|gt|#39|nbsp);/g, (match) => HTML_ENTITY[match] ?? match),
+      .replace(
+        /&(?:quot|amp|lt|gt|#39|nbsp);/g,
+        (match) => HTML_ENTITY[match] ?? match,
+      ),
   ).trim();
 }
 

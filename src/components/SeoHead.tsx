@@ -33,9 +33,7 @@ export function buildPoolSportsActivityJsonLd(pool: Pool | null | undefined) {
           },
         }
       : {}),
-    ...(pool.phone
-      ? { telephone: pool.phone.replace(/\s/g, '') }
-      : {}),
+    ...(pool.phone ? { telephone: pool.phone.replace(/\s/g, '') } : {}),
     ...(pool.official_url ? { sameAs: pool.official_url } : {}),
   };
 }

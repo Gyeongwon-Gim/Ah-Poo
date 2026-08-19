@@ -10,9 +10,7 @@ let loadPromise: Promise<typeof window.kakao> | null = null;
 
 const rejectIfNoKakaoMaps = (reject: (reason?: unknown) => void) => {
   loadPromise = null;
-  reject(
-    new Error(`카카오맵 API를 초기화하지 못했습니다. ${MAP_SETUP_HINT}`),
-  );
+  reject(new Error(`카카오맵 API를 초기화하지 못했습니다. ${MAP_SETUP_HINT}`));
 };
 
 const loadKakaoSdk = (appKey: string) => {
@@ -53,8 +51,9 @@ const loadKakaoSdk = (appKey: string) => {
         return;
       }
 
-      const readyState = (existing as HTMLScriptElement & { readyState?: string })
-        .readyState;
+      const readyState = (
+        existing as HTMLScriptElement & { readyState?: string }
+      ).readyState;
       if (readyState === 'complete' || readyState === 'loaded') {
         finishLoad();
         return;
@@ -138,9 +137,7 @@ export const useKakaoMapLoader = () => {
       })
       .catch((err: unknown) => {
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : '카카오맵 로드 실패',
-          );
+          setError(err instanceof Error ? err.message : '카카오맵 로드 실패');
           setReady(false);
         }
       });

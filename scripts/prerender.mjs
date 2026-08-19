@@ -31,12 +31,18 @@ function contentType(filePath) {
 
 function createSpaServer() {
   return createServer((req, res) => {
-    const urlPath = decodeURIComponent(new URL(req.url, `http://127.0.0.1:${PORT}`).pathname);
+    const urlPath = decodeURIComponent(
+      new URL(req.url, `http://127.0.0.1:${PORT}`).pathname,
+    );
     let filePath = path.join(distDir, urlPath);
 
     if (urlPath.endsWith('/')) {
       filePath = path.join(filePath, 'index.html');
-    } else if (!path.extname(urlPath) && existsSync(filePath) && statSync(filePath).isDirectory()) {
+    } else if (
+      !path.extname(urlPath) &&
+      existsSync(filePath) &&
+      statSync(filePath).isDirectory()
+    ) {
       filePath = path.join(filePath, 'index.html');
     } else if (!path.extname(urlPath)) {
       const asFile = filePath;
@@ -114,10 +120,7 @@ async function main() {
     console.warn(
       `[prerender] limiting to ${routes.length}/${allRoutes.length} routes (PRERENDER_MAX_ROUTES)`,
     );
-  } else if (
-    process.env.PRERENDER_ALL !== 'true' &&
-    allRoutes.length > 50
-  ) {
+  } else if (process.env.PRERENDER_ALL !== 'true' && allRoutes.length > 50) {
     routes = ['/'];
     console.warn(
       `[prerender] ${allRoutes.length} routes — prerendering "/" only (set PRERENDER_ALL=true for all)`,

@@ -108,13 +108,21 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(
     },
     ref,
   ) => {
-    const { mapRef, map, ready, error: sdkError, relayout } = useKakaoMap({
+    const {
+      mapRef,
+      map,
+      ready,
+      error: sdkError,
+      relayout,
+    } = useKakaoMap({
       initialCenter: fitToUser && userLocation ? userLocation : DEFAULT_CENTER,
       initialLevel: fitToUser && userLocation ? USER_ZOOM_LEVEL : DEFAULT_LEVEL,
     });
 
     const markerStoreRef = useRef(new Map<string, MarkerEntry>());
-    const userLocationOverlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
+    const userLocationOverlayRef = useRef<kakao.maps.CustomOverlay | null>(
+      null,
+    );
     const onSelectPoolRef = useRef(onSelectPool);
     const syncedPoolsSignatureRef = useRef('');
     const fittedPoolsSignatureRef = useRef('');
@@ -284,7 +292,10 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(
 
     // 선택된 마커 하이라이트
     useEffect(() => {
-      for (const [key, { iconOverlay, iconEl, label, labelEl }] of markerStoreRef.current) {
+      for (const [
+        key,
+        { iconOverlay, iconEl, label, labelEl },
+      ] of markerStoreRef.current) {
         const isSelected = key === selectedKey;
         iconOverlay.setZIndex(isSelected ? 2 : 1);
         label?.setZIndex(isSelected ? 3 : 1);
@@ -325,7 +336,9 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(
 
       const bounds = new kakao.maps.LatLngBounds();
       if (fitToUser && userLocation && fitMode !== 'search') {
-        bounds.extend(new kakao.maps.LatLng(userLocation.lat, userLocation.lng));
+        bounds.extend(
+          new kakao.maps.LatLng(userLocation.lat, userLocation.lng),
+        );
       }
       pools.forEach((pool) => {
         bounds.extend(new kakao.maps.LatLng(pool.lat, pool.lng));
@@ -335,11 +348,26 @@ const PoolMap = forwardRef<PoolMapHandle, PoolMapProps>(
         map.panTo(new kakao.maps.LatLng(pools[0]!.lat, pools[0]!.lng));
         map.setLevel(5);
       } else {
-        map.setBounds(bounds, MAP_PADDING, MAP_PADDING, MAP_PADDING, MAP_PADDING);
+        map.setBounds(
+          bounds,
+          MAP_PADDING,
+          MAP_PADDING,
+          MAP_PADDING,
+          MAP_PADDING,
+        );
       }
 
       syncMarkerLabelVisibility(map, markerStoreRef.current);
-    }, [map, poolsSignature, pools, fitToUser, userLocation, fitMode, searchTerm, relayout]);
+    }, [
+      map,
+      poolsSignature,
+      pools,
+      fitToUser,
+      userLocation,
+      fitMode,
+      searchTerm,
+      relayout,
+    ]);
 
     // 선택된 수영장으로 부드럽게 이동
     useEffect(() => {

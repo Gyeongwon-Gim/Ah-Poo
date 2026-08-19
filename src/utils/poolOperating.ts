@@ -14,7 +14,10 @@ function parseMinutes(time: string): number | null {
  * `pool.operatingHours`(요일별 개장/마감 시간)가 있는 곳만 open/closed를 판정하고,
  * 데이터가 없는 수영장은 unknown.
  */
-export function getPoolOpenState(pool: Pool, now: Date = new Date()): PoolOpenState {
+export function getPoolOpenState(
+  pool: Pool,
+  now: Date = new Date(),
+): PoolOpenState {
   const hours = pool.operatingHours;
   if (!hours?.length) return 'unknown';
 

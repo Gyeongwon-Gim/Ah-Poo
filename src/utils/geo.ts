@@ -40,9 +40,7 @@ export function enrichWithDistance<T extends Pool>(
 
 /** distanceKm 오름차순 정렬 (원본 불변) */
 export function sortByDistanceAsc<T extends Pool>(pools: T[]): T[] {
-  return [...pools].sort(
-    (a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0),
-  );
+  return [...pools].sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0));
 }
 
 export function filterPoolsWithinKm<T extends Pool>(

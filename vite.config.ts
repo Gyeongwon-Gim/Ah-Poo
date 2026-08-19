@@ -20,7 +20,9 @@ export default defineConfig({
     },
   },
   plugins: [
-    react(),
+    react({
+      jsxImportSource: '@emotion/react',
+    }),
     naverBlogApiPlugin(),
     VitePWA({
       registerType: 'autoUpdate',

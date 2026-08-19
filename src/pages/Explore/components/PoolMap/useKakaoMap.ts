@@ -129,7 +129,11 @@ export const useKakaoMap = ({
       syncMapLayout(el, instance);
 
       tilesListener = () => {
-        kakao.maps.event.removeListener(instance, 'tilesloaded', tilesListener!);
+        kakao.maps.event.removeListener(
+          instance,
+          'tilesloaded',
+          tilesListener!,
+        );
         syncMapLayout(el, instance);
         refreshMapTiles(instance);
       };

@@ -1,0 +1,6 @@
+dist
+dist-ssr
+storybook-static
+node_modules
+.vercel
+package-lock.json

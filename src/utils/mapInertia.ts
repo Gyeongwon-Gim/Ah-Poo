@@ -21,11 +21,7 @@ export function attachMapInertia(
   const { kakao } = window;
   if (!kakao?.maps || !map) return () => {};
 
-  const {
-    friction = 0.94,
-    minSpeed = 2e-7,
-    maxStartSpeed = 0.02,
-  } = options;
+  const { friction = 0.94, minSpeed = 2e-7, maxStartSpeed = 0.02 } = options;
 
   let rafId: number | null = null;
   let dragging = false;

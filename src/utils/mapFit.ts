@@ -98,10 +98,7 @@ export function computeSearchMapFit(
 
   const center = weightedCentroid(pools, weights);
   const radiusKm = percentileRadiusKm(pools, center, 0.85);
-  const level = Math.min(
-    radiusKmToKakaoLevel(radiusKm),
-    SEARCH_FIT_MAX_LEVEL,
-  );
+  const level = Math.min(radiusKmToKakaoLevel(radiusKm), SEARCH_FIT_MAX_LEVEL);
 
   return { ...center, level };
 }

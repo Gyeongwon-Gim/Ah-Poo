@@ -40,7 +40,10 @@ const MapStatusMessage = ({
       )}
 
       {error && !loading && (
-        <div className="map-status-message map-status-message--error" role="alert">
+        <div
+          className="map-status-message map-status-message--error"
+          role="alert"
+        >
           <p>{error}</p>
           {!isSupabaseConfigured && (
             <p className="map-status-message__hint">

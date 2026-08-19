@@ -12,12 +12,7 @@ import type { GeoCoords, LocationStatus } from './useUserLocation';
 export type { PoolMapHandle };
 
 export type DetailOrigin =
-  | 'search'
-  | 'favorites'
-  | 'nearby'
-  | '50m'
-  | 'suggestion'
-  | 'map';
+  'search' | 'favorites' | 'nearby' | '50m' | 'suggestion' | 'map';
 
 interface OpenPoolDetailOptions {
   instant?: boolean;

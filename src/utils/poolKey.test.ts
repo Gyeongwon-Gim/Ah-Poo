@@ -14,7 +14,9 @@ const pool = {
 
 describe('getPoolListKey', () => {
   it('name|roadAddress|lat|lng 형식의 키를 만든다', () => {
-    expect(getPoolListKey(pool)).toBe('올림픽수영장|서울시 송파구|37.5215|127.1213');
+    expect(getPoolListKey(pool)).toBe(
+      '올림픽수영장|서울시 송파구|37.5215|127.1213',
+    );
   });
 
   it('좌표가 다르면 다른 키를 만든다', () => {
