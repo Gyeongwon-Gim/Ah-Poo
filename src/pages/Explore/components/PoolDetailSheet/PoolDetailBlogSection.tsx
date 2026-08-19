@@ -28,7 +28,6 @@ const PoolDetailBlogSection = ({
 }: PoolDetailBlogSectionProps) => {
   return (
     <section className="pool-sheet__blog" aria-live="polite">
-      <h3 className="pool-sheet__blog-title">블로그 리뷰</h3>
       {loading && (
         <p className="pool-sheet__blog-status">리뷰를 불러오는 중…</p>
       )}

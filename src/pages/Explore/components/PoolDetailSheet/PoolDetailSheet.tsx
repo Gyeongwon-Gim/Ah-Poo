@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type { MouseEvent, PointerEvent } from 'react';
 import BottomSheet from '@/components/BottomSheet';
 import { formatDistanceKmLabel } from '@/utils/formatDistance';
@@ -9,7 +10,8 @@ import { usePoolDetailSheetLayout } from './hooks/usePoolDetailSheetLayout';
 import type { Pool } from '@/types/pool';
 import PoolDetailToolbar from './PoolDetailToolbar';
 import PoolDetailContent from './PoolDetailContent';
-import PoolDetailBlogSection from './PoolDetailBlogSection';
+import PoolDetailReviewSection from './PoolDetailReviewSection';
+import { fetchPoolReviews } from '@/services/userReviews';
 import './PoolDetailSheet.css';
 
 interface PoolDetailSheetProps {
@@ -38,6 +40,16 @@ const PoolDetailSheet = ({
   const { poolImageUrl, poolImageFailed, markPoolImageFailed } =
     usePoolImageUrl(pool.id);
   const blog = usePoolBlogReviews(pool);
+
+  const [userReviewCount, setUserReviewCount] = useState(0);
+
+  useEffect(() => {
+    if (!pool.id) return;
+
+    fetchPoolReviews(pool.id, 0)
+      .then((response) => setUserReviewCount(response.totalCount))
+      .catch(() => setUserReviewCount(0));
+  }, [pool.id]);
 
   const sheet = usePoolDetailSheetLayout({
     pool,
@@ -141,9 +153,7 @@ const PoolDetailSheet = ({
       ref={sheet.sheetRef}
       variant="detail"
       as="div"
-      dragging={
-        sheet.dragging || sheet.expandDragging || sheet.headerDragging
-      }
+      dragging={sheet.dragging || sheet.expandDragging || sheet.headerDragging}
       className={sheetClassName}
       style={sheetStyle}
       onAnimationEnd={sheet.handleEnterEnd}
@@ -183,17 +193,19 @@ const PoolDetailSheet = ({
         >
           <div className="pool-sheet__body">
             <PoolDetailContent {...contentProps} />
-            <PoolDetailBlogSection
-              loading={blog.blogLoading}
-              error={blog.blogError}
+            <PoolDetailReviewSection
+              poolId={pool.id}
+              userReviewCount={userReviewCount}
+              blogLoading={blog.blogLoading}
+              blogError={blog.blogError}
               visibleReviews={blog.visibleReviews}
               totalReviews={blog.totalReviews}
               canLoadMore={blog.canLoadMore}
               loadMoreLoading={blog.blogLoadMoreLoading}
               thumbFailed={blog.blogThumbFailed}
-              onRetry={blog.retry}
-              onLoadMore={blog.loadMore}
-              onThumbError={blog.markThumbFailed}
+              onBlogRetry={blog.retry}
+              onBlogLoadMore={blog.loadMore}
+              onBlogThumbError={blog.markThumbFailed}
             />
           </div>
         </div>
