@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Explore from '@/pages/Explore/Explore';
 import PoolDetail from '@/pages/PoolDetail/PoolDetail';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { PoolFilterProvider } from '@/contexts/PoolFilterContext';
 import { FavoritesProvider } from '@/hooks/useFavorites';
 import './App.css';
@@ -8,18 +9,20 @@ import './App.css';
 const App = () => {
   return (
     <Router>
-      <FavoritesProvider>
-        <PoolFilterProvider>
-          <div className="app">
-            <div className="app__main">
-              <Routes>
-                <Route path="/" element={<Explore />} />
-                <Route path="/pool/:id" element={<PoolDetail />} />
-              </Routes>
+      <AuthProvider>
+        <FavoritesProvider>
+          <PoolFilterProvider>
+            <div className="app">
+              <div className="app__main">
+                <Routes>
+                  <Route path="/" element={<Explore />} />
+                  <Route path="/pool/:id" element={<PoolDetail />} />
+                </Routes>
+              </div>
             </div>
-          </div>
-        </PoolFilterProvider>
-      </FavoritesProvider>
+          </PoolFilterProvider>
+        </FavoritesProvider>
+      </AuthProvider>
     </Router>
   );
 };
