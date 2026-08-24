@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import type { MouseEvent, PointerEvent } from 'react';
 import BottomSheet from '@/components/BottomSheet';
 import { formatDistanceKmLabel } from '@/utils/formatDistance';
@@ -6,12 +5,12 @@ import { openNaverDirections } from '@/utils/naverDirectionsUrl';
 import { usePoolImageUrl } from '@/pages/Explore/hooks/usePoolImageUrl';
 import { useFavorites } from '@/hooks/useFavorites';
 import { usePoolBlogReviews } from '@/pages/Explore/hooks/usePoolBlogReviews';
+import { usePoolReviewCount } from '@/pages/Explore/hooks/usePoolReviewCount';
 import { usePoolDetailSheetLayout } from './hooks/usePoolDetailSheetLayout';
 import type { Pool } from '@/types/pool';
 import PoolDetailToolbar from './PoolDetailToolbar';
 import PoolDetailContent from './PoolDetailContent';
 import PoolDetailReviewSection from './PoolDetailReviewSection';
-import { fetchPoolReviews } from '@/services/userReviews';
 import './PoolDetailSheet.css';
 
 interface PoolDetailSheetProps {
@@ -40,16 +39,7 @@ const PoolDetailSheet = ({
   const { poolImageUrl, poolImageFailed, markPoolImageFailed } =
     usePoolImageUrl(pool.id);
   const blog = usePoolBlogReviews(pool);
-
-  const [userReviewCount, setUserReviewCount] = useState(0);
-
-  useEffect(() => {
-    if (!pool.id) return;
-
-    fetchPoolReviews(pool.id, 0)
-      .then((response) => setUserReviewCount(response.totalCount))
-      .catch(() => setUserReviewCount(0));
-  }, [pool.id]);
+  const userReviewCount = usePoolReviewCount(pool.id);
 
   const sheet = usePoolDetailSheetLayout({
     pool,

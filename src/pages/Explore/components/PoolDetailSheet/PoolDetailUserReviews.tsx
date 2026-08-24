@@ -1,10 +1,23 @@
 import { useState, useCallback } from 'react';
-import styled from '@emotion/styled';
 import { useAuth } from '@/contexts/AuthContext';
-import { LoginModal } from '@/components';
+import { ConfirmDialog, LoginModal } from '@/components';
 import { usePoolUserReviews } from '@/pages/Explore/hooks/usePoolUserReviews';
 import ReviewForm from './ReviewForm';
 import ReviewCard from './ReviewCard';
+import {
+  StyledContainer,
+  StyledStatus,
+  StyledError,
+  StyledEmptyPrompt,
+  StyledEmptyTitle,
+  StyledEmptyText,
+  StyledWriteButton,
+  StyledWriteButtonSmall,
+  StyledMyReviewSection,
+  StyledReviewList,
+  StyledSectionTitle,
+  StyledLoadMoreButton,
+} from './PoolDetailUserReviews.styles';
 
 interface PoolDetailUserReviewsProps {
   poolId: string | undefined;
@@ -131,25 +144,14 @@ const PoolDetailUserReviews = ({ poolId }: PoolDetailUserReviewsProps) => {
         </StyledMyReviewSection>
       )}
 
-      {showDeleteConfirm && (
-        <StyledConfirmOverlay onClick={handleCancelDelete}>
-          <StyledConfirmDialog onClick={(e) => e.stopPropagation()}>
-            <StyledConfirmText>리뷰를 삭제하시겠습니까?</StyledConfirmText>
-            <StyledConfirmButtons>
-              <StyledConfirmButton type="button" onClick={handleCancelDelete}>
-                취소
-              </StyledConfirmButton>
-              <StyledConfirmButton
-                type="button"
-                $danger
-                onClick={handleConfirmDelete}
-              >
-                삭제
-              </StyledConfirmButton>
-            </StyledConfirmButtons>
-          </StyledConfirmDialog>
-        </StyledConfirmOverlay>
-      )}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        message="리뷰를 삭제하시겠습니까?"
+        confirmLabel="삭제"
+        danger
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
 
       {reviews.length > 0 && (
         <StyledReviewList>
@@ -188,171 +190,3 @@ const PoolDetailUserReviews = ({ poolId }: PoolDetailUserReviewsProps) => {
 };
 
 export default PoolDetailUserReviews;
-
-const StyledContainer = styled.section`
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-6);
-  padding: var(--ap-space-5) var(--ap-space-6);
-`;
-
-const StyledStatus = styled.p`
-  padding: var(--ap-space-8);
-  text-align: center;
-  font-size: var(--ap-font-body);
-  color: var(--ap-text-muted);
-`;
-
-const StyledError = styled.p`
-  padding: var(--ap-space-5);
-  margin: var(--ap-space-5) var(--ap-space-6);
-  background: var(--ap-error-bg);
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body);
-  color: var(--ap-error);
-  text-align: center;
-`;
-
-const StyledEmptyPrompt = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ap-space-4);
-  padding: var(--ap-space-10) var(--ap-space-6);
-`;
-
-const StyledEmptyTitle = styled.h3`
-  margin: 0;
-  font-size: var(--ap-font-title);
-  font-weight: var(--ap-font-weight-semibold);
-  color: var(--ap-text);
-`;
-
-const StyledEmptyText = styled.p`
-  margin: 0;
-  font-size: var(--ap-font-body);
-  color: var(--ap-text-muted);
-`;
-
-const StyledWriteButton = styled.button`
-  margin-top: var(--ap-space-3);
-  padding: var(--ap-space-4) var(--ap-space-8);
-  background: var(--ap-primary);
-  border: none;
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body);
-  font-weight: var(--ap-font-weight-medium);
-  color: white;
-  cursor: pointer;
-  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover {
-    background: var(--ap-primary-dark);
-  }
-`;
-
-const StyledWriteButtonSmall = styled.button`
-  padding: var(--ap-space-4);
-  background: var(--ap-primary);
-  border: none;
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body-sm);
-  font-weight: var(--ap-font-weight-medium);
-  color: white;
-  cursor: pointer;
-  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover {
-    background: var(--ap-primary-dark);
-  }
-`;
-
-const StyledMyReviewSection = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const StyledReviewList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-4);
-`;
-
-const StyledSectionTitle = styled.h4`
-  margin: 0;
-  font-size: var(--ap-font-body-sm);
-  font-weight: var(--ap-font-weight-semibold);
-  color: var(--ap-text);
-`;
-
-const StyledLoadMoreButton = styled.button`
-  padding: var(--ap-space-4);
-  background: var(--ap-surface);
-  border: 1px solid var(--ap-border-neutral);
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body-sm);
-  color: var(--ap-text-muted);
-  cursor: pointer;
-  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover:not(:disabled) {
-    background: var(--ap-neutral-50);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const StyledConfirmOverlay = styled.div`
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--ap-overlay);
-  z-index: 1000;
-`;
-
-const StyledConfirmDialog = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-6);
-  width: 280px;
-  padding: var(--ap-space-6);
-  background: var(--ap-surface);
-  border-radius: var(--ap-radius);
-  box-shadow: var(--ap-shadow-sheet);
-`;
-
-const StyledConfirmText = styled.p`
-  margin: 0;
-  font-size: var(--ap-font-body);
-  color: var(--ap-text);
-  text-align: center;
-`;
-
-const StyledConfirmButtons = styled.div`
-  display: flex;
-  gap: var(--ap-space-3);
-`;
-
-const StyledConfirmButton = styled.button<{ $danger?: boolean }>`
-  flex: 1;
-  padding: var(--ap-space-4);
-  background: ${({ $danger }) =>
-    $danger ? 'var(--ap-error)' : 'var(--ap-neutral-100)'};
-  border: none;
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body);
-  font-weight: var(--ap-font-weight-medium);
-  color: ${({ $danger }) => ($danger ? 'white' : 'var(--ap-text)')};
-  cursor: pointer;
-  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover {
-    background: ${({ $danger }) =>
-      $danger ? 'var(--ap-error-dark)' : 'var(--ap-neutral-200)'};
-  }
-`;

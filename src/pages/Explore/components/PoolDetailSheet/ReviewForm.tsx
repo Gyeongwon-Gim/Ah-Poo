@@ -1,8 +1,19 @@
 import { useState, useCallback, useEffect } from 'react';
-import styled from '@emotion/styled';
 import { StarRating, ImageUpload } from '@/components';
 import type { ImageFile } from '@/components/ImageUpload/ImageUpload';
 import type { UserReview } from '@/types/review';
+import {
+  StyledForm,
+  StyledSection,
+  StyledLabelRow,
+  StyledLabel,
+  StyledCharCount,
+  StyledTextarea,
+  StyledError,
+  StyledButtonRow,
+  StyledSubmitButton,
+  StyledCancelButton,
+} from './ReviewForm.styles';
 
 interface ReviewFormProps {
   existingReview?: UserReview | null;
@@ -137,120 +148,3 @@ const ReviewForm = ({
 };
 
 export default ReviewForm;
-
-const StyledForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-6);
-  padding: var(--ap-space-5);
-  background: var(--ap-neutral-50);
-  border-radius: var(--ap-radius-md);
-`;
-
-const StyledSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-3);
-`;
-
-const StyledLabelRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const StyledLabel = styled.label`
-  font-size: var(--ap-font-body-sm);
-  font-weight: var(--ap-font-weight-medium);
-  color: var(--ap-text);
-`;
-
-const StyledCharCount = styled.span<{ $warning: boolean }>`
-  font-size: var(--ap-font-caption);
-  color: ${({ $warning }) =>
-    $warning ? 'var(--ap-error)' : 'var(--ap-text-muted)'};
-`;
-
-const StyledTextarea = styled.textarea`
-  width: 100%;
-  padding: var(--ap-space-4);
-  background: var(--ap-surface);
-  border: 1px solid var(--ap-border-neutral);
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body);
-  line-height: 1.5;
-  color: var(--ap-text);
-  resize: vertical;
-  min-height: 100px;
-
-  &::placeholder {
-    color: var(--ap-text-muted);
-  }
-
-  &:focus {
-    outline: none;
-    border-color: var(--ap-primary);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
-
-const StyledError = styled.p`
-  margin: 0;
-  padding: var(--ap-space-3);
-  background: var(--ap-error-bg);
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body-sm);
-  color: var(--ap-error);
-`;
-
-const StyledButtonRow = styled.div`
-  display: flex;
-  gap: var(--ap-space-3);
-`;
-
-const StyledSubmitButton = styled.button`
-  flex: 1;
-  padding: var(--ap-space-4);
-  background: var(--ap-primary);
-  border: none;
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body);
-  font-weight: var(--ap-font-weight-medium);
-  color: white;
-  cursor: pointer;
-  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover:not(:disabled) {
-    background: var(--ap-primary-dark);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-
-const StyledCancelButton = styled.button`
-  padding: var(--ap-space-4) var(--ap-space-6);
-  background: var(--ap-surface);
-  border: 1px solid var(--ap-border-neutral);
-  border-radius: var(--ap-radius-sm);
-  font-size: var(--ap-font-body);
-  color: var(--ap-text-muted);
-  cursor: pointer;
-  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover:not(:disabled) {
-    background: var(--ap-neutral-100);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`;
-

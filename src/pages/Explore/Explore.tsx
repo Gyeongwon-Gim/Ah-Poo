@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LocateFixed, Star } from 'lucide-react';
 import SearchBar from '@/pages/Explore/components/SearchBar';
@@ -22,31 +22,11 @@ import { useMapPools } from '@/pages/Explore/hooks/useMapPools';
 import { useExploreInteractions } from '@/pages/Explore/hooks/useExploreInteractions';
 import { useFabLift } from '@/pages/Explore/hooks/useFabLift';
 import { usePanelSheet } from '@/pages/Explore/hooks/usePanelSheet';
-import { getLayoutHeight } from '@/utils/appViewport';
+import { useOpenPill } from '@/pages/Explore/hooks/useOpenPill';
 import SeoHead, { buildExploreJsonLd } from '@/components/SeoHead';
 import './Explore.css';
 
 const EXPLORE_TITLE = '어푸! | 전국 일일입장·자유수영 수영장 찾기';
-
-const SEARCH_OPEN_PILL_GAP = 10;
-
-function computeOpenPillStyle(sheetTop: number): CSSProperties {
-  return {
-    bottom: Math.max(16, getLayoutHeight() - sheetTop + SEARCH_OPEN_PILL_GAP),
-  };
-}
-
-type PanelSheet = ReturnType<typeof usePanelSheet>;
-
-/** 패널이 접힌 채 열려 있을 때 뜨는 "목록 열기" 핀 하나의 표시 여부·위치. */
-const useOpenPill = (active: boolean, sheet: PanelSheet) => {
-  const show = active && sheet.collapsed;
-  const style = useMemo((): CSSProperties | undefined => {
-    if (!show || !Number.isFinite(sheet.sheetTop)) return undefined;
-    return computeOpenPillStyle(sheet.sheetTop);
-  }, [show, sheet.sheetTop]);
-  return { show, style };
-};
 
 const Explore = () => {
   const location = useLocation();
@@ -241,7 +221,18 @@ const Explore = () => {
 
   return (
     <div
-      className={`explore explore--map app-route ${showSearchPanel ? 'explore--searching' : ''} ${searchActive ? 'explore--suggesting' : ''} ${showFavoritesPanel ? 'explore--favorites' : ''} ${showNearbyPanel ? 'explore--nearby' : ''} ${show50mPanel ? 'explore--50m' : ''}`}
+      className={[
+        'explore',
+        'explore--map',
+        'app-route',
+        showSearchPanel && 'explore--searching',
+        searchActive && 'explore--suggesting',
+        showFavoritesPanel && 'explore--favorites',
+        showNearbyPanel && 'explore--nearby',
+        show50mPanel && 'explore--50m',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       <SeoHead title={EXPLORE_TITLE} path="/" jsonLd={buildExploreJsonLd()} />
       <PoolMap
@@ -258,7 +249,13 @@ const Explore = () => {
 
       {!searchActive && !loading && !error && (
         <div
-          className={`explore-map-actions${fabInteractive ? '' : ' explore-map-actions--inert'}${sheetDragging ? ' explore-map-actions--dragging' : ''}`}
+          className={[
+            'explore-map-actions',
+            !fabInteractive && 'explore-map-actions--inert',
+            sheetDragging && 'explore-map-actions--dragging',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           style={
             {
               ...fabStyle,
