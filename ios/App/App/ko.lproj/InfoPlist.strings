@@ -1,0 +1,4 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleDisplayName = "어푸!";
+NSLocationWhenInUseUsageDescription = "내 주변 수영장을 찾기 위해 위치 정보를 사용합니다.";

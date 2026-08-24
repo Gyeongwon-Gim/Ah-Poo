@@ -18,9 +18,13 @@
     "build-storybook": "storybook build",
     "vercel": "vercel",
     "deploy": "vercel --prod",
-    "deploy:preview": "vercel"
+    "deploy:preview": "vercel",
+    "cap:sync": "vite build && cap sync ios",
+    "ios": "cap open ios"
   },
   "dependencies": {
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@supabase/supabase-js": "^2.106.0",
@@ -34,6 +38,7 @@
     "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "@chromatic-com/storybook": "^5.2.1",
     "@prerenderer/renderer-puppeteer": "^1.2.4",
     "@storybook/addon-a11y": "^10.4.6",
