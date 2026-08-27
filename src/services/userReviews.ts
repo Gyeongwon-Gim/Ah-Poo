@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase, assertSupabaseConfigured } from '@/lib/supabase';
 import type {
   UserReview,
   ReviewImage,
@@ -48,13 +48,6 @@ const mapRowToUserReview = (row: ReviewRow): UserReview => ({
   updated_at: row.updated_at,
   images: row.review_images?.map(mapImageRowToReviewImage),
 });
-
-const assertSupabaseConfigured = () => {
-  if (!isSupabaseConfigured || !supabase) {
-    throw new Error('Supabase 환경 변수가 설정되지 않았습니다.');
-  }
-  return supabase;
-};
 
 export const fetchPoolReviews = async (
   poolId: string,
