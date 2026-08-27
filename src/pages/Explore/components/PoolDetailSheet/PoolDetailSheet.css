@@ -22,14 +22,19 @@
 }
 
 .bottom-sheet--detail.pool-sheet--fullscreen {
-  top: 0;
+  /* top:0 + bottom:0으로 늘어나게 하면(예전 방식), 브라우저가 fixed 요소의 stretch
+     높이를 자체적으로 계산하는데, 이게 --expand-h가 쓰는 --screen-h 값과 완전히
+     같다는 보장이 없다(모바일에서 동적 툴바/safe-area 처리 방식이 top/bottom stretch와
+     dvh 계산에서 미묘하게 다를 수 있음). .pool-sheet--expanding이 height: var(--expand-h)
+     로 다 키워놓은 상태에서 이 클래스로 스왑되는 순간, 높이 계산 "방식" 자체가 바뀌면서
+     한 프레임 만에 값이 재조정되어 튀어 보인다. bottom:0 + 명시적 height로 통일해서
+     expanding → fullscreen 전환 내내 같은 계산식(--screen-h)을 쓰게 만든다. */
   bottom: 0;
   left: 50%;
   right: auto;
   width: min(100%, var(--mobile-width));
   max-width: var(--mobile-width);
-  height: auto;
-  min-height: var(--screen-h, 100dvh);
+  height: var(--screen-h, 100dvh);
   max-height: none;
   border-radius: 0;
   box-shadow: none;
@@ -37,6 +42,10 @@
   flex-direction: column;
   transform: translateX(-50%);
   transform-origin: center center;
+  /* .pool-sheet--expanding은 .bottom-sheet의 box-shadow를 그대로 물려받아 펼쳐지는
+     내내 그림자가 있는데, 여기서 box-shadow: none으로 끊어버리면서 둘 다 transition이
+     없어 전체화면 전환 완료 순간 그림자가 한 프레임에 툭 사라져 보인다. */
+  transition: box-shadow var(--ap-duration-sheet) var(--ap-ease-sheet);
 }
 
 .bottom-sheet--detail.pool-sheet--expanding {
@@ -54,7 +63,14 @@
 .bottom-sheet--detail:not(.pool-sheet--fullscreen):not(
     .pool-sheet--expanding
   ):not(.pool-sheet--entering) {
-  max-height: var(--peek-h);
+  /* max-height + height:auto(기본값)로 콘텐츠에 맞춰 줄어드는 방식이었는데, 이게
+     .pool-sheet--expanding의 height: var(--expand-h)(명시적 높이)와 계산 방식이 달라서
+     취소(cancelExpand) 트랜지션이 --expand-h를 peekH까지 다 내린 뒤 이 클래스로 스왑되는
+     순간, "콘텐츠 실제 높이"와 "peekH"가 정확히 안 맞으면(리뷰가 적은 수영장 등) 한 프레임
+     더 튀어 보였다. peekH는 애초에 measurePeekHeight()가 재는 고정 타겟값이라
+     콘텐츠에 맞춰 줄어들 필요가 없으므로, height를 명시값으로 고정해 전환 내내 같은
+     계산식(--peek-h)을 쓰게 만든다. */
+  height: var(--peek-h);
   overflow: hidden;
 }
 
@@ -397,12 +413,6 @@
 }
 
 /* ---- 블로그 리뷰 ---- */
-.pool-sheet__blog {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--ap-border);
-}
-
 .pool-sheet__blog-title {
   margin: 0 0 10px;
   font-size: 14px;
@@ -455,10 +465,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   width: 100%;
   margin-top: 12px;
   padding: 10px 14px;
-  border: 1px solid var(--ap-border);
+  border: none;
   border-radius: 10px;
   background: var(--ap-surface);
   color: var(--ap-text);
@@ -466,6 +477,7 @@
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--ap-duration-fast) var(--ap-ease-out);
 }
 
 .pool-sheet__blog-more:disabled {
@@ -494,6 +506,20 @@
   background: var(--ap-surface);
   text-decoration: none;
   color: inherit;
+  /* "더보기"로 새로 추가되는 카드가 툭 튀어나오지 않고 부드럽게 나타나게 한다.
+     기존 카드는 key가 유지되어 리마운트되지 않으므로 재생되지 않는다. */
+  animation: pool-sheet-blog-card-enter var(--ap-duration-normal) var(--ap-ease-out);
+}
+
+@keyframes pool-sheet-blog-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .pool-sheet__blog-thumb {
@@ -555,5 +581,13 @@
 
   .bottom-sheet--detail.pool-sheet--expanding {
     transition: none;
+  }
+
+  .bottom-sheet--detail.pool-sheet--fullscreen {
+    transition: none;
+  }
+
+  .pool-sheet__blog-card {
+    animation: none;
   }
 }

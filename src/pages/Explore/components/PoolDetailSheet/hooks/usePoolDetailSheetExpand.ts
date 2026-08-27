@@ -49,6 +49,11 @@ export interface UsePoolDetailSheetExpandParams {
   expandState: PoolDetailExpandState;
 }
 
+// TEMP DEBUG: 풀스크린 전환 버그 추적용. 콘솔에서 "[EXPAND-DEBUG]"로 필터링해서 보세요.
+const dlog = (...args: unknown[]) => {
+  console.log(`[EXPAND-DEBUG] t=${performance.now().toFixed(1)}ms`, ...args);
+};
+
 export const usePoolDetailSheetExpand = ({
   sheetRef,
   peekRef,
@@ -79,6 +84,9 @@ export const usePoolDetailSheetExpand = ({
   const peekBodyGestureRef = useRef<PeekBodyGesture | null>(null);
 
   const commitFullscreen = useCallback(() => {
+    dlog('commitFullscreen() 호출됨', {
+      alreadyFullscreen: isFullscreenRef.current,
+    });
     if (isFullscreenRef.current) return;
 
     isFullscreenRef.current = true;
@@ -95,9 +103,19 @@ export const usePoolDetailSheetExpand = ({
     setTranslate(0);
 
     const el = sheetRef.current;
-    clearExpandStyles(el);
+    // --expand-h를 여기서 바로 지우면(clearExpandStyles), 아직 리액트 커밋 전이라 DOM에는
+    // .pool-sheet--expanding 클래스(height: var(--expand-h))가 그대로 남아있는 채로 --expand-h만
+    // 사라진다. 이 사이에 화면이 한 프레임이라도 그려지면 var()가 무효화되어 height가 엉뚱한
+    // 값(기본 시트 높이)으로 튀었다가, 클래스 교체가 커밋되는 다음 프레임에 다시 정상으로 돌아오는
+    // "튀었다 돌아오는" 현상이 생긴다. 그래서 지우는 대신 최종값(screenH)으로 먼저 맞춰두고,
+    // 실제 제거는 클래스 교체가 반영된 다음 프레임으로 미룬다.
+    el?.style.setProperty('--expand-h', `${screenH}px`);
     el?.style.setProperty('--peek-h', `${screenH}px`);
     applyFullscreenTransform(el);
+    requestAnimationFrame(() => {
+      dlog('commitFullscreen() 후처리: clearExpandStyles 지연 실행');
+      clearExpandStyles(el);
+    });
   }, [
     applyFullscreenTransform,
     clearExpandStyles,
@@ -145,6 +163,7 @@ export const usePoolDetailSheetExpand = ({
   );
 
   const cancelExpand = useCallback(() => {
+    dlog('cancelExpand() 호출됨', { expandPhase: expandPhaseRef.current });
     if (expandPhaseRef.current === 'idle') return;
 
     const reducedMotion = window.matchMedia(
@@ -166,6 +185,12 @@ export const usePoolDetailSheetExpand = ({
     expandPhaseRef.current = 'animating';
     setExpandPhase('animating');
     setExpandDragging(false);
+    // finishExpandDrag와 같은 이유로, transition: none을 거는 클래스를 먼저 직접 떼어낸다.
+    // 클래스 제거와 값 변경을 리플로우 없이 같은 틱에 연달아 하면 사파리는 둘을 하나로
+    // 묶어버려 트랜지션 자체를 건너뛴다 — offsetHeight를 읽어 강제로 리플로우시켜
+    // "트랜지션 켜짐" 상태를 먼저 커밋시킨 뒤에 값을 바꾼다.
+    el?.classList.remove('pool-sheet--expand-dragging');
+    void el?.offsetHeight;
     el?.style.setProperty('--expand-h', `${peekH}px`);
     el?.style.removeProperty('border-radius');
   }, [
@@ -178,6 +203,10 @@ export const usePoolDetailSheetExpand = ({
   ]);
 
   const beginExpandAnimation = useCallback(() => {
+    dlog('beginExpandAnimation() 호출됨(탭)', {
+      isFullscreen: isFullscreenRef.current,
+      expandPhase: expandPhaseRef.current,
+    });
     if (isFullscreenRef.current || expandPhaseRef.current !== 'idle') return;
 
     const reducedMotion = window.matchMedia(
@@ -219,6 +248,10 @@ export const usePoolDetailSheetExpand = ({
 
   const finishExpandDrag = useCallback(
     (progress: number) => {
+      dlog('finishExpandDrag() 호출됨', {
+        progress,
+        threshold: EXPAND_COMMIT_THRESHOLD,
+      });
       if (progress >= EXPAND_COMMIT_THRESHOLD) {
         if (progress >= 1) {
           commitFullscreen();
@@ -229,8 +262,17 @@ export const usePoolDetailSheetExpand = ({
         setExpandPhase('animating');
         setExpandDragging(false);
         expandProgressRef.current = 1;
-        sheetRef.current?.style.setProperty('--expand-h', `${screenH}px`);
-        sheetRef.current?.style.setProperty('border-radius', '0');
+        const el = sheetRef.current;
+        // setExpandDragging(false)는 리액트 상태라 다음 렌더까지 pool-sheet--expand-dragging
+        // 클래스(transition: none)가 DOM에 그대로 남아있다. 그 상태에서 --expand-h를 목표값으로
+        // 바로 바꾸면 트랜지션 없이 즉시 스냅되어 버리므로, 클래스를 먼저 직접 떼어낸다.
+        // 클래스 제거와 값 변경을 리플로우 없이 같은 틱에 연달아 하면(특히 사파리에서) 브라우저가
+        // 둘을 하나로 묶어버려 트랜지션 자체를 건너뛴다 — offsetHeight를 읽어 강제로 리플로우시켜
+        // "트랜지션 켜짐" 상태를 먼저 커밋시킨 뒤에 값을 바꾼다.
+        el?.classList.remove('pool-sheet--expand-dragging');
+        void el?.offsetHeight;
+        el?.style.setProperty('--expand-h', `${screenH}px`);
+        el?.style.setProperty('border-radius', '0');
         return;
       }
       cancelExpand();
@@ -269,6 +311,10 @@ export const usePoolDetailSheetExpand = ({
     (e: ReactTransitionEvent) => {
       if (e.target !== sheetRef.current) return;
       if (e.propertyName !== 'height') return;
+      dlog('handleExpandTransitionEnd (height 트랜지션 종료)', {
+        expandPhase: expandPhaseRef.current,
+        expandProgress: expandProgressRef.current,
+      });
       if (expandPhaseRef.current !== 'animating') return;
 
       if (expandProgressRef.current >= 1) {
@@ -279,7 +325,14 @@ export const usePoolDetailSheetExpand = ({
       if (expandProgressRef.current <= 0) {
         expandPhaseRef.current = 'idle';
         setExpandPhase('idle');
-        clearExpandStyles(sheetRef.current);
+        // commitFullscreen()과 같은 이유: --expand-h를 여기서 바로 지우면 아직 리액트가
+        // .pool-sheet--expanding 클래스를 못 뗀 채로 var()가 무효화되어 height가 순간
+        // 튀어보일 수 있다. 클래스 제거가 커밋된 다음 프레임으로 정리를 미룬다.
+        const el = sheetRef.current;
+        requestAnimationFrame(() => {
+          dlog('cancelExpand 완료 후처리: clearExpandStyles 지연 실행');
+          clearExpandStyles(el);
+        });
       }
     },
     [
@@ -306,6 +359,13 @@ export const usePoolDetailSheetExpand = ({
     setHeaderDragging(false);
     onDragChange?.(false);
     const visible = sheetH - translateRef.current;
+    dlog('finishHeaderDismissDrag()', {
+      visible,
+      closeThreshold: SHEET_CLOSE_THRESHOLD,
+      isFullscreen: isFullscreenRef.current,
+      sheetH,
+      translate: translateRef.current,
+    });
     if (visible < SHEET_CLOSE_THRESHOLD) {
       handleCloseRef.current();
       return;
@@ -313,6 +373,7 @@ export const usePoolDetailSheetExpand = ({
     snapToPeekWithTransitionRef.current();
   }, [
     handleCloseRef,
+    isFullscreenRef,
     onDragChange,
     setHeaderDragging,
     sheetH,
@@ -347,6 +408,7 @@ export const usePoolDetailSheetExpand = ({
       if (Math.abs(deltaY) < GESTURE_LOCK_PX) return;
 
       if (deltaY < 0) {
+        dlog('header 제스처 모드 확정: expand', { deltaY });
         gesture.mode = 'expand';
         expandStartHRef.current = peekRef.current;
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -356,6 +418,7 @@ export const usePoolDetailSheetExpand = ({
         return;
       }
 
+      dlog('header 제스처 모드 확정: dismiss', { deltaY });
       gesture.mode = 'dismiss';
       gesture.dismissStartTranslate = translateRef.current;
       setHeaderDragging(true);
@@ -385,6 +448,10 @@ export const usePoolDetailSheetExpand = ({
       return;
     }
 
+    dlog('onHeaderPointerUp', {
+      mode: gesture.mode,
+      expandProgress: expandProgressRef.current,
+    });
     if (gesture.mode === 'expand') {
       e.currentTarget.releasePointerCapture?.(e.pointerId);
       finishExpandDrag(expandProgressRef.current);
@@ -407,6 +474,13 @@ export const usePoolDetailSheetExpand = ({
     const gesture = headerGestureRef.current;
     if (!gesture || gesture.pointerId !== e.pointerId) return;
 
+    // iOS 사파리는 네이티브 스크롤/제스처로 판단되면 우리 JS 트래킹 도중에도
+    // 강제로 pointercancel을 쏠 수 있다 — onHeaderPointerUp과 다른 시점에
+    // 다른 상태값으로 마무리될 수 있어 원인일 가능성이 있는 지점.
+    dlog('onHeaderPointerCancel (사파리가 강제 취소했을 수 있음)', {
+      mode: gesture.mode,
+      expandProgress: expandProgressRef.current,
+    });
     if (gesture.mode === 'expand') {
       finishExpandDrag(expandProgressRef.current);
     } else if (gesture.mode === 'dismiss') {
@@ -456,6 +530,10 @@ export const usePoolDetailSheetExpand = ({
     if (!gesture || gesture.pointerId !== e.pointerId) return;
 
     e.currentTarget.releasePointerCapture?.(e.pointerId);
+    dlog('onPeekBodyPointerUp', {
+      expandPhase: expandPhaseRef.current,
+      expandProgress: expandProgressRef.current,
+    });
     if (expandPhaseRef.current === 'dragging') {
       finishExpandDrag(expandProgressRef.current);
     }
@@ -466,6 +544,10 @@ export const usePoolDetailSheetExpand = ({
     peekBodyGestureRef.current = null;
     if (!gesture || gesture.pointerId !== e.pointerId) return;
 
+    dlog('onPeekBodyPointerCancel (사파리가 강제 취소했을 수 있음)', {
+      expandPhase: expandPhaseRef.current,
+      expandProgress: expandProgressRef.current,
+    });
     if (expandPhaseRef.current === 'dragging') {
       finishExpandDrag(expandProgressRef.current);
     }

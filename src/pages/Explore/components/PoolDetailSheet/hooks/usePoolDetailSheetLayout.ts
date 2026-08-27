@@ -29,7 +29,6 @@ import {
 export interface UsePoolDetailSheetLayoutParams {
   pool: Pool;
   instantEnter?: boolean;
-  poolImageUrl: string | null;
   onClose: () => void;
   onCloseStart?: () => void;
   onBack?: () => void;
@@ -41,7 +40,6 @@ export interface UsePoolDetailSheetLayoutParams {
 export const usePoolDetailSheetLayout = ({
   pool,
   instantEnter = false,
-  poolImageUrl,
   onClose,
   onCloseStart,
   onBack,
@@ -129,21 +127,13 @@ export const usePoolDetailSheetLayout = ({
       if (!el) return;
       anchorHeightRef.current = el.offsetHeight;
       anchorTranslateRef.current = translateRef.current;
-    },
-    [translateRef],
-  );
-
-  const applyLockedLayout = useCallback(
-    (el: HTMLElement, h: number) => {
-      if (isFullscreenRef.current) {
-        translateRef.current = 0;
-        el.style.transform = 'translateX(-50%)';
-        return;
-      }
-      const nextTranslate =
-        anchorTranslateRef.current + (h - anchorHeightRef.current);
-      translateRef.current = nextTranslate;
-      el.style.transform = `translate(-50%, ${nextTranslate}px)`;
+      console.log(
+        `[EXPAND-DEBUG] t=${performance.now().toFixed(1)}ms captureAnchor()`,
+        {
+          anchorHeight: anchorHeightRef.current,
+          anchorTranslate: anchorTranslateRef.current,
+        },
+      );
     },
     [translateRef],
   );
@@ -293,6 +283,13 @@ export const usePoolDetailSheetLayout = ({
     const grab = grabberRef.current;
     if (!el || !grab) return;
 
+    // TEMP DEBUG: 이 마운트 이펙트가 세션 중간에 예상 밖으로 재실행되면서
+    // isFullscreen을 몰래 false로 되돌리는지 확인용. 콘솔에서 "[EXPAND-DEBUG]"로 필터링.
+    console.log(
+      `[EXPAND-DEBUG] t=${performance.now().toFixed(1)}ms usePoolDetailSheetLayout 마운트 이펙트 실행`,
+      { poolId: pool.id, wasFullscreen: isFullscreenRef.current },
+    );
+
     resetFullscreen();
     expandPhaseRef.current = 'idle';
     setExpandPhase('idle');
@@ -326,27 +323,22 @@ export const usePoolDetailSheetLayout = ({
         setSheetH(screenH);
         peekRef.current = screenH;
         el.style.setProperty('--peek-h', `${screenH}px`);
-
-        if (!translateLockedRef.current) {
-          translateRef.current = 0;
-          setTranslate(0);
-          applyFullscreenTransform(el);
-        } else {
-          applyLockedLayout(el, screenH);
-        }
+        translateRef.current = 0;
+        setTranslate(0);
+        applyFullscreenTransform(el);
         return;
       }
 
+      // peek 상태는 bottom:0 + max-height: var(--peek-h)로 항상 바닥에 붙어서 늘어나므로,
+      // 콘텐츠 높이가 바뀌어도 --peek-h만 갱신하면 충분하다. 예전에는 anchor(el.offsetHeight)
+      // 기준으로 translateY를 delta 보정하는 applyLockedLayout을 썼는데, 이 보정값이 CSS가
+      // 이미 자동으로 반영한 높이 변화를 다시 한번 translateY로 얹어버려서(이중 적용) 시트가
+      // 바닥에서 떨어져 뜨는 원인이 됐다. translateY는 항상 0으로 고정한다.
       const peekH = measurePeekHeight();
       setSheetH(peekH);
       peekRef.current = peekH;
       el.style.setProperty('--peek-h', `${peekH}px`);
-
-      if (!translateLockedRef.current) {
-        setTranslate(0);
-      } else {
-        applyLockedLayout(el, peekH);
-      }
+      setTranslate(0);
     };
 
     measure();
@@ -397,34 +389,11 @@ export const usePoolDetailSheetLayout = ({
   }, [
     pool,
     instantEnter,
-    applyLockedLayout,
     applyFullscreenTransform,
     captureAnchor,
     clearExpandStyles,
     setTranslate,
-    poolImageUrl,
     resetFullscreen,
-    translateRef,
-  ]);
-
-  useLayoutEffect(() => {
-    if (!isFullscreen) return;
-    const el = sheetRef.current;
-    if (!el) return;
-
-    const screenH = getScreenHeight();
-    setSheetH(screenH);
-    peekRef.current = screenH;
-    el.style.setProperty('--peek-h', `${screenH}px`);
-    translateRef.current = 0;
-    setTranslate(0);
-    applyFullscreenTransform(el);
-    reportTop();
-  }, [
-    isFullscreen,
-    applyFullscreenTransform,
-    setTranslate,
-    reportTop,
     translateRef,
   ]);
 
