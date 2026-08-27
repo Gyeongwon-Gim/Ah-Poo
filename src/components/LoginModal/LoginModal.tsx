@@ -179,7 +179,6 @@ const StyledHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: var(--ap-space-5) var(--ap-space-6);
-  border-bottom: 1px solid var(--ap-border-neutral);
 `;
 
 const StyledTitle = styled.h2`

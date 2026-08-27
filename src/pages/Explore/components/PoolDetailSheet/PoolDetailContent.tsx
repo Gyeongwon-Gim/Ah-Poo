@@ -9,7 +9,7 @@ import {
 import type { MouseEvent, PointerEvent, Ref } from 'react';
 import { formatDailyAdmissionFee } from '@/utils/formatFee';
 import { isFlagOn } from '@/services/pools';
-import { Tag } from '@/components';
+import { Tag, Skeleton } from '@/components';
 import PoolStatusTag from '@/components/PoolStatusTag';
 import PoolImagePlaceholder from '@/components/PoolImagePlaceholder';
 import type { Pool } from '@/types/pool';
@@ -18,6 +18,7 @@ interface PoolDetailContentProps {
   pool: Pool;
   poolImageUrl: string | null;
   poolImageFailed: boolean;
+  poolImageLoading: boolean;
   onPoolImageError: () => void;
   distanceLabel: string | null;
   onCopyAddress: () => void;
@@ -32,6 +33,7 @@ const PoolDetailContent = ({
   pool,
   poolImageUrl,
   poolImageFailed,
+  poolImageLoading,
   onPoolImageError,
   distanceLabel,
   onCopyAddress,
@@ -72,7 +74,11 @@ const PoolDetailContent = ({
     <>
       <div ref={essentialRef} className="pool-sheet__essential">
         <div className="pool-sheet__head">
-          {poolImageUrl && !poolImageFailed ? (
+          {poolImageLoading ? (
+            <div className="pool-sheet__hero-wrap" aria-hidden>
+              <Skeleton borderRadius="0" />
+            </div>
+          ) : poolImageUrl && !poolImageFailed ? (
             <div className="pool-sheet__hero-wrap">
               <img
                 className="pool-sheet__hero"

@@ -128,7 +128,6 @@ export const usePoolBlogReviews = (pool: Pool) => {
 
   return {
     visibleReviews,
-    totalReviews: blogReviews.length,
     blogLoading,
     blogLoadMoreLoading,
     blogError,

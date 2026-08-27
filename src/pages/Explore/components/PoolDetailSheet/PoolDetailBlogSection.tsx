@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react';
 import { formatPostDate } from '@/services/naverBlog';
 import type { PoolBlogReviewItem } from '@/services/naverBlog';
 
@@ -5,7 +6,6 @@ interface PoolDetailBlogSectionProps {
   loading: boolean;
   error: string | null;
   visibleReviews: PoolBlogReviewItem[];
-  totalReviews: number;
   canLoadMore: boolean;
   loadMoreLoading: boolean;
   thumbFailed: Set<string>;
@@ -18,7 +18,6 @@ const PoolDetailBlogSection = ({
   loading,
   error,
   visibleReviews,
-  totalReviews,
   canLoadMore,
   loadMoreLoading,
   thumbFailed,
@@ -85,17 +84,24 @@ const PoolDetailBlogSection = ({
           ))}
         </div>
       )}
-      {!loading && !error && canLoadMore && totalReviews > 0 && (
+      {!loading && !error && canLoadMore && visibleReviews.length > 0 && (
         <button
           type="button"
           className="pool-sheet__blog-more"
           onClick={onLoadMore}
           disabled={loadMoreLoading}
         >
-          {loadMoreLoading ? '불러오는 중…' : '펼쳐서 더보기'}
+          {loadMoreLoading ? (
+            '불러오는 중…'
+          ) : (
+            <>
+              더보기
+              <ChevronDown size={16} aria-hidden />
+            </>
+          )}
         </button>
       )}
-      {!loading && !error && totalReviews === 0 && (
+      {!loading && !error && visibleReviews.length === 0 && (
         <p className="pool-sheet__blog-status">관련 리뷰를 찾지 못했어요</p>
       )}
       <p className="pool-sheet__blog-attribution">검색 결과 제공: NAVER</p>

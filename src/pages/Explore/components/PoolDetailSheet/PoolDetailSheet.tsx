@@ -36,15 +36,18 @@ const PoolDetailSheet = ({
 }: PoolDetailSheetProps) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(pool);
-  const { poolImageUrl, poolImageFailed, markPoolImageFailed } =
-    usePoolImageUrl(pool.id);
+  const {
+    poolImageUrl,
+    poolImageFailed,
+    loading: poolImageLoading,
+    markPoolImageFailed,
+  } = usePoolImageUrl(pool.id);
   const blog = usePoolBlogReviews(pool);
   const userReviewCount = usePoolReviewCount(pool.id);
 
   const sheet = usePoolDetailSheetLayout({
     pool,
     instantEnter,
-    poolImageUrl,
     onClose,
     onCloseStart,
     onBack,
@@ -106,6 +109,7 @@ const PoolDetailSheet = ({
     pool,
     poolImageUrl,
     poolImageFailed,
+    poolImageLoading,
     onPoolImageError: markPoolImageFailed,
     distanceLabel,
     onCopyAddress: handleCopyAddress,
@@ -189,7 +193,6 @@ const PoolDetailSheet = ({
               blogLoading={blog.blogLoading}
               blogError={blog.blogError}
               visibleReviews={blog.visibleReviews}
-              totalReviews={blog.totalReviews}
               canLoadMore={blog.canLoadMore}
               loadMoreLoading={blog.blogLoadMoreLoading}
               thumbFailed={blog.blogThumbFailed}

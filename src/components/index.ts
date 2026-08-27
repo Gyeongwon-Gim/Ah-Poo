@@ -8,6 +8,8 @@ export { default as ImageUpload } from './ImageUpload/ImageUpload';
 export type { ImageFile } from './ImageUpload/ImageUpload';
 export { default as LoginButton } from './LoginButton/LoginButton';
 export { default as LoginModal } from './LoginModal/LoginModal';
+export { default as Skeleton } from './Skeleton/Skeleton';
+export type { SkeletonProps } from './Skeleton/Skeleton';
 export { default as StarRating } from './StarRating/StarRating';
 export { default as Tag } from './Tag/Tag';
 export type { TagProps } from './Tag/Tag';

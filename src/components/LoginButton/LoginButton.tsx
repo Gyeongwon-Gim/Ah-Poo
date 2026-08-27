@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import styled from '@emotion/styled';
+import Skeleton from '@/components/Skeleton/Skeleton';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface LoginButtonProps {
@@ -59,7 +60,7 @@ const LoginButton = ({ className }: LoginButtonProps) => {
   );
 
   if (isLoading) {
-    return <StyledSkeleton className={className} />;
+    return <Skeleton className={className} height="180px" />;
   }
 
   if (isAuthenticated && user) {
@@ -284,28 +285,5 @@ const StyledLogoutButton = styled.button`
 
   &:hover {
     background: var(--ap-neutral-100);
-  }
-`;
-
-const StyledSkeleton = styled.div`
-  width: 100%;
-  height: 180px;
-  background: linear-gradient(
-    90deg,
-    var(--ap-neutral-100) 25%,
-    var(--ap-neutral-50) 50%,
-    var(--ap-neutral-100) 75%
-  );
-  background-size: 200% 100%;
-  border-radius: var(--ap-radius-sm);
-  animation: skeleton-loading 1.5s infinite;
-
-  @keyframes skeleton-loading {
-    0% {
-      background-position: 200% 0;
-    }
-    100% {
-      background-position: -200% 0;
-    }
   }
 `;

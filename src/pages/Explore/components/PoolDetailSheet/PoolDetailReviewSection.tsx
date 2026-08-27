@@ -13,7 +13,6 @@ interface PoolDetailReviewSectionProps {
   blogLoading: boolean;
   blogError: string | null;
   visibleReviews: PoolBlogReviewItem[];
-  totalReviews: number;
   canLoadMore: boolean;
   loadMoreLoading: boolean;
   thumbFailed: Set<string>;
@@ -28,7 +27,6 @@ const PoolDetailReviewSection = ({
   blogLoading,
   blogError,
   visibleReviews,
-  totalReviews,
   canLoadMore,
   loadMoreLoading,
   thumbFailed,
@@ -48,7 +46,6 @@ const PoolDetailReviewSection = ({
         activeTab={activeTab}
         onTabChange={handleTabChange}
         userReviewCount={userReviewCount}
-        blogReviewCount={totalReviews}
       />
 
       <StyledTabContent role="tabpanel">
@@ -59,7 +56,6 @@ const PoolDetailReviewSection = ({
             loading={blogLoading}
             error={blogError}
             visibleReviews={visibleReviews}
-            totalReviews={totalReviews}
             canLoadMore={canLoadMore}
             loadMoreLoading={loadMoreLoading}
             thumbFailed={thumbFailed}
@@ -78,6 +74,8 @@ export default PoolDetailReviewSection;
 const StyledContainer = styled.section`
   display: flex;
   flex-direction: column;
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-8);
 `;
 
 const StyledTabContent = styled.div`

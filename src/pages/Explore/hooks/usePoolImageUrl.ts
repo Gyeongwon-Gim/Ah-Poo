@@ -4,13 +4,18 @@ import { fetchPoolImageUrl } from '@/services/poolImages';
 export const usePoolImageUrl = (poolId: string | null | undefined) => {
   const [poolImageUrl, setPoolImageUrl] = useState<string | null>(null);
   const [poolImageFailed, setPoolImageFailed] = useState(false);
+  const [loading, setLoading] = useState(Boolean(poolId));
 
   useEffect(() => {
-    if (!poolId) return undefined;
+    if (!poolId) {
+      setLoading(false);
+      return undefined;
+    }
 
     const controller = new AbortController();
     setPoolImageUrl(null);
     setPoolImageFailed(false);
+    setLoading(true);
 
     fetchPoolImageUrl(poolId, { signal: controller.signal })
       .then((url) => {
@@ -22,6 +27,11 @@ export const usePoolImageUrl = (poolId: string | null | undefined) => {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         if (err instanceof Error && err.name === 'AbortError') return;
         setPoolImageUrl(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       });
 
     return () => controller.abort();
@@ -31,5 +41,5 @@ export const usePoolImageUrl = (poolId: string | null | undefined) => {
     setPoolImageFailed(true);
   }, []);
 
-  return { poolImageUrl, poolImageFailed, markPoolImageFailed };
+  return { poolImageUrl, poolImageFailed, loading, markPoolImageFailed };
 };

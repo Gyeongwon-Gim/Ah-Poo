@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Star } from 'lucide-react';
 import ListItem from '@/components/ListItem';
-import { Tag } from '@/components';
+import { Tag, Skeleton } from '@/components';
 import PoolStatusTag from '@/components/PoolStatusTag';
 import PoolImagePlaceholder from '@/components/PoolImagePlaceholder';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -22,13 +22,17 @@ const PoolListItem = ({ pool, selected, onSelect }: PoolListItemProps) => {
   const favorite = isFavorite(pool);
   const distanceLabel = formatDistance(pool.distanceKm);
   const feeLabel = pool.fee ? formatDailyAdmissionFee(pool.fee) : null;
-  const { poolImageUrl, poolImageFailed, markPoolImageFailed } =
+  const { poolImageUrl, poolImageFailed, loading: imageLoading, markPoolImageFailed } =
     usePoolImageUrl(pool.id);
   const show50mTag = isFlagOn(pool.is50m);
 
   return (
     <ListItem selected={selected} onSelect={() => onSelect(pool)}>
-      {poolImageUrl && !poolImageFailed ? (
+      {imageLoading ? (
+        <ListItem.Media className="pool-list__media" aria-hidden>
+          <Skeleton borderRadius="0" />
+        </ListItem.Media>
+      ) : poolImageUrl && !poolImageFailed ? (
         <ListItem.Media className="pool-list__media">
           <img
             className="pool-list__media-img"

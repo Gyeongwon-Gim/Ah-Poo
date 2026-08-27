@@ -6,14 +6,12 @@ interface PoolDetailReviewTabsProps {
   activeTab: ReviewTab;
   onTabChange: (tab: ReviewTab) => void;
   userReviewCount: number;
-  blogReviewCount: number;
 }
 
 const PoolDetailReviewTabs = ({
   activeTab,
   onTabChange,
   userReviewCount,
-  blogReviewCount,
 }: PoolDetailReviewTabsProps) => {
   return (
     <StyledContainer role="tablist">
@@ -40,11 +38,6 @@ const PoolDetailReviewTabs = ({
         onClick={() => onTabChange('blog')}
       >
         블로그 리뷰
-        {blogReviewCount > 0 && (
-          <StyledCount $active={activeTab === 'blog'}>
-            {blogReviewCount}
-          </StyledCount>
-        )}
       </StyledTab>
     </StyledContainer>
   );
@@ -55,31 +48,32 @@ export default PoolDetailReviewTabs;
 const StyledContainer = styled.div`
   display: flex;
   gap: var(--ap-space-1);
-  padding: 0 var(--ap-space-6);
-  border-bottom: 1px solid var(--ap-border-neutral);
+  padding: var(--ap-space-1);
+  background: var(--ap-neutral-100);
+  border-radius: var(--ap-radius-sm);
 `;
 
 const StyledTab = styled.button<{ $active: boolean }>`
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--ap-space-2);
-  padding: var(--ap-space-4) var(--ap-space-3);
-  background: none;
+  padding: var(--ap-space-5) var(--ap-space-3);
+  background: ${({ $active }) =>
+    $active ? 'var(--ap-surface)' : 'transparent'};
   border: none;
-  border-bottom: 2px solid
-    ${({ $active }) => ($active ? 'var(--ap-primary)' : 'transparent')};
-  font-size: var(--ap-font-body);
+  border-radius: var(--ap-radius-xs);
+  font-size: var(--ap-font-body-sm);
   font-weight: ${({ $active }) =>
-    $active ? 'var(--ap-font-weight-semibold)' : 'var(--ap-font-weight-normal)'};
-  color: ${({ $active }) => ($active ? 'var(--ap-primary)' : 'var(--ap-text-muted)')};
+    $active
+      ? 'var(--ap-font-weight-semibold)'
+      : 'var(--ap-font-weight-normal)'};
+  color: ${({ $active }) => ($active ? 'var(--ap-text)' : 'var(--ap-text-muted)')};
   cursor: pointer;
   transition:
-    color var(--ap-duration-fast) var(--ap-ease-out),
-    border-color var(--ap-duration-fast) var(--ap-ease-out);
-
-  &:hover {
-    color: var(--ap-primary);
-  }
+    background-color var(--ap-duration-fast) var(--ap-ease-out),
+    color var(--ap-duration-fast) var(--ap-ease-out);
 `;
 
 const StyledCount = styled.span<{ $active: boolean }>`
