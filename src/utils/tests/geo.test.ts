@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDistanceKm, filterPoolsWithinKm, NEARBY_RADIUS_KM } from './geo';
+import { getDistanceKm, filterPoolsWithinKm, NEARBY_RADIUS_KM } from '../geo';
 import type { Pool } from '@/types/pool';
 
 describe('getDistanceKm', () => {

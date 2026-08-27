@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { filterBySearchTerm, poolMatchesQuery } from './poolSearch';
+import { filterBySearchTerm, poolMatchesQuery } from '../poolSearch';
 import type { Pool } from '@/types/pool';
 
 const pools: Pool[] = [

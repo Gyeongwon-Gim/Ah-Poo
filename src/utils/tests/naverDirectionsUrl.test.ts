@@ -5,7 +5,7 @@ import {
   buildNaverDirectionsAppUrl,
   buildNaverDirectionsWebUrl,
   openNaverDirections,
-} from './naverDirectionsUrl';
+} from '../naverDirectionsUrl';
 
 const pool = {
   name: '강남구민체육센터 수영장',

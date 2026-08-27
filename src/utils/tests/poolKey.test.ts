@@ -3,7 +3,7 @@ import {
   poolToSearchParams,
   parsePoolKeyFromSearchParams,
   getPoolListKey,
-} from './poolKey';
+} from '../poolKey';
 
 const pool = {
   name: '올림픽수영장',

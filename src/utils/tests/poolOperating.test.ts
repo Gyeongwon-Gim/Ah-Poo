@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getPoolOpenState, isPoolOperating } from './poolOperating';
+import { getPoolOpenState, isPoolOperating } from '../poolOperating';
 import type { Pool } from '@/types/pool';
 
 const basePool: Pool = {
