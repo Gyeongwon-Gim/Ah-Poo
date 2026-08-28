@@ -1,8 +1,12 @@
-# Ah-Poo!
+# 어푸!
+<img width="1287" height="676" alt="Frame 4" src="https://github.com/user-attachments/assets/e4fa27ab-32d4-44a4-9a09-3be9e13e6458" />
+
 
 <br/>
-<h3 align="center">어푸!</h3>
+
 <br/>
+
+
 <p align="center">
 어푸와 함께라서 더욱 즐거운 스윔라이프!<br/>
 지금 바로 어푸에서 일일입장이 가능한 전국의 수영장을 탐색해보세요.
