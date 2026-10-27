@@ -49,6 +49,33 @@ const mapRowToUserReview = (row: ReviewRow): UserReview => ({
   images: row.review_images?.map(mapImageRowToReviewImage),
 });
 
+const attachNicknames = async (
+  client: ReturnType<typeof assertSupabaseConfigured>,
+  reviews: UserReview[],
+): Promise<UserReview[]> => {
+  const userIds = [...new Set(reviews.map((review) => review.user_id))];
+  if (userIds.length === 0) return reviews;
+
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, nickname')
+    .in('id', userIds);
+
+  if (error) throw error;
+
+  const nicknames = new Map(
+    (data ?? []).map((row: { id: string; nickname: string }) => [row.id, row.nickname]),
+  );
+
+  return reviews.map((review) => ({
+    ...review,
+    user: {
+      id: review.user_id,
+      nickname: nicknames.get(review.user_id) ?? '',
+    },
+  }));
+};
+
 export const fetchPoolReviews = async (
   poolId: string,
   page = 0,
@@ -66,7 +93,10 @@ export const fetchPoolReviews = async (
 
   if (error) throw error;
 
-  const reviews = (data ?? []).map((row) => mapRowToUserReview(row as ReviewRow));
+  const reviews = await attachNicknames(
+    client,
+    (data ?? []).map((row) => mapRowToUserReview(row as ReviewRow)),
+  );
   const totalCount = count ?? 0;
 
   return {
@@ -90,8 +120,10 @@ export const fetchUserReviewForPool = async (
     .maybeSingle();
 
   if (error) throw error;
+  if (!data) return null;
 
-  return data ? mapRowToUserReview(data as ReviewRow) : null;
+  const [review] = await attachNicknames(client, [mapRowToUserReview(data as ReviewRow)]);
+  return review ?? null;
 };
 
 const uploadReviewImage = async (
@@ -239,7 +271,13 @@ export const updateReview = async ({
     .eq('id', reviewId)
     .single();
 
-  return mapRowToUserReview(updatedReview as ReviewRow);
+  const [review] = await attachNicknames(client, [
+    mapRowToUserReview(updatedReview as ReviewRow),
+  ]);
+  if (!review) {
+    throw new Error('리뷰를 불러오지 못했습니다.');
+  }
+  return review;
 };
 
 export const deleteReview = async (reviewId: string): Promise<void> => {

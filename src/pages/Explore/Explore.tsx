@@ -23,6 +23,7 @@ import { useExploreInteractions } from '@/pages/Explore/hooks/useExploreInteract
 import { useFabLift } from '@/pages/Explore/hooks/useFabLift';
 import { usePanelSheet } from '@/pages/Explore/hooks/usePanelSheet';
 import { useOpenPill } from '@/pages/Explore/hooks/useOpenPill';
+import { useAccountModal } from '@/components/AccountModal/AccountModal';
 import SeoHead, { buildExploreJsonLd } from '@/components/SeoHead';
 import './Explore.css';
 
@@ -31,6 +32,7 @@ const EXPLORE_TITLE = '어푸! | 전국 일일입장·자유수영 수영장 찾
 const Explore = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { openAccount } = useAccountModal();
   const {
     favoritesOpen,
     closeFavorites,
@@ -357,6 +359,7 @@ const Explore = () => {
           onClose={handleCloseSearch}
           variant="map"
           searchMode={searchMode}
+          onAccountClick={searchActive ? undefined : () => openAccount()}
         />
         {searchActive && (
           <SearchSuggestions

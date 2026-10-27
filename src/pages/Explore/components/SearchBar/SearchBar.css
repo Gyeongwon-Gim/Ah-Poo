@@ -108,6 +108,23 @@
 
 .search-bar-container {
   width: 100%;
+  min-width: 0;
+}
+
+.search-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-bar-account.ap-button--icon {
+  width: var(--ap-pill-height);
+  height: var(--ap-pill-height);
+  flex-shrink: 0;
+  border-radius: var(--ap-radius-circle);
+  background: var(--ap-primary-tint);
+  color: var(--ap-primary);
+  box-shadow: none;
 }
 
 .search-bar .ap-button--ghost {

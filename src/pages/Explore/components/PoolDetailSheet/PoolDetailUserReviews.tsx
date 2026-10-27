@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { ConfirmDialog, LoginModal } from '@/components';
+import { ConfirmDialog } from '@/components';
+import { useAccountModal } from '@/components/AccountModal/AccountModal';
 import { usePoolUserReviews } from '@/pages/Explore/hooks/usePoolUserReviews';
 import ReviewForm from './ReviewForm';
 import ReviewCard from './ReviewCard';
@@ -25,6 +26,7 @@ interface PoolDetailUserReviewsProps {
 
 const PoolDetailUserReviews = ({ poolId }: PoolDetailUserReviewsProps) => {
   const { isAuthenticated } = useAuth();
+  const { openAccount } = useAccountModal();
 
   const {
     reviews,
@@ -44,20 +46,14 @@ const PoolDetailUserReviews = ({ poolId }: PoolDetailUserReviewsProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleWriteClick = useCallback(() => {
     if (isAuthenticated) {
       setShowReviewForm(true);
     } else {
-      setShowLoginModal(true);
+      openAccount(() => setShowReviewForm(true));
     }
-  }, [isAuthenticated]);
-
-  const handleLoginSuccess = useCallback(() => {
-    setShowLoginModal(false);
-    setShowReviewForm(true);
-  }, []);
+  }, [isAuthenticated, openAccount]);
 
   const handleSubmit = useCallback(
     async (data: { rating: number; content: string; images: File[] }) => {
@@ -179,12 +175,6 @@ const PoolDetailUserReviews = ({ poolId }: PoolDetailUserReviewsProps) => {
           리뷰 쓰기
         </StyledWriteButtonSmall>
       )}
-
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onSuccess={handleLoginSuccess}
-      />
     </StyledContainer>
   );
 };

@@ -276,3 +276,124 @@ create trigger swim_logs_updated_at
   before update on public.swim_logs
   for each row
   execute function public.update_updated_at_column();
+
+--------------------------------------------------------------------------------
+-- 공개 프로필 (리뷰에 보이는 닉네임)
+--------------------------------------------------------------------------------
+
+-- auth.users는 다른 사용자에게 안 열린다. 닉네임만 공개 테이블로 둔다.
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  nickname text not null check (char_length(btrim(nickname)) between 1 and 20),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint profiles_nickname_unique unique (nickname)
+);
+
+alter table public.profiles enable row level security;
+
+drop policy if exists "profiles_select_all" on public.profiles;
+create policy "profiles_select_all"
+  on public.profiles
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "profiles_update_own" on public.profiles;
+create policy "profiles_update_own"
+  on public.profiles
+  for update
+  to authenticated
+  using (auth.uid() = id)
+  with check (auth.uid() = id);
+
+drop trigger if exists profiles_updated_at on public.profiles;
+create trigger profiles_updated_at
+  before update on public.profiles
+  for each row
+  execute function public.update_updated_at_column();
+
+-- 가입 직후 프로필을 만든다. 닉네임이 없거나 중복이면 수영인 + id 앞자리로 채운다.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  requested text;
+  final_name text;
+begin
+  requested := nullif(btrim(new.raw_user_meta_data->>'nickname'), '');
+  final_name := '수영인' || left(replace(new.id::text, '-', ''), 8);
+
+  if requested is not null
+    and char_length(requested) between 1 and 20
+    and not exists (select 1 from public.profiles where nickname = requested)
+  then
+    final_name := requested;
+  elsif exists (select 1 from public.profiles where nickname = final_name) then
+    final_name := '수영인' || left(replace(new.id::text, '-', ''), 12);
+  end if;
+
+  insert into public.profiles (id, nickname)
+  values (new.id, final_name)
+  on conflict (id) do nothing;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row
+  execute function public.handle_new_user();
+
+insert into public.profiles (id, nickname)
+select
+  u.id,
+  '수영인' || left(replace(u.id::text, '-', ''), 8)
+from auth.users u
+where not exists (select 1 from public.profiles p where p.id = u.id)
+on conflict (id) do nothing;
+
+-- 본인 계정 삭제. 리뷰·수영 기록·프로필은 auth.users cascade로 따라 지워진다.
+create or replace function public.delete_own_account()
+returns void
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+begin
+  if auth.uid() is null then
+    raise exception '로그인이 필요합니다.';
+  end if;
+
+  delete from auth.users where id = auth.uid();
+end;
+$$;
+
+revoke all on function public.delete_own_account() from public;
+grant execute on function public.delete_own_account() to authenticated;
+
+-- 리뷰 이미지는 FK로 안 지워진다. 탈퇴 전에 클라이언트가 본인 폴더를 비울 수 있게 한다.
+drop policy if exists "review_images_storage_select_own" on storage.objects;
+create policy "review_images_storage_select_own"
+  on storage.objects
+  for select
+  to authenticated
+  using (
+    bucket_id = 'review-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists "review_images_storage_delete_own" on storage.objects;
+create policy "review_images_storage_delete_own"
+  on storage.objects
+  for delete
+  to authenticated
+  using (
+    bucket_id = 'review-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
