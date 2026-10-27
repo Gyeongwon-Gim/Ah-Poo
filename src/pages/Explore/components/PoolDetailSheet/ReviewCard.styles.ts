@@ -26,14 +26,6 @@ export const StyledUserInfo = styled.div`
   gap: var(--ap-space-3);
 `;
 
-export const StyledAvatar = styled.img`
-  width: 36px;
-  height: 36px;
-  border-radius: var(--ap-radius-circle);
-  object-fit: cover;
-  background: var(--ap-neutral-100);
-`;
-
 export const StyledAvatarPlaceholder = styled.div`
   width: 36px;
   height: 36px;

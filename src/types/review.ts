@@ -12,12 +12,7 @@ export interface UserReview {
 
 export interface ReviewUser {
   id: string;
-  email?: string;
-  user_metadata?: {
-    name?: string;
-    avatar_url?: string;
-    full_name?: string;
-  };
+  nickname: string;
 }
 
 export interface ReviewImage {

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Search, X, ChevronLeft } from 'lucide-react';
+import { Search, X, ChevronLeft, User } from 'lucide-react';
 import SearchBarLogo from '@/pages/Explore/components/SearchBarLogo';
 import { Button, Input } from '@/components';
 import { disableInputAccessoryView } from '@/utils/disableInputAccessoryView';
@@ -14,6 +14,7 @@ interface SearchBarProps {
   onClose?: () => void;
   variant?: 'default' | 'map';
   searchMode?: boolean;
+  onAccountClick?: () => void;
 }
 
 const STATIC_INPUT_PROPS = {
@@ -35,6 +36,7 @@ const SearchBar = ({
   onClose,
   variant = 'default',
   searchMode = false,
+  onAccountClick,
 }: SearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -100,20 +102,33 @@ const SearchBar = ({
       className={`search-bar-wrap ${isMapVariant ? 'search-bar-wrap--map search-bar-wrap--browser' : ''} ${searchMode ? 'search-bar-wrap--search' : ''} ${showLogo ? 'search-bar-wrap--with-logo' : ''}`}
     >
       {showLogo && <SearchBarLogo />}
-      <form className="search-bar-container" onSubmit={handleSubmit}>
-        <Input
-          ref={inputRef}
-          {...STATIC_INPUT_PROPS}
-          value={value}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          variant={isMapVariant ? 'pill' : 'default'}
-          bordered={searchMode}
-          leading={leading}
-          trailing={trailing}
-        />
-      </form>
+      <div className="search-bar-row">
+        <form className="search-bar-container" onSubmit={handleSubmit}>
+          <Input
+            ref={inputRef}
+            {...STATIC_INPUT_PROPS}
+            value={value}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            variant={isMapVariant ? 'pill' : 'default'}
+            bordered={searchMode}
+            leading={leading}
+            trailing={trailing}
+          />
+        </form>
+        {onAccountClick && (
+          <Button
+            type="button"
+            variant="icon"
+            className="search-bar-account"
+            onClick={onAccountClick}
+            aria-label="계정"
+          >
+            <User size={18} strokeWidth={1.75} />
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

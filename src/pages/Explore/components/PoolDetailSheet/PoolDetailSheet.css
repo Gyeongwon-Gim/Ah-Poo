@@ -74,13 +74,23 @@
   overflow: hidden;
 }
 
-/* ---- peek / fullscreen 공통 ---- */
+/* ---- peek / fullscreen 공통 ----
+
+   아래 "펼침 레이아웃" 규칙들은 .pool-sheet--expanding과 .pool-sheet--fullscreen에
+   똑같이 걸려 있다. 예전에는 --fullscreen에만 걸려 있었는데, 그러면 시트 바깥 높이는
+   0.3초에 걸쳐 부드럽게 자라는 반면 commitFullscreen()이 클래스를 교체하는 "한 프레임"에
+   안쪽 패딩이 통째로 바뀌면서 툴바·제목·사진이 20~24px씩(iOS는 safe-area 높이만큼 더)
+   순간이동했다 — 이게 "풀스크린 전환할 때 튀는" 현상의 정체다.
+   이제 두 상태의 안쪽 배치가 완전히 같고 padding/margin이 높이와 같은 속도로
+   트랜지션되므로, 클래스가 교체되는 순간에는 시각적으로 아무것도 바뀌지 않는다. */
 .pool-sheet__grabber {
   flex-shrink: 0;
   padding: 12px 20px calc(var(--pool-sheet-bottom-pad, 0px) + 20px);
   -webkit-tap-highlight-color: transparent;
+  transition: padding var(--ap-duration-sheet) var(--ap-ease-sheet);
 }
 
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__grabber,
 .bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__grabber {
   flex: 1;
   min-height: 0;
@@ -92,8 +102,10 @@
 .pool-sheet__toolbar-wrap {
   flex-shrink: 0;
   padding-right: 4px;
+  transition: padding var(--ap-duration-sheet) var(--ap-ease-sheet);
 }
 
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__toolbar-wrap,
 .bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__toolbar-wrap {
   padding: var(--safe-top) 24px 4px;
 }
@@ -106,8 +118,10 @@
 
 .pool-sheet__body {
   overflow: hidden;
+  transition: padding var(--ap-duration-sheet) var(--ap-ease-sheet);
 }
 
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__peek-body,
 .bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__peek-body {
   flex: 1;
   min-height: 0;
@@ -117,6 +131,7 @@
   touch-action: auto;
 }
 
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__body,
 .bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__body {
   flex: 1;
   min-height: 0;
@@ -128,8 +143,15 @@
   padding: 0 20px calc(var(--pool-sheet-bottom-pad, 0px) + 20px);
 }
 
-.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__peek-body {
+/* 펼치는 도중에는 아직 제스처가 시트 크기를 조절하는 중이라 내부 스크롤을 막는다.
+   (레이아웃은 위에서 이미 fullscreen과 동일하게 맞춰져 있고, 여기선 입력만 끊는다) */
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__peek-body,
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__body {
   touch-action: none;
+}
+
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__body {
+  overflow-y: hidden;
 }
 
 .pool-sheet__modal-header {
@@ -289,8 +311,10 @@
   color: var(--ap-text-muted);
   margin: 8px 0 0;
   -webkit-touch-callout: none;
+  transition: margin var(--ap-duration-sheet) var(--ap-ease-sheet);
 }
 
+.bottom-sheet--detail.pool-sheet--expanding .pool-sheet__location,
 .bottom-sheet--detail.pool-sheet--fullscreen .pool-sheet__location {
   margin: 14px 0 0;
 }
@@ -584,6 +608,13 @@
   }
 
   .bottom-sheet--detail.pool-sheet--fullscreen {
+    transition: none;
+  }
+
+  .pool-sheet__grabber,
+  .pool-sheet__toolbar-wrap,
+  .pool-sheet__body,
+  .pool-sheet__location {
     transition: none;
   }
 

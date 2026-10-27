@@ -5,7 +5,6 @@ import {
   StyledCard,
   StyledHeader,
   StyledUserInfo,
-  StyledAvatar,
   StyledAvatarPlaceholder,
   StyledUserMeta,
   StyledUserName,
@@ -50,18 +49,13 @@ const ReviewCard = ({
   onEdit,
   onDelete,
 }: ReviewCardProps) => {
-  const userName = review.user?.user_metadata?.name ?? '익명';
-  const avatarUrl = review.user?.user_metadata?.avatar_url;
+  const userName = review.user?.nickname || '수영인';
 
   return (
     <StyledCard $isOwn={isOwn}>
       <StyledHeader>
         <StyledUserInfo>
-          {avatarUrl ? (
-            <StyledAvatar src={avatarUrl} alt={userName} />
-          ) : (
-            <StyledAvatarPlaceholder>{userName[0]}</StyledAvatarPlaceholder>
-          )}
+          <StyledAvatarPlaceholder>{userName.at(0) ?? '?'}</StyledAvatarPlaceholder>
           <StyledUserMeta>
             <StyledUserName>
               {userName}

@@ -218,6 +218,10 @@ vi.mock('@/pages/Explore/components/SearchBar', () => ({
   },
 }));
 
+vi.mock('@/components/AccountModal/AccountModal', () => ({
+  useAccountModal: () => ({ openAccount: () => undefined }),
+}));
+
 import Explore from './Explore';
 
 const POOLS: Pool[] = [
