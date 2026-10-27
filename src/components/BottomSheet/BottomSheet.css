@@ -63,6 +63,10 @@
   .bottom-sheet--list {
     transition: none;
   }
+
+  .bottom-sheet--detail .bottom-sheet__handle {
+    transition: none;
+  }
 }
 
 .bottom-sheet__header {
@@ -97,6 +101,20 @@
   cursor: grabbing;
 }
 
+/* display: none이면 핸들이 차지하던 12px(높이 4px + margin 8px)가 한 프레임에 사라져
+   펼침 → 전체화면 전환에서 안쪽 내용이 그만큼 순간이동한다. 높이·여백·투명도를 0으로
+   좁혀서 시트 높이 애니메이션과 같은 속도로 접히게 한다. pointer-events는 남겨둔다 —
+   드래그 도중 --expanding이 붙는데, 여기서 입력을 끊으면 진행 중인 제스처가 끊긴다. */
+.bottom-sheet--detail .bottom-sheet__handle {
+  transition:
+    height var(--ap-duration-sheet) var(--ap-ease-sheet),
+    margin var(--ap-duration-sheet) var(--ap-ease-sheet),
+    opacity var(--ap-duration-sheet) var(--ap-ease-sheet);
+}
+
+.bottom-sheet--detail.pool-sheet--expanding .bottom-sheet__handle,
 .bottom-sheet--detail.pool-sheet--fullscreen .bottom-sheet__handle {
-  display: none;
+  height: 0;
+  margin-bottom: 0;
+  opacity: 0;
 }

@@ -80,14 +80,44 @@ export const usePoolDetailSheetExpand = ({
 
   const expandProgressRef = useRef(0);
   const expandStartHRef = useRef(0);
+  /** 마지막으로 --expand-h에 실제로 써넣은 값(px). 트랜지션이 일어날지 판단하는 데 쓴다. */
+  const expandHRef = useRef(0);
   const headerGestureRef = useRef<HeaderGesture | null>(null);
   const peekBodyGestureRef = useRef<PeekBodyGesture | null>(null);
+
+  /**
+   * 트랜지션을 기다리지 않고 펼침 상태를 즉시 peek으로 정리한다.
+   * expandPhase를 'idle'로 되돌리는 경로가 transitionend 하나뿐이면, 트랜지션이
+   * 발생하지 않는 순간 상태가 영구히 갇히므로 동기 탈출구가 필요하다.
+   */
+  const settleExpandIdle = useCallback(() => {
+    expandPhaseRef.current = 'idle';
+    setExpandPhase('idle');
+    setExpandDragging(false);
+    expandProgressRef.current = 0;
+    clearExpandStyles(sheetRef.current);
+  }, [
+    clearExpandStyles,
+    expandPhaseRef,
+    setExpandDragging,
+    setExpandPhase,
+    sheetRef,
+  ]);
 
   const commitFullscreen = useCallback(() => {
     dlog('commitFullscreen() 호출됨', {
       alreadyFullscreen: isFullscreenRef.current,
     });
-    if (isFullscreenRef.current) return;
+    if (isFullscreenRef.current) {
+      // 이미 풀스크린인데 여기까지 들어오는 경로가 있다(풀스크린에서 range가 0이라
+      // progress가 1로 계산되는 경우 등). 그냥 return하면 expandPhase가 'dragging'에
+      // 갇혀서 이후 모든 제스처와 ResizeObserver 재측정이 막히므로, 상태만 정리한다.
+      expandPhaseRef.current = 'idle';
+      setExpandPhase('idle');
+      setExpandDragging(false);
+      expandProgressRef.current = 0;
+      return;
+    }
 
     isFullscreenRef.current = true;
     setIsFullscreen(true);
@@ -111,6 +141,7 @@ export const usePoolDetailSheetExpand = ({
     // 실제 제거는 클래스 교체가 반영된 다음 프레임으로 미룬다.
     el?.style.setProperty('--expand-h', `${screenH}px`);
     el?.style.setProperty('--peek-h', `${screenH}px`);
+    expandHRef.current = screenH;
     applyFullscreenTransform(el);
     requestAnimationFrame(() => {
       dlog('commitFullscreen() 후처리: clearExpandStyles 지연 실행');
@@ -143,6 +174,7 @@ export const usePoolDetailSheetExpand = ({
 
       expandProgressRef.current = clamped;
       el.style.setProperty('--expand-h', `${h}px`);
+      expandHRef.current = h;
       if (clamped > 0 && clamped < 1) {
         el.style.borderRadius = `${Math.round(
           (1 - clamped) * 16,
@@ -172,12 +204,23 @@ export const usePoolDetailSheetExpand = ({
     const el = sheetRef.current;
     const peekH = expandStartHRef.current || peekRef.current;
 
-    if (reducedMotion) {
-      expandPhaseRef.current = 'idle';
-      setExpandPhase('idle');
-      setExpandDragging(false);
-      expandProgressRef.current = 0;
-      clearExpandStyles(el);
+    // 아래에서 --expand-h를 peekH로 되돌리면 height 트랜지션이 돌고, 끝나는 시점에
+    // handleExpandTransitionEnd가 뒷정리(expandPhase → 'idle' + clearExpandStyles)를 한다.
+    // 문제는 트랜지션이 아예 시작되지 않는 경우다. 그러면 transitionend가 영영 오지 않아
+    // expandPhase가 'animating'에 갇히고, 그 순간부터 펼치기·닫기 드래그·ResizeObserver
+    // 재측정(measure)이 전부 막힌다.
+    //
+    // reducedMotion이면 CSS가 transition: none이고, 이미 목표 높이에 도달해 있으면
+    // 계산값이 변하지 않아 브라우저가 트랜지션을 생략한다. 어느 쪽이든 이벤트가 오지
+    // 않으므로 여기서 동기적으로 끝낸다. 0.5px 미만 차이는 눈에 보이지도 않고 서브픽셀
+    // 레이아웃에서 트랜지션 발생 여부가 브라우저마다 달라서 같이 묶어 처리한다.
+    if (reducedMotion || Math.abs(expandHRef.current - peekH) < 0.5) {
+      dlog('cancelExpand(): 트랜지션 없이 즉시 정리', {
+        reducedMotion,
+        expandH: expandHRef.current,
+        peekH,
+      });
+      settleExpandIdle();
       return;
     }
 
@@ -192,13 +235,14 @@ export const usePoolDetailSheetExpand = ({
     el?.classList.remove('pool-sheet--expand-dragging');
     void el?.offsetHeight;
     el?.style.setProperty('--expand-h', `${peekH}px`);
+    expandHRef.current = peekH;
     el?.style.removeProperty('border-radius');
   }, [
-    clearExpandStyles,
     expandPhaseRef,
     peekRef,
     setExpandDragging,
     setExpandPhase,
+    settleExpandIdle,
     sheetRef,
   ]);
 
@@ -228,11 +272,13 @@ export const usePoolDetailSheetExpand = ({
     setExpandPhase('animating');
     setExpandDragging(false);
     el.style.setProperty('--expand-h', `${peekH}px`);
+    expandHRef.current = peekH;
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         expandProgressRef.current = 1;
         el.style.setProperty('--expand-h', `${screenH}px`);
+        expandHRef.current = screenH;
         el.style.borderRadius = '0';
       });
     });
@@ -253,11 +299,13 @@ export const usePoolDetailSheetExpand = ({
         threshold: EXPAND_COMMIT_THRESHOLD,
       });
       if (progress >= EXPAND_COMMIT_THRESHOLD) {
-        if (progress >= 1) {
+        const screenH = getScreenHeight();
+        // cancelExpand와 같은 이유 — 이미 목표 높이라 트랜지션이 생략되면 transitionend가
+        // 오지 않아 풀스크린으로 넘어가지 못하고 'animating'에 갇힌다.
+        if (progress >= 1 || Math.abs(expandHRef.current - screenH) < 0.5) {
           commitFullscreen();
           return;
         }
-        const screenH = getScreenHeight();
         expandPhaseRef.current = 'animating';
         setExpandPhase('animating');
         setExpandDragging(false);
@@ -272,6 +320,7 @@ export const usePoolDetailSheetExpand = ({
         el?.classList.remove('pool-sheet--expand-dragging');
         void el?.offsetHeight;
         el?.style.setProperty('--expand-h', `${screenH}px`);
+        expandHRef.current = screenH;
         el?.style.setProperty('border-radius', '0');
         return;
       }
@@ -288,19 +337,9 @@ export const usePoolDetailSheetExpand = ({
   );
 
   const resetExpandInstant = useCallback(() => {
-    expandPhaseRef.current = 'idle';
-    setExpandPhase('idle');
-    setExpandDragging(false);
+    settleExpandIdle();
     setHeaderDragging(false);
-    clearExpandStyles(sheetRef.current);
-  }, [
-    clearExpandStyles,
-    expandPhaseRef,
-    setExpandDragging,
-    setExpandPhase,
-    setHeaderDragging,
-    sheetRef,
-  ]);
+  }, [setHeaderDragging, settleExpandIdle]);
 
   const resetFullscreen = useCallback(() => {
     setIsFullscreen(false);
@@ -490,6 +529,10 @@ export const usePoolDetailSheetExpand = ({
   };
 
   const onPeekBodyPointerDown = (e: ReactPointerEvent) => {
+    // 풀스크린에서는 본문이 네이티브 스크롤을 담당한다. 여기서 제스처를 잡으면
+    // setPointerCapture가 스크롤을 가로채고, range가 0이라 progress가 1로 계산되어
+    // 펼침 상태 머신에 잘못 들어간다.
+    if (isFullscreenRef.current) return;
     if (expandPhaseRef.current === 'animating') return;
     peekBodyGestureRef.current = {
       startX: e.clientX,
@@ -502,6 +545,11 @@ export const usePoolDetailSheetExpand = ({
   const onPeekBodyPointerMove = (e: ReactPointerEvent) => {
     const gesture = peekBodyGestureRef.current;
     if (!gesture || gesture.pointerId !== e.pointerId) return;
+    // 제스처 도중 풀스크린으로 전환됐다면 남은 이동은 무시한다.
+    if (isFullscreenRef.current) {
+      peekBodyGestureRef.current = null;
+      return;
+    }
 
     const deltaY = e.clientY - gesture.startY;
     const deltaX = e.clientX - gesture.startX;
